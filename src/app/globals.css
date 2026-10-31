@@ -1,15 +1,22 @@
 @import "tailwindcss";
 
-/* Cores do Fiães Sport Clube (verde e amarelo). Valores por omissão, substituídos pela
-   configuração do clube na BD (página Clube do painel; ver Cabecalho). */
+/* Identidade do Fiães Sport Clube.
+   Verde Fiães #006633 (principal) e #00875A (secundário); Amarelo Fiães #FFCC00 (destaque) e #FFD700 (realce);
+   neutros #FFFFFF e #1A1A1A. As três cores --cor-* são substituídas pela configuração do clube na BD
+   (página Clube do painel; ver Cabecalho); as variantes claras/escuras ficam fixas. */
 :root {
-  --cor-primaria: #0b6b35;
+  --cor-primaria: #006633;
   --cor-secundaria: #ffffff;
-  --cor-destaque: #ffd100;
+  --cor-destaque: #ffcc00;
+  --verde-claro: #00875a;
+  --verde-escuro: #004d26;
+  --amarelo-claro: #ffd700;
+  --amarelo-escuro: #e6b800;
+  --escuro: #1a1a1a;
 
   --fundo: #f4f5f7;
   --superficie: #ffffff;
-  --texto: #14171f;
+  --texto: #1a1a1a;
   --texto-suave: #5b6272;
   --borda: #e2e5ea;
   --ao-vivo: #16a34a;
@@ -20,11 +27,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --fundo: #0d1017;
-    --superficie: #171b24;
-    --texto: #eef0f4;
-    --texto-suave: #9aa3b5;
-    --borda: #2a303d;
+    --fundo: #1a1a1a;
+    --superficie: #242424;
+    --texto: #f4f5f7;
+    --texto-suave: #a3a3a3;
+    --borda: #383838;
     --ao-vivo: #22c55e;
     --vitoria: #22c55e;
     --empate: #eab308;
@@ -45,13 +52,20 @@
   --color-vitoria: var(--vitoria);
   --color-empate: var(--empate);
   --color-derrota: var(--derrota);
-  --font-sans: var(--font-geist-sans);
+  --color-clube-claro: var(--verde-claro);
+  --color-clube-escuro: var(--verde-escuro);
+  --color-destaque-claro: var(--amarelo-claro);
+  --color-destaque-escuro: var(--amarelo-escuro);
+  --color-escuro: var(--escuro);
+  --font-sans: var(--font-inter);
+  /* Fonte desportiva para títulos e marcadores */
+  --font-display: var(--font-teko);
 }
 
 body {
   background: var(--fundo);
   color: var(--texto);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 

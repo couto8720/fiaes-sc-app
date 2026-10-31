@@ -2,7 +2,8 @@
 
 import type { JogoCompleto } from "@/lib/dados";
 import type { Escalao } from "@/lib/supabase/database.types";
-import { agruparPorDia, aoVivo, rotuloDia } from "@/lib/jogos";
+import { CalendarClock, CalendarDays, History, Radio, type LucideIcon } from "lucide-react";
+import { agruparPorDia, agruparPorSemana, rotuloDia } from "@/lib/jogos";
 import { useJogosAoVivo } from "@/lib/useJogosAoVivo";
 import { useFiltroEscalao } from "@/lib/useFiltroEscalao";
 import { CartaoJogo } from "./CartaoJogo";
@@ -47,55 +48,51 @@ export function ListaJogos({ jogos, nomeClube, agora, escaloes, vazio }: Props) 
   );
 }
 
-/** Página inicial: "Ao vivo", "Hoje", "Próximos dias" e "Últimos resultados". */
+/** Página inicial: "Ao vivo", "Esta semana", "Próxima semana" e "Jogos anteriores" (semanas de segunda a domingo). */
 export function PainelInicio({ jogos, nomeClube, agora, escaloes }: Omit<Props, "vazio">) {
   const vivos = useJogosAoVivo(jogos);
   const filtro = useFiltroEscalao();
   const filtroValido = escaloes?.some((e) => e.slug === filtro) ? filtro : "";
   const visiveis = filtroValido ? vivos.filter((j) => j.escalao?.slug === filtroValido) : vivos;
+  const g = agruparPorSemana(visiveis, agora);
 
-  const hoje = rotuloDia(new Date(agora).toISOString(), agora);
-  const ehHoje = (j: JogoCompleto) => rotuloDia(j.data_hora, agora) === hoje;
-  const passou = (j: JogoCompleto) => Date.parse(j.data_hora) < agora;
-
-  const aoVivoAgora = visiveis.filter((j) => aoVivo(j.estado));
-  const deHoje = visiveis.filter((j) => !aoVivo(j.estado) && ehHoje(j));
-  const proximos = visiveis.filter((j) => !aoVivo(j.estado) && !ehHoje(j) && !passou(j));
-  const resultados = visiveis
-    .filter((j) => j.estado === "final" && !ehHoje(j) && passou(j))
-    .reverse();
-
-  const seccao = (titulo: string, lista: JogoCompleto[], opcoes: { dia?: boolean; destaque?: boolean } = {}) =>
+  const seccao = (titulo: string, Icone: LucideIcon, lista: JogoCompleto[], tom: "vivo" | "destaque" | "normal" | "suave") =>
     lista.length > 0 && (
-      <section className="mb-7">
+      <section className="mb-8">
         <h2
-          className={`mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide ${
-            opcoes.destaque ? "text-ao-vivo" : "text-suave"
+          className={`mb-3 flex items-center gap-2 border-b-2 pb-1 font-display text-2xl leading-none font-semibold uppercase tracking-wide ${
+            tom === "vivo"
+              ? "border-ao-vivo text-ao-vivo"
+              : tom === "destaque"
+                ? "border-destaque text-texto"
+                : tom === "normal"
+                  ? "border-clube text-texto dark:border-clube-claro"
+                  : "border-borda text-suave"
           }`}
         >
-          {opcoes.destaque && <span aria-hidden className="ponto-ao-vivo h-2 w-2 rounded-full bg-ao-vivo" />}
+          <Icone size={20} className={tom === "vivo" ? "ponto-ao-vivo" : tom === "suave" ? "" : "text-clube dark:text-destaque"} aria-hidden />
           {titulo}
         </h2>
         <div className="space-y-3">
           {lista.map((j) => (
-            <CartaoJogo key={j.id} jogo={j} nomeClube={nomeClube} mostrarDia={opcoes.dia} />
+            <CartaoJogo key={j.id} jogo={j} nomeClube={nomeClube} mostrarDia={tom !== "vivo"} />
           ))}
         </div>
       </section>
     );
 
-  const nada = !aoVivoAgora.length && !deHoje.length && !proximos.length && !resultados.length;
+  const nada = !g.aoVivo.length && !g.estaSemana.length && !g.proximaSemana.length && !g.anteriores.length;
 
   return (
     <>
       {escaloes && <FiltroEscaloes escaloes={escaloes} ativo={filtroValido} />}
-      {seccao("Ao vivo", aoVivoAgora, { destaque: true })}
-      {seccao("Hoje", deHoje)}
-      {seccao("Próximos dias", proximos, { dia: true })}
-      {seccao("Últimos resultados", resultados, { dia: true })}
+      {seccao("Ao vivo", Radio, g.aoVivo, "vivo")}
+      {seccao("Esta semana", CalendarClock, g.estaSemana, "destaque")}
+      {seccao("Próxima semana", CalendarDays, g.proximaSemana, "normal")}
+      {seccao("Jogos anteriores", History, g.anteriores, "suave")}
       {nada && (
         <p className="rounded-xl border border-dashed border-borda p-6 text-center text-suave">
-          Não há jogos nesta semana.
+          Não há jogos nestas semanas.
         </p>
       )}
     </>

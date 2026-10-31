@@ -1,4 +1,5 @@
 import type { EstadoJogo, Jogo } from "./supabase/database.types";
+import { somarDias } from "./datas.ts";
 
 export const ROTULO_ESTADO: Record<EstadoJogo, string> = {
   agendado: "Agendado",
@@ -36,6 +37,19 @@ export const chaveDia = (d: string | number) => fmtChaveDia.format(new Date(d));
 export const formatarHora = (iso: string) => fmtHora.format(new Date(iso));
 export const formatarDiaCurto = (iso: string) => fmtDiaCurto.format(new Date(iso));
 
+/** "sábado, 31 de outubro" */
+export const formatarDiaLongo = (iso: string) => fmtDiaLongo.format(new Date(iso));
+
+const fmtDiaSemanaCurto = new Intl.DateTimeFormat("pt-PT", { timeZone: FUSO, weekday: "short" });
+const MESES_CURTOS = ["jan.", "fev.", "mar.", "abr.", "mai.", "jun.", "jul.", "ago.", "set.", "out.", "nov.", "dez."];
+
+/** "Dom., 1 nov." — etiqueta curta para os cartões (cabe no telemóvel). */
+export function formatarDiaEtiqueta(iso: string) {
+  const [, m, d] = chaveDia(iso).split("-").map(Number);
+  const semana = fmtDiaSemanaCurto.format(new Date(iso));
+  return `${semana.charAt(0).toUpperCase()}${semana.slice(1)}, ${d} ${MESES_CURTOS[m - 1]}`;
+}
+
 export function formatarDataHora(iso: string) {
   return `${formatarDiaCurto(iso)} · ${formatarHora(iso)}`;
 }
@@ -60,6 +74,42 @@ export function agruparPorDia<T extends Pick<Jogo, "data_hora">>(jogos: T[]) {
     else grupos.push({ dia, jogos: [j] });
   }
   return grupos;
+}
+
+// ---------- Feed por semanas (segunda a domingo, hora de Lisboa) ----------
+
+export type GruposSemana<T> = {
+  aoVivo: T[];
+  estaSemana: T[];
+  proximaSemana: T[];
+  anteriores: T[];
+};
+
+/** Segunda-feira da semana de um dia ("2026-10-31" → "2026-10-26"). */
+export function segundaDaSemana(dia: string) {
+  const [a, m, d] = dia.split("-").map(Number);
+  const diaSemana = new Date(Date.UTC(a, m - 1, d)).getUTCDay(); // 0 = domingo
+  return somarDias(dia, -((diaSemana + 6) % 7));
+}
+
+/**
+ * Agrupa os jogos para a página inicial:
+ * ao vivo · esta semana (todos, por ordem) · próxima semana · jogos anteriores (terminados, do mais recente).
+ */
+export function agruparPorSemana<T extends Pick<Jogo, "data_hora" | "estado">>(jogos: T[], agora: number): GruposSemana<T> {
+  const segunda = segundaDaSemana(chaveDia(agora));
+  const proximaSegunda = somarDias(segunda, 7);
+  const segundaSeguinte = somarDias(segunda, 14);
+  const g: GruposSemana<T> = { aoVivo: [], estaSemana: [], proximaSemana: [], anteriores: [] };
+  for (const j of [...jogos].sort((a, b) => a.data_hora.localeCompare(b.data_hora))) {
+    const dia = chaveDia(j.data_hora);
+    if (aoVivo(j.estado)) g.aoVivo.push(j);
+    else if (dia >= segunda && dia < proximaSegunda) g.estaSemana.push(j);
+    else if (dia >= proximaSegunda && dia < segundaSeguinte) g.proximaSemana.push(j);
+    else if (dia < segunda && j.estado === "final") g.anteriores.push(j);
+  }
+  g.anteriores.reverse();
+  return g;
 }
 
 // ---------- Equipas e resultado ----------

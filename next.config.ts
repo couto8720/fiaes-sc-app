@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   // As fontes da imagem do post são lidas do disco: garante que vão com a função no deploy.
   outputFileTracingIncludes: {
-    "/admin/post/imagem": ["./assets/fontes/*.woff", "./public/simbolo-fiaes.png"],
+    "/admin/post/imagem": ["./assets/fontes/*.woff", "./public/simbolo-fiaes.png"], // Barlow + Teko
     "/icones/[tipo]": ["./public/simbolo-fiaes.png"],
   },
   partialPrefetching: true,

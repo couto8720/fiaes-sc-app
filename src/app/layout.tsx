@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter, Teko } from "next/font/google";
 import { Suspense } from "react";
 import { Cabecalho, CabecalhoProvisorio } from "@/components/Cabecalho";
 import { NavInferior, NavInferiorVista } from "@/components/NavInferior";
 import { RegistarServiceWorker } from "@/components/RegistarServiceWorker";
 import "./globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+// Teko: fonte desportiva dos títulos e dos marcadores.
+const teko = Teko({ variable: "--font-teko", subsets: ["latin"], weight: ["500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: { default: "Fiães Sport Clube", template: "%s · Fiães SC" },
@@ -21,12 +23,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0B6B35",
+  themeColor: "#006633",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-PT" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="pt-PT" className={`${inter.variable} ${teko.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <Suspense fallback={<CabecalhoProvisorio />}>
           <Cabecalho />

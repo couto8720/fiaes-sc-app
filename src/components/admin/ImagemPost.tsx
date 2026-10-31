@@ -49,8 +49,8 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 44, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", opacity: 0.9 }}>{config.nome_curto}</div>
-          <div style={{ fontSize: story ? 150 : 128, fontWeight: 800, lineHeight: 0.9, textTransform: "uppercase", marginTop: story ? 28 : 16 }}>Resultados</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 14, fontSize: 40, fontWeight: 600, textTransform: "uppercase" }}>
+          <div style={{ fontFamily: "Teko", fontSize: story ? 190 : 164, fontWeight: 700, lineHeight: 0.78, textTransform: "uppercase", marginTop: story ? 34 : 22 }}>Resultados</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 14, fontFamily: "Teko", fontSize: 50, fontWeight: 500, textTransform: "uppercase" }}>
             <div style={{ width: 56, height: 8, background: destaque }} />
             <div style={{ color: destaque }}>{`Fim de semana · ${formatarIntervalo(de, ate)}`}</div>
           </div>
@@ -72,18 +72,19 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
           <div style={{ display: "flex", alignItems: "center", gap: 18, height: i.marcadores ? 76 : alturaLinha }}>
             <div
               style={{
-                width: 150, height: 60, borderRadius: 14, background: destaque, color: config.cor_primaria,
-                display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 8px",
+                width: 160, height: 60, borderRadius: 14, background: destaque, color: config.cor_primaria,
+                display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 6px",
                 // Nomes compridos ("Feminino Sub-13") em duas linhas, com letra menor.
-                fontSize: i.escalao.length > 11 ? 22 : i.escalao.length > 8 ? 27 : 32,
-                lineHeight: i.escalao.length > 11 ? 1.05 : 1,
-                fontWeight: 800, textTransform: "uppercase", flexShrink: 0,
+                fontFamily: "Teko",
+                fontSize: i.escalao.length > 11 ? 26 : i.escalao.length > 8 ? 28 : i.escalao.length > 6 ? 34 : 40,
+                lineHeight: i.escalao.length > 11 ? 0.88 : 1,
+                fontWeight: 700, textTransform: "uppercase", flexShrink: 0, paddingTop: 4,
               }}
             >
               {i.escalao}
             </div>
             <Equipa nome={i.casa.nome} clube={i.casa.eClube} destaque={destaque} alinhar="flex-end" />
-            <div style={{ width: 150, display: "flex", justifyContent: "center", fontSize: i.nota ? 34 : 62, fontWeight: 800, flexShrink: 0, textTransform: "uppercase", opacity: i.nota ? 0.8 : 1 }}>
+            <div style={{ width: 150, display: "flex", justifyContent: "center", fontFamily: "Teko", fontSize: i.nota ? 42 : 84, fontWeight: 700, lineHeight: 1, paddingTop: 8, flexShrink: 0, textTransform: "uppercase", opacity: i.nota ? 0.8 : 1 }}>
               {i.nota ?? `${i.casa.golos} - ${i.fora.golos}`}
             </div>
             <Equipa nome={i.fora.nome} clube={i.fora.eClube} destaque={destaque} alinhar="flex-start" />
@@ -108,7 +109,7 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
       </div>
 
       {/* Rodapé */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontSize: 34, fontWeight: 600, opacity: 0.9 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontFamily: "Teko", fontSize: 44, fontWeight: 500, opacity: 0.95 }}>
         <div style={{ color: destaque }}>{config.hashtag ?? ""}</div>
         {totalPaginas > 1 && <div>{`${pagina}/${totalPaginas}`}</div>}
       </div>

@@ -22,7 +22,8 @@ async function ConteudoInicio() {
   const [config, escaloes, jogos] = await Promise.all([
     obterConfig(),
     obterEscaloes(),
-    obterJogos({ desde: new Date(t - 7 * DIA), ate: new Date(t + 8 * DIA) }),
+    // Da semana anterior até ao fim da próxima semana (o agrupamento por semanas faz o resto).
+    obterJogos({ desde: new Date(t - 14 * DIA), ate: new Date(t + 15 * DIA) }),
   ]);
 
   return (

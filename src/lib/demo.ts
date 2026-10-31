@@ -8,9 +8,9 @@ export const CONFIG_DEMO: ClubeConfig = {
   nome: "Fiães Sport Clube",
   nome_curto: "Fiães SC",
   logo_url: null,
-  cor_primaria: "#0B6B35",
+  cor_primaria: "#006633",
   cor_secundaria: "#FFFFFF",
-  cor_destaque: "#FFD100",
+  cor_destaque: "#FFCC00",
   hashtag: "#FiaesSC",
 };
 
