@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { fimDeSemanaAte, formatarIntervalo, intervaloUTC, somarDias } from "../src/lib/datas.ts";
-import { itensPost, paginar, textoPost, type JogoPost } from "../src/lib/post.ts";
+import { escalaPost, FORMATOS, itensPost, paginar, textoPost, type JogoPost } from "../src/lib/post.ts";
 
 test("fim de semana por omissão: o mais recente até hoje", () => {
   assert.deepEqual(fimDeSemanaAte("2026-10-28"), { de: "2026-10-24", ate: "2026-10-25" }); // quarta
@@ -93,4 +93,15 @@ test("marcadores do Fiães SC entram na legenda", () => {
 test("muitos jogos dividem-se em várias imagens", () => {
   assert.deepEqual(paginar([1, 2, 3, 4, 5], 2), [[1, 2], [3, 4], [5]]);
   assert.deepEqual(paginar([], 7), [[]]);
+});
+
+test("post: todos os jogos numa só imagem, com linhas reduzidas quando são muitos", () => {
+  const jogos = (n: number, marcadores = "") => Array.from({ length: n }, () => ({ marcadores }));
+  assert.equal(escalaPost([], "feed"), 1);
+  assert.equal(escalaPost(jogos(6), "feed"), 1);
+  const onze = escalaPost(jogos(11), "feed");
+  assert.ok(onze < 1 && onze > 0.6, `11 jogos: ${onze}`);
+  assert.ok(escalaPost(jogos(11, "Rui P."), "feed") < onze);
+  assert.equal(escalaPost(jogos(40), "feed"), 0.4);
+  assert.equal(paginar(jogos(14), FORMATOS.feed.porPagina).length, 1);
 });

@@ -2,7 +2,7 @@
 // só flexbox e estilos inline; cada <div> com vários filhos precisa de display: flex.
 import type { ClubeConfig } from "@/lib/supabase/database.types";
 import { formatarIntervalo } from "@/lib/datas";
-import type { Formato, ItemPost } from "@/lib/post";
+import { escalaPost, LINHA_POST, type Formato, type ItemPost } from "@/lib/post";
 
 const COR_DESFECHO = { vitoria: "#22c55e", empate: "#eab308", derrota: "#ef4444" } as const;
 const LETRA_DESFECHO = { vitoria: "V", empate: "E", derrota: "D" } as const;
@@ -30,7 +30,10 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
   const texto = config.cor_secundaria;
   const destaque = config.cor_destaque;
   const story = formato === "story";
-  const alturaLinha = story ? 118 : 112;
+  // Todos os jogos numa só imagem: com muitos jogos, tudo nas linhas encolhe pelo mesmo fator.
+  const s = escalaPost(itens, formato);
+  const e = (px: number) => Math.round(px * s);
+  const alturaLinha = e(LINHA_POST.altura);
 
   return (
     <div
@@ -60,38 +63,38 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
       </div>
 
       {/* Jogos */}
-      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 14, margin: story ? "48px 0" : "28px 0", flexGrow: 1 }}>
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: e(LINHA_POST.espaco), margin: story ? "48px 0" : "28px 0", flexGrow: 1 }}>
         {itens.length === 0 && (
           <div style={{ display: "flex", fontSize: 48, fontWeight: 600, opacity: 0.85, marginTop: 40 }}>Sem jogos neste fim de semana.</div>
         )}
         {itens.map((i) => (
           <div
             key={i.id}
-            style={{ display: "flex", flexDirection: "column", justifyContent: "center", minHeight: alturaLinha, background: "rgba(255,255,255,0.09)", borderRadius: 22, padding: i.marcadores ? "16px 22px 14px" : "0 22px" }}
+            style={{ display: "flex", flexDirection: "column", justifyContent: "center", minHeight: alturaLinha, background: "rgba(255,255,255,0.09)", borderRadius: e(22), padding: i.marcadores ? `${e(16)}px ${e(22)}px ${e(14)}px` : `0 ${e(22)}px` }}
           >
-          <div style={{ display: "flex", alignItems: "center", gap: 18, height: i.marcadores ? 76 : alturaLinha }}>
+          <div style={{ display: "flex", alignItems: "center", gap: e(18), height: i.marcadores ? e(76) : alturaLinha }}>
             <div
               style={{
-                width: 160, height: 60, borderRadius: 14, background: destaque, color: config.cor_primaria,
-                display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 6px",
+                width: e(160), height: e(60), borderRadius: e(14), background: destaque, color: config.cor_primaria,
+                display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: `0 ${e(6)}px`,
                 // Nomes compridos ("Feminino Sub-13") em duas linhas, com letra menor.
                 fontFamily: "Teko",
-                fontSize: i.escalao.length > 11 ? 26 : i.escalao.length > 8 ? 28 : i.escalao.length > 6 ? 34 : 40,
+                fontSize: e(i.escalao.length > 11 ? 26 : i.escalao.length > 8 ? 28 : i.escalao.length > 6 ? 34 : 40),
                 lineHeight: i.escalao.length > 11 ? 0.88 : 1,
-                fontWeight: 700, textTransform: "uppercase", flexShrink: 0, paddingTop: 4,
+                fontWeight: 700, textTransform: "uppercase", flexShrink: 0, paddingTop: e(4),
               }}
             >
               {i.escalao}
             </div>
-            <Equipa nome={i.casa.nome} clube={i.casa.eClube} destaque={destaque} alinhar="flex-end" />
-            <div style={{ width: 150, display: "flex", justifyContent: "center", fontFamily: "Teko", fontSize: i.nota ? 42 : 84, fontWeight: 700, lineHeight: 1, paddingTop: 8, flexShrink: 0, textTransform: "uppercase", opacity: i.nota ? 0.8 : 1 }}>
+            <Equipa nome={i.casa.nome} clube={i.casa.eClube} destaque={destaque} alinhar="flex-end" s={s} />
+            <div style={{ width: e(150), display: "flex", justifyContent: "center", fontFamily: "Teko", fontSize: e(i.nota ? 42 : 84), fontWeight: 700, lineHeight: 1, paddingTop: e(8), flexShrink: 0, textTransform: "uppercase", opacity: i.nota ? 0.8 : 1 }}>
               {i.nota ?? `${i.casa.golos} - ${i.fora.golos}`}
             </div>
-            <Equipa nome={i.fora.nome} clube={i.fora.eClube} destaque={destaque} alinhar="flex-start" />
+            <Equipa nome={i.fora.nome} clube={i.fora.eClube} destaque={destaque} alinhar="flex-start" s={s} />
             <div
               style={{
-                width: 52, height: 52, borderRadius: 26, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 30, fontWeight: 800, color: "#fff",
+                width: e(52), height: e(52), borderRadius: e(26), flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: e(30), fontWeight: 800, color: "#fff",
                 background: i.desfecho ? COR_DESFECHO[i.desfecho] : "rgba(255,255,255,0.15)",
               }}
             >
@@ -100,7 +103,7 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
           </div>
           {i.marcadores && (
             // Marcadores do clube (nome curto), alinhados com os nomes das equipas.
-            <div style={{ display: "block", paddingLeft: 168, fontSize: 26, fontWeight: 600, color: destaque, lineClamp: 1, overflow: "hidden" }}>
+            <div style={{ display: "block", paddingLeft: e(178), fontSize: e(26), fontWeight: 600, color: destaque, lineClamp: 1, overflow: "hidden" }}>
               {`GOLOS: ${i.marcadores}`}
             </div>
           )}
@@ -117,7 +120,7 @@ export function ImagemPost({ config, itens, de, ate, formato, pagina, totalPagin
   );
 }
 
-function Equipa({ nome, clube, destaque, alinhar }: { nome: string; clube: boolean; destaque: string; alinhar: "flex-start" | "flex-end" }) {
+function Equipa({ nome, clube, destaque, alinhar, s }: { nome: string; clube: boolean; destaque: string; alinhar: "flex-start" | "flex-end"; s: number }) {
   // Até 13 letras: letra grande; até 17: média, numa linha; mais compridos
   // ("Associação Desportiva e Recreativa de…"): letra menor e até duas linhas.
   const longo = nome.length > 17;
@@ -126,7 +129,7 @@ function Equipa({ nome, clube, destaque, alinhar }: { nome: string; clube: boole
       <div
         style={{
           display: "block",
-          fontSize: longo ? 28 : nome.length > 13 ? 31 : 38,
+          fontSize: Math.round((longo ? 28 : nome.length > 13 ? 31 : 38) * Math.max(s, 0.6)),
           lineHeight: longo ? 1.05 : 1.1,
           fontWeight: clube ? 800 : 600,
           color: clube ? destaque : undefined,

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LogIn } from "lucide-react";
 import { modoDemo, obterConfig } from "@/lib/dados";
 import { SIMBOLO_LOCAL, simboloSrc } from "@/lib/simbolo";
 
@@ -12,6 +13,14 @@ function Barra({ nome, logo }: { nome: string; logo: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element -- símbolo pequeno (incluído na app ou URL configurado) */}
           <img src={logo} alt={`Símbolo do ${nome}`} width={36} height={43} className="h-11 w-auto object-contain drop-shadow" />
           <span className="truncate text-lg font-bold tracking-tight">{nome}</span>
+        </Link>
+        {/* Acesso do staff: sem sessão, /admin leva ao formulário de login; com sessão, abre o painel. */}
+        <Link
+          href="/admin"
+          className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-clube-texto/40 px-3 py-1.5 text-sm font-semibold hover:bg-clube-texto/10"
+        >
+          <LogIn size={16} aria-hidden />
+          Entrar
         </Link>
       </div>
     </header>

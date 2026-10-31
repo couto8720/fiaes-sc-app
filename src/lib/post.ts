@@ -21,11 +21,28 @@ export type ItemPost = {
   marcadores: string;
 };
 
+// Todos os jogos do fim de semana cabem numa só imagem: as linhas encolhem quando há muitos.
+// "espacoJogos" = altura livre (px) entre o cabeçalho e o rodapé da imagem.
 export const FORMATOS = {
-  feed: { largura: 1080, altura: 1350, porPagina: 6 },
-  story: { largura: 1080, altura: 1920, porPagina: 9 },
+  feed: { largura: 1080, altura: 1350, porPagina: 99, espacoJogos: 860 },
+  story: { largura: 1080, altura: 1920, porPagina: 99, espacoJogos: 1240 },
 } as const;
 export type Formato = keyof typeof FORMATOS;
+
+/** Altura de uma linha à escala 1 (com marcadores fica mais alta) e espaço entre linhas. */
+export const LINHA_POST = { altura: 112, comMarcadores: 142, espaco: 14 } as const;
+
+/**
+ * Fator (0.4–1) pelo qual se reduzem as linhas para todos os jogos caberem numa só imagem.
+ * Ex.: 6 jogos no feed → 1; 12 jogos → ~0.55.
+ */
+export function escalaPost(itens: Pick<ItemPost, "marcadores">[], formato: Formato) {
+  if (!itens.length) return 1;
+  const precisa =
+    itens.reduce((t, i) => t + (i.marcadores ? LINHA_POST.comMarcadores : LINHA_POST.altura), 0) +
+    (itens.length - 1) * LINHA_POST.espaco;
+  return Math.max(0.4, Math.min(1, FORMATOS[formato].espacoJogos / precisa));
+}
 
 /** Jogos que entram no post: terminados, adiados e cancelados, por ordem de escalão e de hora. */
 export function itensPost(jogos: JogoPost[], nomeClube: string): ItemPost[] {
