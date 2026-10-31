@@ -1,0 +1,8 @@
+# Nunca enviar para a Vercel: segredos locais, dependências e caches (a Vercel instala e compila sozinha).
+.env*
+!.env.example
+node_modules
+.next
+.claude
+supabase/.temp
+*.tsbuildinfo

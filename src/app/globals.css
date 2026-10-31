@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* Cores do Fiães Sport Clube (verde e amarelo). Valores por omissão, substituídos pela
+   configuração do clube na BD (página Clube do painel; ver Cabecalho). */
+:root {
+  --cor-primaria: #0b6b35;
+  --cor-secundaria: #ffffff;
+  --cor-destaque: #ffd100;
+
+  --fundo: #f4f5f7;
+  --superficie: #ffffff;
+  --texto: #14171f;
+  --texto-suave: #5b6272;
+  --borda: #e2e5ea;
+  --ao-vivo: #16a34a;
+  --vitoria: #16a34a;
+  --empate: #a16207;
+  --derrota: #dc2626;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #0d1017;
+    --superficie: #171b24;
+    --texto: #eef0f4;
+    --texto-suave: #9aa3b5;
+    --borda: #2a303d;
+    --ao-vivo: #22c55e;
+    --vitoria: #22c55e;
+    --empate: #eab308;
+    --derrota: #f87171;
+  }
+}
+
+@theme inline {
+  --color-clube: var(--cor-primaria);
+  --color-clube-texto: var(--cor-secundaria);
+  --color-destaque: var(--cor-destaque);
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-texto: var(--texto);
+  --color-suave: var(--texto-suave);
+  --color-borda: var(--borda);
+  --color-ao-vivo: var(--ao-vivo);
+  --color-vitoria: var(--vitoria);
+  --color-empate: var(--empate);
+  --color-derrota: var(--derrota);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Números do marcador com largura fixa, para não "saltarem" quando mudam. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes pulsar {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.8); }
+}
+.ponto-ao-vivo {
+  animation: pulsar 1.4s ease-in-out infinite;
+}
+
+@keyframes destacar {
+  from { background-color: color-mix(in srgb, var(--cor-destaque) 45%, transparent); }
+  to { background-color: transparent; }
+}
+.golo-novo {
+  animation: destacar 1.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ponto-ao-vivo, .golo-novo { animation: none; }
+}
