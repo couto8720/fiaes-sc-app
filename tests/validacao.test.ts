@@ -3,16 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { isoParaLisboa, lisboaParaISO } from "../src/lib/datas.ts";
-import {
-  destinoSeguro,
-  slugificar,
-  validarClassificacao,
-  validarClube,
-  validarConvite,
-  validarEscalao,
-  validarJogo,
-  validarLocal,
-} from "../src/lib/validacao.ts";
+import { destinoSeguro, mensagemErroPalavraPasse, slugificar, validarClassificacao, validarClube, validarConvite, validarEscalao, validarJogo, validarLocal, validarPalavraPasse } from "../src/lib/validacao.ts";
 
 const linhaC = (posicao: number, equipa: string, extra = {}) => ({
   posicao, equipa, e_o_clube: false, jogos: 5, vitorias: 3, empates: 1, derrotas: 1,
@@ -132,4 +123,25 @@ test("redirecionamento após login só para o painel", () => {
   assert.equal(destinoSeguro("//mau.site"), "/admin");
   assert.equal(destinoSeguro("/admin/../../x"), "/admin");
   assert.equal(destinoSeguro(null), "/admin");
+});
+
+test("palavra-passe: regras em português (10 caracteres, minúscula, maiúscula, número)", () => {
+  assert.equal(validarPalavraPasse("Fiaes2026SC", "Fiaes2026SC"), null);
+  assert.equal(validarPalavraPasse("Fiães2026sc", "Fiães2026sc"), null); // letras acentuadas contam
+  assert.equal(validarPalavraPasse("curta1A", "curta1A"), "A palavra-passe precisa de ter pelo menos 10 caracteres.");
+  assert.equal(
+    validarPalavraPasse("sominusculas", "sominusculas"),
+    "A palavra-passe precisa de ter uma letra maiúscula e um número.",
+  );
+  assert.equal(validarPalavraPasse("Fiaes2026SC", "Fiaes2026Sc"), "As palavras-passe não coincidem.");
+  assert.equal(validarPalavraPasse(undefined, undefined)?.startsWith("A palavra-passe precisa de ter pelo menos 10 caracteres, "), true);
+});
+
+test("palavra-passe: erros do Supabase traduzidos", () => {
+  assert.match(mensagemErroPalavraPasse("same_password"), /diferente da anterior/);
+  assert.match(mensagemErroPalavraPasse("weak_password", ["pwned"]), /fugas de dados/);
+  assert.match(mensagemErroPalavraPasse("weak_password", ["characters"]), /minúsculas, maiúsculas e números/);
+  assert.match(mensagemErroPalavraPasse("reauthentication_needed"), /sai e volta a entrar/);
+  assert.match(mensagemErroPalavraPasse("over_request_rate_limit"), /Espera uns minutos/);
+  assert.match(mensagemErroPalavraPasse(undefined), /Não foi possível guardar/);
 });

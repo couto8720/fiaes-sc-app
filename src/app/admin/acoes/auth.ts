@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { origemDoSite } from "@/lib/sessao";
-import { destinoSeguro, validarPalavraPasse } from "@/lib/validacao";
+import { destinoSeguro, mensagemErroPalavraPasse, validarPalavraPasse } from "@/lib/validacao";
 import type { EstadoFormulario } from "./tipos";
 
 export async function entrar(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
@@ -47,9 +47,8 @@ export async function definirPalavraPasse(_: EstadoFormulario, fd: FormData): Pr
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password: String(fd.get("password")) });
   if (error) {
-    return {
-      erro: error.code === "same_password" ? "A nova palavra-passe tem de ser diferente da anterior." : "Não foi possível guardar. O link pode ter expirado.",
-    };
+    const motivos = "reasons" in error && Array.isArray(error.reasons) ? (error.reasons as string[]) : [];
+    return { erro: mensagemErroPalavraPasse(error.code, motivos) };
   }
   redirect("/admin");
 }

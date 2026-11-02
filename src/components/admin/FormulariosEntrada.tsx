@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { definirPalavraPasse, entrar, pedirRecuperacao } from "@/app/admin/acoes/auth";
 import { ESTADO_INICIAL } from "@/app/admin/acoes/tipos";
 import { BotaoSubmeter, Campo, Mensagem, classeInput } from "./ui";
+import { REGRAS_PALAVRA_PASSE } from "@/lib/validacao";
 
 export function FormLogin() {
   const params = useSearchParams();
@@ -56,15 +57,51 @@ export function FormRecuperar() {
 
 export function FormDefinirPalavraPasse() {
   const [estado, acao] = useActionState(definirPalavraPasse, ESTADO_INICIAL);
+  const [nova, setNova] = useState("");
+  const [confirmacao, setConfirmacao] = useState("");
   return (
     <form action={acao} className="space-y-4">
       {estado.erro && <Mensagem tipo="erro">{estado.erro}</Mensagem>}
-      <Campo rotulo="Nova palavra-passe" nome="password" ajuda="Pelo menos 8 caracteres.">
-        <input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required className={classeInput} />
+      <Campo rotulo="Nova palavra-passe" nome="password">
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
+          minLength={10}
+          required
+          value={nova}
+          onChange={(e) => setNova(e.target.value)}
+          aria-describedby="regras-palavra-passe"
+          className={classeInput}
+        />
       </Campo>
+      {/* As regras vão ficando a verde à medida que se escreve. */}
+      <ul id="regras-palavra-passe" className="space-y-1 text-sm" aria-live="polite">
+        {REGRAS_PALAVRA_PASSE.map((r) => {
+          const ok = r.cumpre(nova);
+          return (
+            <li key={r.id} className={ok ? "font-semibold text-vitoria" : "text-suave"}>
+              <span aria-hidden>{ok ? "✓" : "○"}</span> {r.texto}
+              <span className="sr-only">{ok ? " (cumprido)" : " (em falta)"}</span>
+            </li>
+          );
+        })}
+      </ul>
       <Campo rotulo="Repetir palavra-passe" nome="confirmacao">
-        <input id="confirmacao" name="confirmacao" type="password" autoComplete="new-password" minLength={8} required className={classeInput} />
+        <input
+          id="confirmacao"
+          name="confirmacao"
+          type="password"
+          autoComplete="new-password"
+          minLength={10}
+          required
+          value={confirmacao}
+          onChange={(e) => setConfirmacao(e.target.value)}
+          className={classeInput}
+        />
       </Campo>
+      {confirmacao && confirmacao !== nova && <p className="text-sm font-medium text-derrota">As palavras-passe não coincidem.</p>}
       <BotaoSubmeter>Guardar e entrar</BotaoSubmeter>
     </form>
   );

@@ -259,10 +259,45 @@ export function validarConvite(c: Campos): Resultado<DadosConvite> {
     : { ok: true, dados: { nome, email, papel: papel as DadosConvite["papel"] } };
 }
 
+// Regras das palavras-passe: iguais às definidas no Supabase (Authentication → Sign In / Providers → Email).
+export const REGRAS_PALAVRA_PASSE = [
+  { id: "tamanho", texto: "Pelo menos 10 caracteres", falta: "pelo menos 10 caracteres", cumpre: (s: string) => s.length >= 10 },
+  { id: "minuscula", texto: "Uma letra minúscula", falta: "uma letra minúscula", cumpre: (s: string) => /\p{Ll}/u.test(s) },
+  { id: "maiuscula", texto: "Uma letra maiúscula", falta: "uma letra maiúscula", cumpre: (s: string) => /\p{Lu}/u.test(s) },
+  { id: "numero", texto: "Um número", falta: "um número", cumpre: (s: string) => /\d/.test(s) },
+] as const;
+
+const juntar = (itens: string[]) => (itens.length > 1 ? `${itens.slice(0, -1).join(", ")} e ${itens.at(-1)}` : itens[0]);
+
 export function validarPalavraPasse(nova: string | undefined, confirmacao: string | undefined): string | null {
-  if (!nova || nova.length < 8) return "A palavra-passe tem de ter pelo menos 8 caracteres.";
+  const faltam = REGRAS_PALAVRA_PASSE.filter((r) => !r.cumpre(nova ?? "")).map((r) => r.falta);
+  if (faltam.length) return `A palavra-passe precisa de ter ${juntar(faltam)}.`;
   if (nova !== confirmacao) return "As palavras-passe não coincidem.";
   return null;
+}
+
+/** Erros do Supabase ao mudar a palavra-passe, em português (o Supabase responde em inglês). */
+export function mensagemErroPalavraPasse(codigo: string | undefined, motivos: readonly string[] = []): string {
+  switch (codigo) {
+    case "same_password":
+      return "A nova palavra-passe tem de ser diferente da anterior.";
+    case "weak_password":
+      if (motivos.includes("pwned")) return "Essa palavra-passe apareceu em fugas de dados na internet. Escolhe outra.";
+      if (motivos.includes("length")) return "A palavra-passe é demasiado curta. Usa pelo menos 10 caracteres.";
+      return "A palavra-passe é fraca. Usa letras minúsculas, maiúsculas e números.";
+    case "reauthentication_needed":
+    case "reauthentication_not_valid":
+      return "Por segurança, sai e volta a entrar (ou usa “Esqueci-me da palavra-passe”) antes de mudar a palavra-passe.";
+    case "over_request_rate_limit":
+    case "over_email_send_rate_limit":
+      return "Demasiadas tentativas seguidas. Espera uns minutos e tenta outra vez.";
+    case "session_not_found":
+    case "session_expired":
+    case "otp_expired":
+      return "A sessão ou o link expirou. Pede um novo link em “Esqueci-me da palavra-passe”.";
+    default:
+      return "Não foi possível guardar. O link pode ter expirado.";
+  }
 }
 
 /** Só aceita caminhos internos do painel (evita redirecionar para outro site depois do login). */
