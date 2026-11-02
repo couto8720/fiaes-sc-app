@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Clock, MapPin, Navigation } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
+import { BotaoMapa } from "./BotaoMapa";
 import type { JogoCompleto } from "@/lib/dados";
 import { aoVivo, desfecho, equipas, formatarDiaEtiqueta, formatarHora } from "@/lib/jogos";
 import { EstadoJogo } from "./EstadoJogo";
@@ -88,17 +89,7 @@ export function CartaoJogo({
             <span className="truncate">{jogo.local?.nome ?? "Local a definir"}</span>
           </span>
         </div>
-        {jogo.local?.maps_url && (
-          <a
-            href={jogo.local.maps_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="relative z-10 inline-flex shrink-0 items-center gap-1 font-semibold text-clube hover:underline dark:text-destaque"
-          >
-            <Navigation size={14} aria-hidden />
-            Ver mapa
-          </a>
-        )}
+        {jogo.local?.maps_url && <BotaoMapa mapsUrl={jogo.local.maps_url} nomeLocal={jogo.local.nome} />}
       </div>
       {jogo.notas && <p className="mt-2 text-sm italic text-suave">{jogo.notas}</p>}
 

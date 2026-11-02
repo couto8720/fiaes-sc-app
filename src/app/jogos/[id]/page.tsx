@@ -6,6 +6,7 @@ import { agora, obterConfig, obterJogo } from "@/lib/dados";
 import { formatarDataHora, resumoJogo, rotuloDia, formatarHora } from "@/lib/jogos";
 import { MarcadorPublico } from "@/components/MarcadorPublico";
 import { BotaoPartilhar } from "@/components/BotaoPartilhar";
+import { BotaoMapa } from "@/components/BotaoMapa";
 import { Esqueleto } from "@/components/Esqueleto";
 
 type Props = PageProps<"/jogos/[id]">;
@@ -59,16 +60,7 @@ async function ConteudoJogo({ params }: Pick<Props, "params">) {
       {jogo.notas && <p className="mt-3 rounded-xl bg-destaque/20 px-4 py-3 text-sm">{jogo.notas}</p>}
 
       <div className="mt-4 flex gap-3">
-        {jogo.local?.maps_url && (
-          <a
-            href={jogo.local.maps_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-clube font-semibold text-clube-texto"
-          >
-            Como chegar
-          </a>
-        )}
+        {jogo.local?.maps_url && <BotaoMapa mapsUrl={jogo.local.maps_url} nomeLocal={jogo.local.nome} variante="botao" />}
         <BotaoPartilhar titulo={`${resumoJogo(jogo, config.nome_curto)} (${jogo.escalao?.nome ?? ""})`} />
       </div>
     </>
