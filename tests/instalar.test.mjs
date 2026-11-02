@@ -85,3 +85,24 @@ test("instalar-tudo.sql corre do zero e regista as migrações", async () => {
   const { rows: cfg } = await db.query("select nome_curto, cor_primaria from public.clube_config");
   assert.deepEqual(cfg, [{ nome_curto: "Fiães SC", cor_primaria: "#0B6B35" }]);
 });
+
+test("convite: o perfil é criado mesmo sem permissão para chamar a função do trigger", async () => {
+  // No Supabase quem insere em auth.users é o papel supabase_auth_admin (não o dono das funções).
+  const db = new PGlite();
+  await db.exec(`
+    create role anon nologin; create role authenticated nologin; create role supabase_auth_admin nologin;
+    create schema auth;
+    create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
+    create function auth.uid() returns uuid language sql stable as $$ select null::uuid $$;
+    create publication supabase_realtime;
+    grant usage on schema auth to supabase_auth_admin; grant insert on auth.users to supabase_auth_admin;
+  `);
+  await db.exec(readFileSync(join(raiz, "instalar", "instalar-tudo.sql"), "utf8"));
+  await db.exec("set role supabase_auth_admin");
+  await db.query(
+    "insert into auth.users (id, email, raw_user_meta_data) values ('44444444-4444-4444-8444-444444444444', 'novo@clube.pt', '{\"nome\":\"Novo\"}')",
+  );
+  await db.exec("reset role");
+  const { rows } = await db.query("select nome, email, papel from public.perfis");
+  assert.deepEqual(rows, [{ nome: "Novo", email: "novo@clube.pt", papel: "treinador" }]);
+});

@@ -438,6 +438,24 @@ grant select, insert, update, delete on public.expulsoes to authenticated;
 -- O público vê as expulsões a aparecer em tempo real.
 alter publication supabase_realtime add table public.expulsoes;
 
+-- ===== 20261102000009_restringir_funcoes.sql =====
+-- =========================================================
+-- Segurança (Security Advisor do Supabase): quem pode chamar as funções internas
+-- =========================================================
+-- As funções que verificam permissões são usadas pelas regras de acesso (RLS) do staff.
+-- Quem não tem sessão não precisa delas: as regras públicas são só "leitura para todos".
+revoke execute on function public.is_admin_ativo() from public, anon;
+revoke execute on function public.is_super_admin() from public, anon;
+revoke execute on function public.pode_editar_escalao(uuid) from public, anon;
+revoke execute on function public.pode_editar_jogo(uuid) from public, anon;
+grant execute on function public.is_admin_ativo() to authenticated;
+grant execute on function public.is_super_admin() to authenticated;
+grant execute on function public.pode_editar_escalao(uuid) to authenticated;
+grant execute on function public.pode_editar_jogo(uuid) to authenticated;
+
+-- Função do trigger que cria o perfil quando alguém é convidado: corre sozinha, ninguém a chama.
+revoke execute on function public.criar_perfil_novo_utilizador() from public, anon, authenticated;
+
 -- ===== Registo das migrações (para a CLI do Supabase saber o que já está aplicado) =====
 create schema if not exists supabase_migrations;
 create table if not exists supabase_migrations.schema_migrations (version text primary key, statements text[], name text);
@@ -449,4 +467,5 @@ insert into supabase_migrations.schema_migrations (version, name, statements) va
 insert into supabase_migrations.schema_migrations (version, name, statements) values ('20261028000006', 'substituir_classificacao', '{}') on conflict (version) do nothing;
 insert into supabase_migrations.schema_migrations (version, name, statements) values ('20261029000007', 'fiaes_e_golos', '{}') on conflict (version) do nothing;
 insert into supabase_migrations.schema_migrations (version, name, statements) values ('20261102000008', 'expulsoes', '{}') on conflict (version) do nothing;
+insert into supabase_migrations.schema_migrations (version, name, statements) values ('20261102000009', 'restringir_funcoes', '{}') on conflict (version) do nothing;
 notify pgrst, 'reload schema';

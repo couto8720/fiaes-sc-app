@@ -291,6 +291,18 @@ test("expulsões: público lê; treinador regista no seu escalão com nome curto
   assert.equal(apagar.affectedRows, 3);
 });
 
+test("funções internas: sem sessão não se chamam; o staff continua a usá-las nas regras", async () => {
+  for (const f of ["is_super_admin()", "is_admin_ativo()", "criar_perfil_novo_utilizador()"]) {
+    await assert.rejects(como("anon", `select public.${f}`), /permission denied/, f);
+  }
+  await assert.rejects(como("anon", "select public.pode_editar_jogo('00000000-0000-4000-c000-000000000001')"), /permission denied/);
+  await assert.rejects(como(U.treinador13, "select public.criar_perfil_novo_utilizador()"), /permission denied/);
+  const r = await como(U.treinador13, "select public.pode_editar_jogo('00000000-0000-4000-c000-000000000001') as pode");
+  assert.equal(r.rows[0].pode, true);
+  // O público continua a ler tudo o que é público.
+  assert.ok((await como("anon", "select * from public.jogos")).rows.length > 0);
+});
+
 test("cor do clube tem de ser hexadecimal", async () => {
   await assert.rejects(como(U.super, "update public.clube_config set cor_primaria = 'azul'"));
 });

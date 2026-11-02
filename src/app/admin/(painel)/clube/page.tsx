@@ -23,6 +23,7 @@ async function Conteudo() {
   await exigirSuperAdmin();
   const c = await obterConfig();
   return (
+    <>
     <FormClube
       inicial={{
         nome: c.nome,
@@ -34,5 +35,28 @@ async function Conteudo() {
         logo_url: c.logo_url ?? "",
       }}
     />
+    <CopiaSeguranca />
+    </>
+  );
+}
+
+function CopiaSeguranca() {
+  return (
+    <section className="mt-10 rounded-2xl border border-borda bg-superficie p-4">
+      <h2 className="font-semibold">💾 Cópia de segurança</h2>
+      <p className="mt-1 text-sm text-suave">
+        Descarrega um ficheiro com todos os dados da app: escalões, jogos, marcadores, expulsões, classificações,
+        locais e utilizadores. Faz uma cópia uma vez por mês e antes de mudanças grandes, e guarda-a num sítio seguro
+        (contém os emails do staff).
+      </p>
+      {/* Link normal (não Link do Next): o ficheiro é descarregado, não é uma página. */}
+      <a
+        href="/admin/copia"
+        download
+        className="mt-3 inline-flex h-11 items-center rounded-xl bg-clube px-4 font-semibold text-clube-texto"
+      >
+        Descarregar cópia de segurança
+      </a>
+    </section>
   );
 }
