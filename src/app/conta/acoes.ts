@@ -1,7 +1,6 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { refresh } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { origemDoSite } from "@/lib/sessao";
 import { validarPalavraPasse, validarPerfilAdepto } from "@/lib/validacao";
@@ -84,8 +83,8 @@ export async function guardarPerfilAdepto(_: EstadoFormulario, fd: FormData): Pr
 
   const { error } = await supabase.from("adeptos").update(r.dados).eq("id", auth.user.id);
   if (error) return { erro: "Não foi possível guardar. Tenta outra vez.", valores: valoresDe(fd) };
-  refresh();
-  return { ok: "Guardado." };
+  // Depois de guardar, entra logo na app (página inicial).
+  redirect("/");
 }
 
 export async function sairAdepto() {

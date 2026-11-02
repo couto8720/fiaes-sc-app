@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { entrarAdepto, guardarPerfilAdepto, registarAdepto, sairAdepto } from "@/app/conta/acoes";
 import { ESTADO_INICIAL } from "@/app/admin/acoes/tipos";
 import { BotaoSubmeter, Campo, Mensagem, classeInput } from "../admin/ui";
@@ -112,18 +112,18 @@ export function FormPerfilAdepto({
   const [estado, acao] = useActionState(guardarPerfilAdepto, ESTADO_INICIAL);
   const [seguidos, setSeguidos] = useState<string[]>(inicial.escaloes);
 
-  // Depois de guardar com escalões escolhidos, a página inicial passa a mostrar "Os meus".
-  useEffect(() => {
-    if (estado.ok && seguidos.length > 0) definirFiltroEscalao("meus");
-  }, [estado.ok, seguidos.length]);
 
   const alternar = (slug: string) =>
     setSeguidos((s) => (s.includes(slug) ? s.filter((x) => x !== slug) : [...s, slug]));
 
   return (
-    <form action={acao} className="space-y-5">
+    <form
+      action={acao}
+      // Ao guardar vai para a página inicial: com escalões escolhidos, já abre em "⭐ Os meus".
+      onSubmit={() => definirFiltroEscalao(seguidos.length > 0 ? "meus" : "")}
+      className="space-y-5"
+    >
       {estado.erro && <Mensagem tipo="erro">{estado.erro}</Mensagem>}
-      {estado.ok && <Mensagem tipo="ok">Guardado. Na página inicial, escolhe “⭐ Os meus” para ver só os teus escalões.</Mensagem>}
       <Campo rotulo="Nome" nome="nome" erro={estado.erros?.nome}>
         <input id="nome" name="nome" maxLength={80} required defaultValue={estado.valores?.nome ?? inicial.nome} className={classeInput} />
       </Campo>
