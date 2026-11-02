@@ -14,9 +14,9 @@ function Barra({ nome, logo }: { nome: string; logo: string }) {
           <img src={logo} alt={`Símbolo do ${nome}`} width={36} height={43} className="h-11 w-auto object-contain drop-shadow" />
           <span className="truncate text-lg font-bold tracking-tight">{nome}</span>
         </Link>
-        {/* Acesso do staff: sem sessão, /admin leva ao formulário de login; com sessão, abre o painel. */}
+        {/* Conta de sócio/adepto (com link para o painel do staff na própria página). */}
         <Link
-          href="/admin"
+          href="/conta"
           className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-clube-texto/40 px-3 py-1.5 text-sm font-semibold hover:bg-clube-texto/10"
         >
           <LogIn size={16} aria-hidden />

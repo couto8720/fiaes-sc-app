@@ -36,18 +36,19 @@ export function FormLogin() {
   );
 }
 
-export function FormRecuperar() {
+export function FormRecuperar({ area = "admin" }: { area?: "admin" | "conta" }) {
   const [estado, acao] = useActionState(pedirRecuperacao, ESTADO_INICIAL);
   return (
     <form action={acao} className="space-y-4">
       {estado.erro && <Mensagem tipo="erro">{estado.erro}</Mensagem>}
       {estado.ok && <Mensagem tipo="ok">{estado.ok}</Mensagem>}
+      <input type="hidden" name="area" value={area} />
       <Campo rotulo="Email" nome="email">
         <input id="email" name="email" type="email" autoComplete="username" required className={classeInput} />
       </Campo>
       <BotaoSubmeter>Enviar link</BotaoSubmeter>
       <p className="text-sm">
-        <Link href="/admin/login" className="text-suave underline underline-offset-2">
+        <Link href={area === "conta" ? "/conta" : "/admin/login"} className="text-suave underline underline-offset-2">
           Voltar ao login
         </Link>
       </p>

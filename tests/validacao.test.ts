@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { isoParaLisboa, lisboaParaISO } from "../src/lib/datas.ts";
-import { destinoSeguro, mensagemErroPalavraPasse, slugificar, validarClassificacao, validarClube, validarConvite, validarEscalao, validarJogo, validarLocal, validarPalavraPasse } from "../src/lib/validacao.ts";
+import { destinoSeguro, validarPerfilAdepto, mensagemErroPalavraPasse, slugificar, validarClassificacao, validarClube, validarConvite, validarEscalao, validarJogo, validarLocal, validarPalavraPasse } from "../src/lib/validacao.ts";
 
 const linhaC = (posicao: number, equipa: string, extra = {}) => ({
   posicao, equipa, e_o_clube: false, jogos: 5, vitorias: 3, empates: 1, derrotas: 1,
@@ -123,6 +123,18 @@ test("redirecionamento após login só para o painel", () => {
   assert.equal(destinoSeguro("//mau.site"), "/admin");
   assert.equal(destinoSeguro("/admin/../../x"), "/admin");
   assert.equal(destinoSeguro(null), "/admin");
+  assert.equal(destinoSeguro("/conta"), "/conta");
+  assert.equal(destinoSeguro("/conta/palavra-passe"), "/conta/palavra-passe");
+  assert.equal(destinoSeguro("/contas-falsas.site"), "/admin");
+});
+
+test("perfil do adepto: nome, número de sócio e escalões que existem", () => {
+  const r = validarPerfilAdepto({ nome: "  Ana   Silva ", numero_socio: " 1234 ", escaloes: ["sub-13", "sub-13", "inventado"] }, ["sub-13", "seniores"]);
+  assert.deepEqual(r, { ok: true, dados: { nome: "Ana Silva", numero_socio: "1234", escaloes: ["sub-13"] } });
+  assert.deepEqual(validarPerfilAdepto({ nome: "Rui", numero_socio: "" }, []), { ok: true, dados: { nome: "Rui", numero_socio: null, escaloes: [] } });
+  const mau = validarPerfilAdepto({ nome: " ", numero_socio: "x".repeat(21) }, []);
+  assert.equal(mau.ok, false);
+  if (!mau.ok) assert.deepEqual(Object.keys(mau.erros).sort(), ["nome", "numero_socio"]);
 });
 
 test("palavra-passe: regras em português (10 caracteres, minúscula, maiúscula, número)", () => {

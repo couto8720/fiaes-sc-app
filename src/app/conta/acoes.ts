@@ -1,0 +1,95 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import { refresh } from "next/cache";
+import { createClient } from "@/lib/supabase/server";
+import { origemDoSite } from "@/lib/sessao";
+import { validarPalavraPasse, validarPerfilAdepto } from "@/lib/validacao";
+import { valoresDe, type EstadoFormulario } from "@/app/admin/acoes/tipos";
+
+// Ações da área de sócios e adeptos (/conta). As permissões estão no RLS:
+// um adepto só lê e altera a sua própria linha em public.adeptos.
+
+export async function registarAdepto(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  const valores = valoresDe(fd);
+  delete valores.password;
+  delete valores.confirmacao;
+  const nome = String(fd.get("nome") ?? "").trim();
+  const email = String(fd.get("email") ?? "").trim();
+  const password = String(fd.get("password") ?? "");
+  if (!nome || !email) return { erro: "Preenche o nome e o email.", valores };
+  const erroPalavraPasse = validarPalavraPasse(password, String(fd.get("confirmacao") ?? ""));
+  if (erroPalavraPasse) return { erro: erroPalavraPasse, valores };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { nome: nome.slice(0, 80) },
+      // Se o Supabase pedir confirmação do email, o link volta à conta.
+      emailRedirectTo: `${await origemDoSite()}/auth/confirm?next=/conta`,
+    },
+  });
+  if (error) {
+    const mensagem =
+      error.code === "signup_disabled"
+        ? "Os registos ainda não estão abertos. Tenta mais tarde."
+        : error.code === "weak_password"
+          ? "A palavra-passe é fraca. Usa letras minúsculas, maiúsculas e números."
+          : error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit"
+            ? "Demasiados registos seguidos. Espera uns minutos e tenta outra vez."
+            : error.code === "email_address_invalid"
+              ? "Esse email não é válido."
+              : "Não foi possível criar a conta. Verifica os dados e tenta outra vez.";
+    return { erro: mensagem, valores };
+  }
+  // Com confirmação de email ligada, ainda não há sessão: a pessoa tem de abrir o link.
+  if (!data.session) {
+    return { ok: "Conta criada! Enviámos um email para confirmares o endereço. Depois é só entrar." };
+  }
+  redirect("/conta");
+}
+
+export async function entrarAdepto(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  const email = String(fd.get("email") ?? "").trim();
+  const password = String(fd.get("password") ?? "");
+  if (!email || !password) return { erro: "Preenche o email e a palavra-passe.", valores: { email } };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    return {
+      erro: error.code === "email_not_confirmed" ? "Confirma primeiro o teu email (abre o link que te enviámos)." : "Email ou palavra-passe errados.",
+      valores: { email },
+    };
+  }
+  redirect("/conta");
+}
+
+export async function guardarPerfilAdepto(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) redirect("/conta");
+
+  const { data: escaloes } = await supabase.from("escaloes").select("slug").eq("ativo", true);
+  const r = validarPerfilAdepto(
+    {
+      nome: String(fd.get("nome") ?? ""),
+      numero_socio: String(fd.get("numero_socio") ?? ""),
+      escaloes: fd.getAll("escaloes").map(String),
+    },
+    (escaloes ?? []).map((e) => e.slug),
+  );
+  if (!r.ok) return { erros: r.erros, valores: valoresDe(fd) };
+
+  const { error } = await supabase.from("adeptos").update(r.dados).eq("id", auth.user.id);
+  if (error) return { erro: "Não foi possível guardar. Tenta outra vez.", valores: valoresDe(fd) };
+  refresh();
+  return { ok: "Guardado." };
+}
+
+export async function sairAdepto() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
+}

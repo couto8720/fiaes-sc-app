@@ -2,9 +2,19 @@
 
 import type { Escalao } from "@/lib/supabase/database.types";
 import { definirFiltroEscalao } from "@/lib/useFiltroEscalao";
+import { FILTRO_MEUS } from "@/lib/filtroJogos";
 
-export function FiltroEscaloes({ escaloes, ativo }: { escaloes: Pick<Escalao, "slug" | "nome">[]; ativo: string }) {
-  const opcoes = [{ slug: "", nome: "Todos" }, ...escaloes];
+export function FiltroEscaloes({
+  escaloes,
+  ativo,
+  meus = false,
+}: {
+  escaloes: Pick<Escalao, "slug" | "nome">[];
+  ativo: string;
+  /** Mostra o chip "⭐ Os meus" (adepto com sessão e escalões escolhidos). */
+  meus?: boolean;
+}) {
+  const opcoes = [{ slug: "", nome: "Todos" }, ...(meus ? [{ slug: FILTRO_MEUS, nome: "⭐ Os meus" }] : []), ...escaloes];
   return (
     <div role="group" aria-label="Filtrar por escalão" className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
       {opcoes.map((e) => {

@@ -6,6 +6,8 @@ import { CalendarClock, CalendarDays, History, Radio, type LucideIcon } from "lu
 import { agruparPorDia, agruparPorSemana, rotuloDia } from "@/lib/jogos";
 import { useJogosAoVivo } from "@/lib/useJogosAoVivo";
 import { useFiltroEscalao } from "@/lib/useFiltroEscalao";
+import { useMeusEscaloes } from "@/lib/useMeusEscaloes";
+import { filtrarJogos, filtroAtivo } from "@/lib/filtroJogos";
 import { CartaoJogo } from "./CartaoJogo";
 import { FiltroEscaloes } from "./FiltroEscaloes";
 
@@ -22,12 +24,13 @@ type Props = {
 export function ListaJogos({ jogos, nomeClube, agora, escaloes, vazio }: Props) {
   const vivos = useJogosAoVivo(jogos);
   const filtro = useFiltroEscalao();
-  const filtroValido = escaloes?.some((e) => e.slug === filtro) ? filtro : "";
-  const visiveis = filtroValido ? vivos.filter((j) => j.escalao?.slug === filtroValido) : vivos;
+  const meus = useMeusEscaloes();
+  const filtroValido = filtroAtivo(filtro, escaloes, meus);
+  const visiveis = filtrarJogos(vivos, filtroValido, meus);
 
   return (
     <>
-      {escaloes && <FiltroEscaloes escaloes={escaloes} ativo={filtroValido} />}
+      {escaloes && <FiltroEscaloes escaloes={escaloes} ativo={filtroValido} meus={Boolean(meus?.length)} />}
       {visiveis.length === 0 ? (
         <p className="rounded-xl border border-dashed border-borda p-6 text-center text-suave">{vazio}</p>
       ) : (
@@ -52,8 +55,9 @@ export function ListaJogos({ jogos, nomeClube, agora, escaloes, vazio }: Props) 
 export function PainelInicio({ jogos, nomeClube, agora, escaloes }: Omit<Props, "vazio">) {
   const vivos = useJogosAoVivo(jogos);
   const filtro = useFiltroEscalao();
-  const filtroValido = escaloes?.some((e) => e.slug === filtro) ? filtro : "";
-  const visiveis = filtroValido ? vivos.filter((j) => j.escalao?.slug === filtroValido) : vivos;
+  const meus = useMeusEscaloes();
+  const filtroValido = filtroAtivo(filtro, escaloes, meus);
+  const visiveis = filtrarJogos(vivos, filtroValido, meus);
   const g = agruparPorSemana(visiveis, agora);
 
   const seccao = (titulo: string, Icone: LucideIcon, lista: JogoCompleto[], tom: "vivo" | "destaque" | "normal" | "suave") =>
@@ -85,7 +89,7 @@ export function PainelInicio({ jogos, nomeClube, agora, escaloes }: Omit<Props, 
 
   return (
     <>
-      {escaloes && <FiltroEscaloes escaloes={escaloes} ativo={filtroValido} />}
+      {escaloes && <FiltroEscaloes escaloes={escaloes} ativo={filtroValido} meus={Boolean(meus?.length)} />}
       {seccao("Ao vivo", Radio, g.aoVivo, "vivo")}
       {seccao("Esta semana", CalendarClock, g.estaSemana, "destaque")}
       {seccao("Próxima semana", CalendarDays, g.proximaSemana, "normal")}

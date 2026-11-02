@@ -43,7 +43,7 @@ before(async () => {
     create role anon nologin;
     create role authenticated nologin;
     create schema auth;
-    create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
+    create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb, invited_at timestamptz);
     create function auth.uid() returns uuid language sql stable as
       $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
     create publication supabase_realtime;
@@ -57,10 +57,10 @@ before(async () => {
   await db.exec(readFileSync(join(raiz, "seed.sql"), "utf8"));
 
   await db.query(
-    `insert into auth.users (id, email, raw_user_meta_data) values
-       ($1, 'super@clube.pt', '{"nome":"Super"}'),
-       ($2, 'sub13@clube.pt', '{"nome":"Treinador Sub-13"}'),
-       ($3, 'saiu@clube.pt',  null)`,
+    `insert into auth.users (id, email, raw_user_meta_data, invited_at) values
+       ($1, 'super@clube.pt', '{"nome":"Super"}', now()),
+       ($2, 'sub13@clube.pt', '{"nome":"Treinador Sub-13"}', now()),
+       ($3, 'saiu@clube.pt',  null, now())`,
     [U.super, U.treinador13, U.inativo],
   );
   await db.query("update public.perfis set papel = 'super_admin' where id = $1", [U.super]);
@@ -301,6 +301,45 @@ test("funções internas: sem sessão não se chamam; o staff continua a usá-la
   assert.equal(r.rows[0].pode, true);
   // O público continua a ler tudo o que é público.
   assert.ok((await como("anon", "select * from public.jogos")).rows.length > 0);
+});
+
+test("adeptos: registo cria conta de adepto (nunca staff) e só altera a sua", async () => {
+  const A1 = "55555555-5555-4555-8555-555555555555";
+  const A2 = "66666666-6666-4666-8666-666666666666";
+  await db.query(
+    `insert into auth.users (id, email, raw_user_meta_data) values ($1, 'pai@mail.pt', '{"nome":"Pai do Tiago"}'), ($2, 'socia@mail.pt', null)`,
+    [A1, A2],
+  );
+  // Não ganham perfil de staff: não criam locais nem mexem em jogos.
+  assert.equal((await db.query("select count(*)::int n from public.perfis where id in ($1, $2)", [A1, A2])).rows[0].n, 0);
+  await assert.rejects(como(A1, "insert into public.locais (nome) values ('Campo pirata')"), /row-level security/);
+  const jogo = await como(A1, "update public.jogos set golos_clube = 9 returning id");
+  assert.equal(jogo.rows.length, 0);
+
+  // Conta de adepto criada, com o nome (ou a parte do email antes do @).
+  const { rows: contas } = await db.query("select id, nome from public.adeptos where id in ($1, $2) order by nome", [A1, A2]);
+  assert.deepEqual(contas.map((c) => c.nome), ["Pai do Tiago", "socia"]);
+
+  // Cada um vê e altera só a sua conta.
+  assert.equal((await como(A1, "select * from public.adeptos")).rows.length, 1);
+  const r = await como(A1, "update public.adeptos set numero_socio = '1234', escaloes = '{sub-13,seniores}' where id = $1 returning numero_socio", [A1]);
+  assert.equal(r.rows[0].numero_socio, "1234");
+  const alheio = await como(A1, "update public.adeptos set nome = 'Hacker' where id = $1", [A2]);
+  assert.equal(alheio.affectedRows, 0);
+  await assert.rejects(como(A1, "update public.adeptos set id = $2 where id = $1", [A1, A2]), /permission denied/);
+  await assert.rejects(como("anon", "select * from public.adeptos"), /permission denied/);
+  // O super-admin vê todas as contas de adeptos.
+  assert.ok((await como(U.super, "select * from public.adeptos")).rows.length >= 2);
+});
+
+test("adeptos: convite depois do registo passa a pessoa a staff", async () => {
+  const id = "77777777-7777-4777-8777-777777777777";
+  await db.query("insert into auth.users (id, email, raw_user_meta_data) values ($1, 'treinador@mail.pt', '{\"nome\":\"Novo Treinador\"}')", [id]);
+  assert.equal((await db.query("select count(*)::int n from public.adeptos where id = $1", [id])).rows[0].n, 1);
+  await db.query("update auth.users set invited_at = now() where id = $1", [id]);
+  assert.equal((await db.query("select count(*)::int n from public.adeptos where id = $1", [id])).rows[0].n, 0);
+  const { rows } = await db.query("select nome, papel from public.perfis where id = $1", [id]);
+  assert.deepEqual(rows, [{ nome: "Novo Treinador", papel: "treinador" }]);
 });
 
 test("cor do clube tem de ser hexadecimal", async () => {

@@ -300,7 +300,26 @@ export function mensagemErroPalavraPasse(codigo: string | undefined, motivos: re
   }
 }
 
-/** Só aceita caminhos internos do painel (evita redirecionar para outro site depois do login). */
+/** Só aceita caminhos internos do painel ou da conta de adepto (evita redirecionar para outro site). */
 export function destinoSeguro(v: string | undefined | null) {
-  return v && /^\/admin(\/[\w\-/]*)?$/.test(v) ? v : "/admin";
+  return v && /^\/(admin|conta)(\/[\w\-/]*)?$/.test(v) ? v : "/admin";
+}
+
+export type DadosAdepto = { nome: string; numero_socio: string | null; escaloes: string[] };
+
+/** Perfil do adepto: nome obrigatório, número de sócio opcional, escalões seguidos (só os que existem). */
+export function validarPerfilAdepto(
+  c: { nome?: string; numero_socio?: string; escaloes?: string[] },
+  escaloesValidos: string[],
+): Resultado<DadosAdepto> {
+  const erros: Erros = {};
+  const nome = (c.nome ?? "").trim().replace(/\s+/g, " ");
+  if (!nome) erros.nome = "Indica o teu nome.";
+  else if (nome.length > 80) erros.nome = "Nome demasiado comprido (máximo 80 letras).";
+  const numero = (c.numero_socio ?? "").trim();
+  if (numero.length > 20) erros.numero_socio = "Número de sócio demasiado comprido.";
+  const escaloes = [...new Set(c.escaloes ?? [])].filter((s) => escaloesValidos.includes(s)).slice(0, 30);
+  return Object.keys(erros).length
+    ? { ok: false, erros }
+    : { ok: true, dados: { nome, numero_socio: numero || null, escaloes } };
 }

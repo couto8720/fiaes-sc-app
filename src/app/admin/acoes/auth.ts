@@ -36,10 +36,14 @@ export async function pedirRecuperacao(_: EstadoFormulario, fd: FormData): Promi
   // O link do email volta a /auth/confirm com ?code=… (fluxo PKCE: o verificador fica num cookie
   // deste browser), que inicia a sessão e segue para a página de definir a palavra-passe.
   await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${await origemDoSite()}/auth/confirm?next=/admin/definir-palavra-passe`,
+    redirectTo: `${await origemDoSite()}/auth/confirm?next=${destinoRecuperacao(fd)}`,
   });
   return { ok: "Se existir uma conta com esse email, vais receber um link para definir uma nova palavra-passe." };
 }
+
+// Staff volta a definir a palavra-passe no painel; adeptos na área da conta.
+const destinoRecuperacao = (fd: FormData) =>
+  fd.get("area") === "conta" ? "/conta/palavra-passe" : "/admin/definir-palavra-passe";
 
 export async function definirPalavraPasse(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
   const erro = validarPalavraPasse(String(fd.get("password") ?? ""), String(fd.get("confirmacao") ?? ""));
@@ -50,5 +54,10 @@ export async function definirPalavraPasse(_: EstadoFormulario, fd: FormData): Pr
     const motivos = "reasons" in error && Array.isArray(error.reasons) ? (error.reasons as string[]) : [];
     return { erro: mensagemErroPalavraPasse(error.code, motivos) };
   }
-  redirect("/admin");
+  // Staff (tem perfil) vai para o painel; adeptos para a sua conta.
+  const { data: auth } = await supabase.auth.getUser();
+  const { data: perfil } = auth.user
+    ? await supabase.from("perfis").select("id").eq("id", auth.user.id).maybeSingle()
+    : { data: null };
+  redirect(perfil ? "/admin" : "/conta");
 }

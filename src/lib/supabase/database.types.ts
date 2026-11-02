@@ -147,6 +147,10 @@ export type Database = {
           },
         ];
       };
+      adeptos: Tabela<
+        { id: string; nome: string; numero_socio: string | null; escaloes: string[]; criado_em: string },
+        "id" | "nome"
+      > & { Relationships: [] };
       perfis: Tabela<
         { id: string; nome: string; email: string | null; papel: PapelAdmin; ativo: boolean },
         "id" | "nome"
@@ -195,3 +199,4 @@ export type ClubeConfig = Database["public"]["Tables"]["clube_config"]["Row"];
 export type Perfil = Database["public"]["Tables"]["perfis"]["Row"];
 export type GoloLinha = Database["public"]["Tables"]["golos"]["Row"];
 export type ExpulsaoLinha = Database["public"]["Tables"]["expulsoes"]["Row"];
+export type Adepto = Database["public"]["Tables"]["adeptos"]["Row"];
