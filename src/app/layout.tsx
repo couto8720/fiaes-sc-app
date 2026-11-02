@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Teko } from "next/font/google";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Cabecalho, CabecalhoProvisorio } from "@/components/Cabecalho";
 import { NavInferior, NavInferiorVista } from "@/components/NavInferior";
@@ -33,7 +34,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<CabecalhoProvisorio />}>
           <Cabecalho />
         </Suspense>
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28">{children}</main>
+        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28">
+          {children}
+          {/* Rodapé discreto (fica acima da barra de navegação inferior) */}
+          <footer className="mt-10 border-t border-borda pt-4 text-center text-xs text-suave">
+            <Link href="/privacidade" className="font-semibold hover:underline">
+              Privacidade
+            </Link>
+            <span aria-hidden> · </span>© Fiães Sport Clube
+          </footer>
+        </main>
         <Suspense fallback={<NavInferiorVista caminho={null} />}>
           <NavInferior />
         </Suspense>
