@@ -39,3 +39,19 @@ export function melhoresMarcadores(golos: Pick<Golo, "marcador">[]) {
     .map(([marcador, golos]) => ({ marcador, golos }))
     .sort((a, b) => b.golos - a.golos || a.marcador.localeCompare(b.marcador, "pt"));
 }
+
+// ---------- Expulsões (cartões vermelhos) ----------
+
+export type Expulsao = { lado: "clube" | "adversario"; atleta: string | null; minuto: number | null };
+
+/**
+ * Texto das expulsões de uma equipa, por ordem do minuto: "Rui P. 67', 80'".
+ * Sem nome (adversário, ou atleta não indicado) mostra só o minuto; sem nada, "Expulsão".
+ */
+export function resumoExpulsoes(expulsoes: Expulsao[], lado: Expulsao["lado"]): string {
+  return [...expulsoes]
+    .filter((e) => e.lado === lado)
+    .sort((a, b) => (a.minuto ?? 999) - (b.minuto ?? 999))
+    .map((e) => [e.atleta, e.minuto && `${e.minuto}'`].filter(Boolean).join(" ") || "Expulsão")
+    .join(", ");
+}

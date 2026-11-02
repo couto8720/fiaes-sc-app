@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { abreviarNome, melhoresMarcadores, resumoMarcadores } from "../src/lib/marcadores.ts";
+import { abreviarNome, melhoresMarcadores, resumoExpulsoes, resumoMarcadores, type Expulsao } from "../src/lib/marcadores.ts";
 
 test("nome curto igual ao da base de dados", () => {
   assert.equal(abreviarNome("Tiago Martins Costa"), "Tiago C.");
@@ -28,4 +28,16 @@ test("melhores marcadores ignoram autogolos", () => {
     { marcador: "André S.", golos: 1 },
     { marcador: "Rui P.", golos: 1 },
   ]);
+});
+
+test("expulsões: texto por equipa, ordenado pelo minuto", () => {
+  const exp: Expulsao[] = [
+    { lado: "clube", atleta: "Rui P.", minuto: 67 },
+    { lado: "adversario", atleta: null, minuto: 80 },
+    { lado: "clube", atleta: null, minuto: 30 },
+    { lado: "adversario", atleta: null, minuto: null },
+  ];
+  assert.equal(resumoExpulsoes(exp, "clube"), "30', Rui P. 67'");
+  assert.equal(resumoExpulsoes(exp, "adversario"), "80', Expulsão");
+  assert.equal(resumoExpulsoes([], "clube"), "");
 });

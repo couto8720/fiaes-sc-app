@@ -8,7 +8,8 @@ import { ACAO_SEGUINTE, ESTADO_ANTERIOR, marcarGolo, mudarEstado, podeMarcar, ty
 import { useEcraLigado, useGravacaoMarcador, type EstadoGravacao } from "@/lib/useGravacaoMarcador";
 import { TempoDesde } from "../TempoDesde";
 import { GestorGolos } from "./GestorGolos";
-import type { GoloLinha } from "@/lib/supabase/database.types";
+import { GestorExpulsoes } from "./GestorExpulsoes";
+import type { ExpulsaoLinha, GoloLinha } from "@/lib/supabase/database.types";
 
 type Props = {
   jogo: Jogo;
@@ -16,6 +17,7 @@ type Props = {
   escalao: string;
   local: string | null;
   golos: Pick<GoloLinha, "id" | "marcador" | "minuto" | "penalti">[];
+  expulsoes: Pick<ExpulsaoLinha, "id" | "lado" | "atleta" | "minuto">[];
   sugestoes: string[];
 };
 
@@ -25,7 +27,7 @@ const vibrar = () => {
   } catch {}
 };
 
-export function Marcador({ jogo, nomeClube, escalao, local, golos, sugestoes }: Props) {
+export function Marcador({ jogo, nomeClube, escalao, local, golos, expulsoes, sugestoes }: Props) {
   const { valores, estadoDesde, gravacao, alterar, tentarJa } = useGravacaoMarcador(jogo);
   // Cada golo do clube pede o nome do marcador (campo "Quem marcou?" logo abaixo).
   const [pedidoMarcador, setPedidoMarcador] = useState(0);
@@ -147,6 +149,9 @@ export function Marcador({ jogo, nomeClube, escalao, local, golos, sugestoes }: 
             pedido={pedidoMarcador}
             nomeClube={nomeClube}
           />
+          <div className="mt-4">
+            <GestorExpulsoes jogoId={jogo.id} iniciais={expulsoes} nomeClube={nomeClube} adversario={jogo.adversario} sugestoes={sugestoes} />
+          </div>
         </div>
       )}
 

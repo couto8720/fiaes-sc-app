@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { exigirSessao, podeEditarEscalao } from "@/lib/sessao";
 import { obterConfig } from "@/lib/dados";
 import { Marcador } from "@/components/admin/Marcador";
-import { golosParaEditar } from "@/lib/golosAdmin";
+import { expulsoesParaEditar, golosParaEditar } from "@/lib/golosAdmin";
 import { Esqueleto } from "@/components/Esqueleto";
 
 export const metadata: Metadata = { title: "Marcador" };
@@ -40,7 +40,7 @@ async function ConteudoMarcador({ params }: Pick<PageProps<"/admin/jogos/[id]/ma
   }
 
   const { escalao, local, ...jogo } = data;
-  const { golos, sugestoes } = await golosParaEditar(jogo.id, jogo.escalao_id);
+  const [{ golos, sugestoes }, expulsoes] = await Promise.all([golosParaEditar(jogo.id, jogo.escalao_id), expulsoesParaEditar(jogo.id)]);
   return (
     <Marcador
       jogo={jogo}
@@ -48,6 +48,7 @@ async function ConteudoMarcador({ params }: Pick<PageProps<"/admin/jogos/[id]/ma
       escalao={escalao?.nome ?? ""}
       local={local?.nome ?? null}
       golos={golos}
+      expulsoes={expulsoes}
       sugestoes={sugestoes}
     />
   );

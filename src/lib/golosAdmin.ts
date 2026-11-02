@@ -21,3 +21,14 @@ export async function golosParaEditar(jogoId: string, escalaoId: string) {
   const sugestoes = [...contagem.entries()].sort((a, b) => b[1] - a[1]).map(([n]) => n);
   return { golos: golos ?? [], sugestoes };
 }
+
+/** Expulsões de um jogo (para o marcador e a edição do jogo). */
+export async function expulsoesParaEditar(jogoId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("expulsoes")
+    .select("id, lado, atleta, minuto")
+    .eq("jogo_id", jogoId)
+    .order("minuto", { nullsFirst: false });
+  return data ?? [];
+}

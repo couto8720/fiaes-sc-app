@@ -35,6 +35,8 @@ export function useJogosAoVivo<T extends Jogo>(iniciais: T[]): T[] {
       })
       // Marcador novo, corrigido ou apagado: volta a pedir a página (traz os golos já com os nomes).
       .on("postgres_changes", { event: "*", schema: "public", table: "golos" }, () => router.refresh())
+      // Expulsão registada ou apagada: idem.
+      .on("postgres_changes", { event: "*", schema: "public", table: "expulsoes" }, () => router.refresh())
       .subscribe((estado) => {
         if (estado === "SUBSCRIBED") {
           if (ligadoAntes) router.refresh(); // reconectou: pode ter perdido alterações

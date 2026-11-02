@@ -133,6 +133,20 @@ export type Database = {
           },
         ];
       };
+      expulsoes: Tabela<
+        { id: string; jogo_id: string; lado: "clube" | "adversario"; atleta: string | null; minuto: number | null; criado_em: string },
+        "jogo_id" | "lado"
+      > & {
+        Relationships: [
+          {
+            foreignKeyName: "expulsoes_jogo_id_fkey";
+            columns: ["jogo_id"];
+            isOneToOne: false;
+            referencedRelation: "jogos";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       perfis: Tabela<
         { id: string; nome: string; email: string | null; papel: PapelAdmin; ativo: boolean },
         "id" | "nome"
@@ -180,3 +194,4 @@ export type Classificacao = Database["public"]["Tables"]["classificacoes"]["Row"
 export type ClubeConfig = Database["public"]["Tables"]["clube_config"]["Row"];
 export type Perfil = Database["public"]["Tables"]["perfis"]["Row"];
 export type GoloLinha = Database["public"]["Tables"]["golos"]["Row"];
+export type ExpulsaoLinha = Database["public"]["Tables"]["expulsoes"]["Row"];

@@ -5,6 +5,7 @@ import { aoVivo, desfecho, equipas, formatarDiaEtiqueta, formatarHora } from "@/
 import { EstadoJogo } from "./EstadoJogo";
 import { NumeroGolos } from "./NumeroGolos";
 import { resumoMarcadores } from "@/lib/marcadores";
+import { CartaoVermelho } from "./CartaoVermelho";
 
 export function CartaoJogo({
   jogo,
@@ -49,7 +50,18 @@ export function CartaoJogo({
       <ul className={riscado ? "opacity-60" : undefined}>
         {ladoALado.map((eq) => (
           <li key={eq.nome} className="flex items-center justify-between gap-3 py-0.5">
-            <span className={`truncate text-base ${eq.eClube ? "font-bold" : "font-medium"}`}>{eq.nome}</span>
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span className={`truncate text-base ${eq.eClube ? "font-bold" : "font-medium"}`}>{eq.nome}</span>
+              {/* Um cartão por expulsão dessa equipa */}
+              {(jogo.expulsoes ?? [])
+                .filter((e) => e.lado === (eq.eClube ? "clube" : "adversario"))
+                .map((e, k) => (
+                  <CartaoVermelho key={k} className="h-3.5 w-2.5" />
+                ))}
+              {(jogo.expulsoes ?? []).some((e) => e.lado === (eq.eClube ? "clube" : "adversario")) && (
+                <span className="sr-only">(com expulsões)</span>
+              )}
+            </span>
             {temResultado && (
               <NumeroGolos valor={eq.golos} className="tabular rounded px-1.5 font-display text-3xl leading-none font-bold" />
             )}

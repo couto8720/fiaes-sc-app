@@ -1,4 +1,4 @@
-// Confirma que supabase/instalar/instalar-tudo.sql (as 7 migrações juntas, para colar no SQL Editor
+// Confirma que supabase/instalar/instalar-tudo.sql (as migrações juntas, para colar no SQL Editor
 // do Supabase quando a porta 5432 está bloqueada) instala tudo do zero e regista as migrações.
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -60,7 +60,7 @@ test("importar-zerozero.sql: 14 escalões, 317 jogos, 13 classificações, sem d
   ]);
 });
 
-test("instalar-tudo.sql corre do zero e regista as 7 migrações", async () => {
+test("instalar-tudo.sql corre do zero e regista as migrações", async () => {
   const db = new PGlite();
   await db.exec(`
     create role anon nologin; create role authenticated nologin;
@@ -80,7 +80,7 @@ test("instalar-tudo.sql corre do zero e regista as 7 migrações", async () => {
     "select table_name from information_schema.tables where table_schema = 'public' order by 1",
   );
   assert.deepEqual(tabelas.rows.map((r) => r.table_name), [
-    "classificacoes", "clube_config", "escaloes", "golos", "jogos", "locais", "perfis", "perfis_escaloes",
+    "classificacoes", "clube_config", "escaloes", "expulsoes", "golos", "jogos", "locais", "perfis", "perfis_escaloes",
   ]);
   const { rows: cfg } = await db.query("select nome_curto, cor_primaria from public.clube_config");
   assert.deepEqual(cfg, [{ nome_curto: "Fiães SC", cor_primaria: "#0B6B35" }]);

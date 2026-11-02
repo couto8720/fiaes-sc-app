@@ -7,19 +7,21 @@ import { createPublicClient } from "./supabase/publico";
 import { supabaseConfigurado } from "./supabase/env";
 import type { Classificacao, ClubeConfig, Escalao, Jogo, Local } from "./supabase/database.types";
 import { CLASSIFICACOES_DEMO, CONFIG_DEMO, ESCALOES_DEMO, jogosDemo } from "./demo";
-import type { Golo } from "./marcadores";
+import type { Expulsao, Golo } from "./marcadores";
 
 export type JogoCompleto = Jogo & {
   escalao: Pick<Escalao, "nome" | "slug" | "ordem"> | null;
   local: Pick<Local, "nome" | "maps_url"> | null;
   /** Marcadores do Fiães SC (nome já na forma curta). */
   golos: Golo[];
+  /** Cartões vermelhos (do clube com o nome curto do atleta, quando indicado). */
+  expulsoes: Expulsao[];
 };
 
 export const modoDemo = !supabaseConfigurado;
 
 const SELECT_JOGO =
-  "*, escalao:escaloes(nome, slug, ordem), local:locais(nome, maps_url), golos(marcador, minuto, penalti)";
+  "*, escalao:escaloes(nome, slug, ordem), local:locais(nome, maps_url), golos(marcador, minuto, penalti), expulsoes(lado, atleta, minuto)";
 
 // Hora do pedido. connection() marca o render como "por pedido" (exigido pelo Cache Components).
 export const agora = cache(async () => {

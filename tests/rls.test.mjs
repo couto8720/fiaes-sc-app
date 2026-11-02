@@ -266,6 +266,31 @@ test("golos: público lê; treinador grava no seu escalão; noutro não", async 
   await assert.rejects(como(U.treinador13, "insert into public.golos (jogo_id, marcador) values ($1, '   ')", [jogo13]));
 });
 
+test("expulsões: público lê; treinador regista no seu escalão com nome curto; noutro não", async () => {
+  const jogo13 = "00000000-0000-4000-c000-000000000001";
+  const jogoSen = "00000000-0000-4000-c000-000000000004";
+  await assert.rejects(como("anon", "insert into public.expulsoes (jogo_id, lado) values ($1, 'clube')", [jogo13]), /permission denied/);
+
+  const r = await como(
+    U.treinador13,
+    "insert into public.expulsoes (jogo_id, lado, atleta, minuto) values ($1, 'clube', 'Rui Miguel Pinto', 67), ($1, 'adversario', null, 80), ($1, 'clube', '   ', null) returning lado, atleta, minuto",
+    [jogo13],
+  );
+  assert.deepEqual(r.rows, [
+    { lado: "clube", atleta: "Rui P.", minuto: 67 },
+    { lado: "adversario", atleta: null, minuto: 80 },
+    { lado: "clube", atleta: null, minuto: null },
+  ]);
+  assert.equal((await como("anon", "select * from public.expulsoes where jogo_id = $1", [jogo13])).rows.length, 3);
+  await assert.rejects(como(U.treinador13, "insert into public.expulsoes (jogo_id, lado) values ($1, 'arbitro')", [jogo13]));
+  await assert.rejects(
+    como(U.treinador13, "insert into public.expulsoes (jogo_id, lado) values ($1, 'clube')", [jogoSen]),
+    /row-level security/,
+  );
+  const apagar = await como(U.treinador13, "delete from public.expulsoes where jogo_id = $1", [jogo13]);
+  assert.equal(apagar.affectedRows, 3);
+});
+
 test("cor do clube tem de ser hexadecimal", async () => {
   await assert.rejects(como(U.super, "update public.clube_config set cor_primaria = 'azul'"));
 });

@@ -5,7 +5,8 @@ import { aoVivo, desfecho, equipas } from "@/lib/jogos";
 import { useJogosAoVivo } from "@/lib/useJogosAoVivo";
 import { EstadoJogo } from "./EstadoJogo";
 import { NumeroGolos } from "./NumeroGolos";
-import { resumoMarcadores } from "@/lib/marcadores";
+import { resumoExpulsoes, resumoMarcadores } from "@/lib/marcadores";
+import { CartaoVermelho } from "./CartaoVermelho";
 
 /** Marcador grande da página do jogo, atualizado em tempo real. */
 export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoCompleto; nomeClube: string }) {
@@ -13,6 +14,16 @@ export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoComple
   const [casa, fora] = equipas(jogo, nomeClube);
   const temResultado = casa.golos !== null && fora.golos !== null;
   const vivo = aoVivo(jogo.estado);
+  const expulsoes = jogo.expulsoes ?? [];
+  // Cartões vermelhos de cada equipa, por baixo do nome.
+  const vermelhos = (eClube: boolean) => {
+    const texto = resumoExpulsoes(expulsoes, eClube ? "clube" : "adversario");
+    return texto ? (
+      <span className="mt-1 flex items-center justify-center gap-1 text-xs font-semibold" aria-label={`Expulsões: ${texto}`}>
+        <CartaoVermelho /> {texto}
+      </span>
+    ) : null;
+  };
 
   return (
     <section
@@ -26,7 +37,10 @@ export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoComple
         </span>
       </div>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
-        <p className={`text-base leading-tight sm:text-lg ${casa.eClube ? "font-black" : "font-semibold"}`}>{casa.nome}</p>
+        <div>
+          <p className={`text-base leading-tight sm:text-lg ${casa.eClube ? "font-black" : "font-semibold"}`}>{casa.nome}</p>
+          {vermelhos(casa.eClube)}
+        </div>
         <p className="tabular text-5xl font-black sm:text-6xl" aria-label={temResultado ? `${casa.golos} a ${fora.golos}` : "Ainda sem resultado"}>
           {temResultado ? (
             <>
@@ -38,7 +52,10 @@ export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoComple
             <span className="text-3xl opacity-80">vs</span>
           )}
         </p>
-        <p className={`text-base leading-tight sm:text-lg ${fora.eClube ? "font-black" : "font-semibold"}`}>{fora.nome}</p>
+        <div>
+          <p className={`text-base leading-tight sm:text-lg ${fora.eClube ? "font-black" : "font-semibold"}`}>{fora.nome}</p>
+          {vermelhos(fora.eClube)}
+        </div>
       </div>
       {jogo.golos.length > 0 && (
         <p className="mt-4 border-t border-white/20 pt-3 text-center text-sm">

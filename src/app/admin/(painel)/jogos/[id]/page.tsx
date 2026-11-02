@@ -7,7 +7,8 @@ import { exigirSessao, podeEditarEscalao } from "@/lib/sessao";
 import { isoParaLisboa } from "@/lib/datas";
 import { FormJogo } from "@/components/admin/FormJogo";
 import { GestorGolos } from "@/components/admin/GestorGolos";
-import { golosParaEditar } from "@/lib/golosAdmin";
+import { expulsoesParaEditar, golosParaEditar } from "@/lib/golosAdmin";
+import { GestorExpulsoes } from "@/components/admin/GestorExpulsoes";
 import { obterConfig } from "@/lib/dados";
 import { BotaoSubmeter } from "@/components/admin/ui";
 import { Esqueleto } from "@/components/Esqueleto";
@@ -45,7 +46,11 @@ async function ConteudoEditarJogo({ params }: Pick<PageProps<"/admin/jogos/[id]"
     );
   }
 
-  const [{ golos, sugestoes }, config] = await Promise.all([golosParaEditar(jogo.id, jogo.escalao_id), obterConfig()]);
+  const [{ golos, sugestoes }, expulsoes, config] = await Promise.all([
+    golosParaEditar(jogo.id, jogo.escalao_id),
+    expulsoesParaEditar(jogo.id),
+    obterConfig(),
+  ]);
   const { data, hora } = isoParaLisboa(jogo.data_hora);
   const inicial: Record<string, string> = {
     escalao_id: jogo.escalao_id,
@@ -80,6 +85,9 @@ async function ConteudoEditarJogo({ params }: Pick<PageProps<"/admin/jogos/[id]"
             golosClube={jogo.golos_clube}
             nomeClube={config.nome_curto}
           />
+          <div className="mt-4">
+            <GestorExpulsoes jogoId={jogo.id} iniciais={expulsoes} nomeClube={config.nome_curto} adversario={jogo.adversario} sugestoes={sugestoes} />
+          </div>
         </div>
       )}
       <form action={apagarJogo} className="mt-10 border-t border-borda pt-6">

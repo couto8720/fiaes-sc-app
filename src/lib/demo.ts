@@ -69,6 +69,7 @@ export function jogosDemo(agora: number): JogoCompleto[] {
       escalao: { nome: e.nome, slug: e.slug, ordem: e.ordem },
       local: { nome: LOCAIS[local].nome, maps_url: LOCAIS[local].maps_url },
       golos: [],
+      expulsoes: [],
       ...extra,
     };
   };
