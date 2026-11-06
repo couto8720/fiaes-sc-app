@@ -30,7 +30,6 @@ Stack: Next.js 16 (App Router) + Supabase (Postgres, Auth, Realtime) + Tailwind.
 ## Base de dados no Supabase (projeto `fiaes-sc`, Frankfurt)
 
 - **Instalação:** a rede onde a app foi montada bloqueia a porta 5432 da CLI do Supabase, por isso as migrações foram aplicadas no **SQL Editor** com `supabase/instalar/instalar-tudo.sql` (as 7 migrações juntas, que também as regista como aplicadas). Teste: `tests/instalar.test.mjs`.
-- **Dados do zerozero (2026/27):** `supabase/importar/zerozero-2026-27.json` tem os 14 escalões, 317 jogos e 13 classificações recolhidos do zerozero.pt a 30/10/2026. `npm run importar:gerar` cria `supabase/importar/importar-zerozero.sql`, que se cola no SQL Editor. Pode correr várias vezes: não duplica e nunca apaga jogos que o staff alterou no painel.
 - **Super-admin:** gabrielcoutoassuncao@gmail.com.
 
 ## Publicar (Vercel)

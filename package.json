@@ -9,7 +9,6 @@
     "lint": "eslint",
     "test:db": "node --test \"tests/*.test.mjs\" \"tests/*.test.ts\"",
     "db:push": "supabase db push",
-    "importar:gerar": "node scripts/gerar-importacao.mjs",
     "db:tipos": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts"
   },
   "dependencies": {

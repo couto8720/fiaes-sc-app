@@ -1,4 +1,4 @@
-// Lê uma tabela de classificação copiada de um site (associação, FPF, zerozero…) e colada como texto.
+// Lê uma tabela de classificação copiada de um site (associação, FPF…) e colada como texto.
 // Funções puras, testadas em tests/colarTabela.test.ts.
 
 export type LinhaClassificacao = {
