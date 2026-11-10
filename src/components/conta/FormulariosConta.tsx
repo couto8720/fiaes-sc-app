@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
-import { entrarAdepto, guardarPerfilAdepto, registarAdepto, sairAdepto } from "@/app/conta/acoes";
+import { apagarContaAdepto, entrarAdepto, guardarPerfilAdepto, registarAdepto, sairAdepto } from "@/app/conta/acoes";
 import { ESTADO_INICIAL } from "@/app/admin/acoes/tipos";
 import { BotaoSubmeter, Campo, Mensagem, classeInput } from "../admin/ui";
 import { REGRAS_PALAVRA_PASSE } from "@/lib/validacao";
@@ -170,5 +170,37 @@ export function BotaoSairAdepto() {
     <form action={sairAdepto}>
       <button className="h-10 rounded-xl border border-borda px-4 text-sm font-semibold">Sair</button>
     </form>
+  );
+}
+
+/** "Apagar a minha conta" (RGPD): pede confirmação explícita antes de apagar. */
+export function ApagarContaAdepto() {
+  const [estado, acao] = useActionState(apagarContaAdepto, ESTADO_INICIAL);
+  const [confirmo, setConfirmo] = useState(false);
+  return (
+    <details className="rounded-2xl border border-derrota/40 bg-superficie">
+      <summary className="cursor-pointer p-4 text-sm font-semibold text-derrota">Apagar a minha conta</summary>
+      <form
+        action={acao}
+        onSubmit={(e) => {
+          if (!window.confirm("Apagar a tua conta? Não dá para desfazer.")) e.preventDefault();
+          else definirFiltroEscalao("");
+        }}
+        className="space-y-3 px-4 pb-4 text-sm"
+      >
+        <p>
+          Apaga para sempre o teu login, nome, número de sócio e escalões seguidos. Não dá para desfazer; se quiseres
+          voltar, podes criar uma conta nova.
+        </p>
+        {estado.erro && <Mensagem tipo="erro">{estado.erro}</Mensagem>}
+        <label className="flex items-start gap-2">
+          <input type="checkbox" name="confirmo" value="sim" checked={confirmo} onChange={(e) => setConfirmo(e.target.checked)} className="mt-0.5 h-4 w-4" />
+          Percebo que a minha conta e os meus dados vão ser apagados.
+        </label>
+        <button type="submit" disabled={!confirmo} className="h-11 w-full rounded-xl bg-derrota font-semibold text-white disabled:opacity-40">
+          Apagar a minha conta
+        </button>
+      </form>
+    </details>
   );
 }

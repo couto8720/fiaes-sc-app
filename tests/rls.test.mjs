@@ -342,6 +342,26 @@ test("adeptos: convite depois do registo passa a pessoa a staff", async () => {
   assert.deepEqual(rows, [{ nome: "Novo Treinador", papel: "treinador" }]);
 });
 
+test("apagar conta: o adepto apaga só a sua; o staff e o público não podem", async () => {
+  const A = "88888888-8888-4888-8888-888888888888";
+  const B = "99999999-9999-4999-8999-999999999999";
+  await db.query(
+    `insert into auth.users (id, email, raw_user_meta_data) values ($1, 'apaga@mail.pt', '{"nome":"Vai Sair"}'), ($2, 'fica@mail.pt', '{"nome":"Fica"}')`,
+    [A, B],
+  );
+  await assert.rejects(como("anon", "select public.apagar_minha_conta()"), /permission denied/);
+  await assert.rejects(como(U.treinador13, "select public.apagar_minha_conta()"), /staff/);
+
+  await como(A, "select public.apagar_minha_conta()");
+  const conta = async (id) => (await db.query(
+    "select (select count(*)::int from auth.users where id = $1) + (select count(*)::int from public.adeptos where id = $1) as n", [id],
+  )).rows[0].n;
+  assert.equal(await conta(A), 0); // login e dados de adepto apagados
+  assert.equal(await conta(B), 2); // a conta dos outros fica
+  // O staff continua lá.
+  assert.equal((await db.query("select count(*)::int n from auth.users where id = $1", [U.treinador13])).rows[0].n, 1);
+});
+
 test("cor do clube tem de ser hexadecimal", async () => {
   await assert.rejects(como(U.super, "update public.clube_config set cor_primaria = 'azul'"));
 });

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { supabaseConfigurado } from "@/lib/supabase/env";
 import { CartaoEntrada } from "@/components/admin/CartaoEntrada";
 import { Esqueleto } from "@/components/Esqueleto";
-import { BotaoSairAdepto, FormEntrarAdepto, FormPerfilAdepto } from "@/components/conta/FormulariosConta";
+import { ApagarContaAdepto, BotaoSairAdepto, FormEntrarAdepto, FormPerfilAdepto } from "@/components/conta/FormulariosConta";
 
 export const metadata: Metadata = { title: "A minha conta", robots: { index: false } };
 
@@ -109,6 +109,7 @@ async function Conteudo() {
           Mudar a palavra-passe
         </Link>
       </p>
+      <ApagarContaAdepto />
     </div>
   );
 }

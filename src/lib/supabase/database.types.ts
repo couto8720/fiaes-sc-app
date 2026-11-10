@@ -185,6 +185,7 @@ export type Database = {
       substituir_classificacao: { Args: { p_escalao: string; p_linhas: Json }; Returns: undefined };
       pode_editar_jogo: { Args: { j: string }; Returns: boolean };
       abreviar_nome: { Args: { nome: string }; Returns: string };
+      apagar_minha_conta: { Args: Record<string, never>; Returns: undefined };
     };
     Enums: { estado_jogo: EstadoJogo; papel_admin: PapelAdmin };
     CompositeTypes: { [_ in never]: never };

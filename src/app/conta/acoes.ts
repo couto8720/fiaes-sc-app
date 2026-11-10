@@ -92,3 +92,17 @@ export async function sairAdepto() {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+/** RGPD: o adepto apaga a sua própria conta (login e dados). Só contas de adepto; o staff não. */
+export async function apagarContaAdepto(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  if (fd.get("confirmo") !== "sim") return { erro: "Para apagar, marca a caixa de confirmação." };
+  const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) redirect("/conta");
+
+  const { error } = await supabase.rpc("apagar_minha_conta");
+  if (error) return { erro: "Não foi possível apagar a conta. Tenta outra vez ou fala com o clube." };
+  // A conta já não existe: limpa a sessão deste browser.
+  await supabase.auth.signOut();
+  redirect("/conta/apagada");
+}

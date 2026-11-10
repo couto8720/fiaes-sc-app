@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 // Atualizar esta data sempre que o texto mudar.
-const ATUALIZADO_EM = "2 de novembro de 2026";
+const ATUALIZADO_EM = "10 de novembro de 2026";
 
 // Página estática: descreve o que a app realmente guarda (ver lib/dados.ts, migrações e DicaInstalar/useFiltroEscalao).
 export default function Privacidade() {
@@ -94,6 +94,10 @@ export default function Privacidade() {
       </Seccao>
 
       <Seccao titulo="Os teus direitos">
+        <p>
+          Se tens conta de adepto, podes corrigir os teus dados e <strong>apagar a tua conta</strong> a qualquer momento em
+          “A minha conta” (botão “Entrar” no topo do site). O login e todos os dados da conta são apagados de imediato.
+        </p>
         <p>
           Podes pedir para ver, corrigir ou apagar os teus dados, ou opor-te à sua publicação. No caso de atletas
           menores, o pedido pode ser feito pelos pais ou encarregados de educação. Para isso, contacta a direção do
