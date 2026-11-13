@@ -13,9 +13,13 @@ export function pesquisaDoMapa(mapsUrl: string | null | undefined, nomeLocal: st
   return nomeLocal.trim();
 }
 
-/** Endereço do mapa para pôr numa janela (iframe) dentro da app. */
-export function urlMapaEmbutido(mapsUrl: string | null | undefined, nomeLocal: string): string {
-  return `https://www.google.com/maps?q=${encodeURIComponent(pesquisaDoMapa(mapsUrl, nomeLocal))}&output=embed`;
+/** Endereço do mapa para pôr numa janela (iframe) dentro da app. Com chave: usa a API oficial (melhor qualidade). Sem chave: usa o formulário do Google Maps. */
+export function urlMapaEmbutido(mapsUrl: string | null | undefined, nomeLocal: string, chaveAPI?: string): string {
+  const pesquisa = pesquisaDoMapa(mapsUrl, nomeLocal);
+  if (chaveAPI?.trim()) {
+    return `https://www.google.com/maps/embed/v1/search?key=${encodeURIComponent(chaveAPI)}&q=${encodeURIComponent(pesquisa)}`;
+  }
+  return `https://www.google.com/maps?q=${encodeURIComponent(pesquisa)}&output=embed`;
 }
 
 /** Link para abrir o Google Maps (direções): só aceita http/https. */

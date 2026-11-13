@@ -64,7 +64,7 @@ export function BotaoMapa({
         </div>
         {aberto && (
           <iframe
-            src={urlMapaEmbutido(mapsUrl, nomeLocal)}
+            src={urlMapaEmbutido(mapsUrl, nomeLocal, process.env.NEXT_PUBLIC_GOOGLE_MAPS_EMBED_KEY)}
             title={`Mapa de ${nomeLocal}`}
             className="block h-[60vh] max-h-[480px] w-full border-0"
             loading="lazy"

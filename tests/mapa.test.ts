@@ -17,3 +17,26 @@ test("mapa: endereço embutido e link seguro", () => {
   assert.equal(linkSeguro("javascript:alert(1)", "Campo"), "https://www.google.com/maps/search/?api=1&query=Campo");
   assert.equal(linkSeguro("https://maps.google.com/?q=a", "Campo"), "https://maps.google.com/?q=a");
 });
+
+test("mapa: endereço com chave da API oficial do Google", () => {
+  const chave = "AIzaSyDummyKey123";
+  assert.equal(
+    urlMapaEmbutido(null, "Estádio do Bolhão", chave),
+    "https://www.google.com/maps/embed/v1/search?key=AIzaSyDummyKey123&q=Est%C3%A1dio%20do%20Bolh%C3%A3o",
+  );
+  assert.equal(
+    urlMapaEmbutido("https://maps.google.com/?q=Campo+de+Treinos", "X", chave),
+    "https://www.google.com/maps/embed/v1/search?key=AIzaSyDummyKey123&q=Campo%20de%20Treinos",
+  );
+});
+
+test("mapa: chave vazia ou whitespace ignora-se", () => {
+  assert.equal(
+    urlMapaEmbutido(null, "Estádio do Bolhão", ""),
+    "https://www.google.com/maps?q=Est%C3%A1dio%20do%20Bolh%C3%A3o&output=embed",
+  );
+  assert.equal(
+    urlMapaEmbutido(null, "Estádio do Bolhão", "   "),
+    "https://www.google.com/maps?q=Est%C3%A1dio%20do%20Bolh%C3%A3o&output=embed",
+  );
+});
