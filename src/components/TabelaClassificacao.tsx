@@ -52,7 +52,7 @@ export function TabelaClassificacao({ linhas }: { linhas: Classificacao[] }) {
           })}
         </tbody>
       </table>
-      <p className="border-t border-borda px-3 py-2 text-xs text-suave">Atualizada em {formatarDiaCurto(ultima)}</p>
+      <p className="border-t border-borda px-3 py-2 text-xs text-suave">✓ Atualizada em {formatarDiaCurto(ultima)} • Dados oficiais AFAveiro</p>
     </div>
   );
 }

@@ -11,6 +11,9 @@ export default function PaginaClassificacao() {
   return (
     <>
       <Titulo>Classificação</Titulo>
+      <div className="mb-6 rounded-lg border border-borda/50 bg-superficie px-4 py-3 text-xs text-suave">
+        <p>📋 <strong>Classificação oficial</strong> dos campeonatos da Associação de Futebol de Aveiro. Os dados apresentados correspondem aos dados públicos fornecidos pela AFAveiro.</p>
+      </div>
       <Suspense fallback={<Esqueleto cartoes={2} />}>
         <ConteudoClassificacao />
       </Suspense>
