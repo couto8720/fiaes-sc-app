@@ -22,11 +22,9 @@ export function urlMapaEmbutido(mapsUrl: string | null | undefined, nomeLocal: s
   return `https://www.google.com/maps?q=${encodeURIComponent(pesquisa)}&output=embed`;
 }
 
-/** Link para abrir o Google Maps (direções): só aceita http/https. */
+/** Link para abrir o Google Maps Directions (pedir direções com GPS). */
 export function linkSeguro(mapsUrl: string | null | undefined, nomeLocal: string): string {
-  try {
-    const u = new URL(mapsUrl ?? "");
-    if (u.protocol === "https:" || u.protocol === "http:") return u.toString();
-  } catch {}
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(nomeLocal)}`;
+  const pesquisa = pesquisaDoMapa(mapsUrl, nomeLocal);
+  // Usar Directions API para que abra com GPS turn-by-turn, não só search
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(pesquisa)}`;
 }
