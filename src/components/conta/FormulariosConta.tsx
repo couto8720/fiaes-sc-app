@@ -94,8 +94,9 @@ export function FormRegistoAdepto() {
       </Campo>
       {confirmacao && confirmacao !== palavra && <p className="text-sm font-medium text-derrota">As palavras-passe não coincidem.</p>}
       <p className="text-xs text-suave">
-        Ao criar conta aceitas a <Link href="/privacidade" className="underline">política de privacidade</Link>. A conta serve só
-        para personalizar o site; não precisas dela para ver jogos e resultados.
+        Ao criar conta aceitas a <Link href="/privacidade" className="underline">política de privacidade</Link> e os{" "}
+        <Link href="/termos" className="underline">termos de utilização</Link>. A conta serve só para personalizar o site;
+        não precisas dela para ver jogos e resultados.
       </p>
       <BotaoSubmeter>Criar conta</BotaoSubmeter>
     </form>
