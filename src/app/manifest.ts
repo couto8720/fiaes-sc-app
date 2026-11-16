@@ -22,8 +22,6 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
       { src: "/icones/maskable", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Calendário", url: "/calendario" },
-      { name: "Resultados", url: "/resultados" },
       { name: "Classificação", url: "/classificacao" },
     ],
   };
