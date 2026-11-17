@@ -6,12 +6,6 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000
-    },
-    {
-      "name": "fiaes-sc-producao",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start", "--", "-p", "3001"],
-      "port": 3001
     }
   ]
 }
