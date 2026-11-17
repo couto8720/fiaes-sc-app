@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, ListOrdered, Trophy, type LucideIcon } from "lucide-react";
+import { CalendarDays, House, ListOrdered, Trophy, type LucideIcon } from "lucide-react";
 
 const ITENS: { href: string; rotulo: string; Icone: LucideIcon }[] = [
   { href: "/", rotulo: "Início", Icone: House },
-  { href: "/escaloes", rotulo: "Escalões", Icone: Trophy },
+  { href: "/calendario", rotulo: "Calendário", Icone: CalendarDays },
+  { href: "/resultados", rotulo: "Resultados", Icone: Trophy },
   { href: "/classificacao", rotulo: "Classificação", Icone: ListOrdered },
 ];
 

@@ -20,21 +20,21 @@ export async function POST(request: Request) {
     const { error: erroGolos } = await supabase
       .from("golos")
       .delete()
-      .neq("jogo_id", "");
+      .not("jogo_id", "is", null);
     if (erroGolos) throw erroGolos;
 
     // 2. Deletar expulsões
     const { error: erroExpulsoes } = await supabase
       .from("expulsoes")
       .delete()
-      .neq("jogo_id", "");
+      .not("jogo_id", "is", null);
     if (erroExpulsoes) throw erroExpulsoes;
 
     // 3. Deletar todos os jogos
     const { error: erroJogos } = await supabase
       .from("jogos")
       .delete()
-      .neq("id", "");
+      .not("id", "is", null);
     if (erroJogos) throw erroJogos;
 
     return Response.json({
