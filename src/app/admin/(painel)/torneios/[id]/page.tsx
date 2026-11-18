@@ -42,8 +42,7 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
   const { data: jogos } = await supabase
     .from("jogos_torneio")
     .select("*")
-    .eq("torneio_id", id)
-    .order("criado_em", { ascending: false });
+    .eq("torneio_id", id);
 
   const { data: locais } = await supabase
     .from("locais")

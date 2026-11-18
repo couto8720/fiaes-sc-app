@@ -69,6 +69,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       );
     }
 
+    console.log("Tentando inserir", jogos.length, "jogos:", JSON.stringify(jogos.slice(0, 2)));
+
     // Inserir jogos
     const { data: jogosInseridos, error: erroInserir } = await supabase
       .from("jogos_torneio")

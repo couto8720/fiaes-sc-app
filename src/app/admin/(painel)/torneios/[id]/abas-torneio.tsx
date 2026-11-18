@@ -510,9 +510,9 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                               ✏️ Editar Resultado
                             </button>
                           )}
-                            </div>
-                          ))}
-                          </div>
+                        </div>
+                      ))}
+                    </div>
                         </div>
                       ))}
                     </div>
