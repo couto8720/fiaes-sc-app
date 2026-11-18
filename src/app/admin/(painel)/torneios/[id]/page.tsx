@@ -23,17 +23,32 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
     notFound();
   }
 
+  const { data: fases } = await supabase
+    .from("fases_torneio")
+    .select("*")
+    .eq("torneio_id", id);
+
   const { data: equipas } = await supabase
     .from("equipas_torneio")
-    .select("*")
+    .select("*, fase_torneio:fase_torneio_id(nome)")
     .eq("torneio_id", id)
     .order("nome");
+
+  const { data: equipasMap } = await supabase
+    .from("equipas_torneio")
+    .select("id, nome")
+    .eq("torneio_id", id);
 
   const { data: jogos } = await supabase
     .from("jogos_torneio")
     .select("*")
     .eq("torneio_id", id)
     .order("criado_em", { ascending: false });
+
+  const mapEquipas = (equipasMap || []).reduce(
+    (acc, e) => ({ ...acc, [e.id]: e.nome }),
+    {} as Record<string, string>
+  );
 
   const formatoTexto: Record<string, string> = {
     grupos: "Em grupos",
@@ -96,7 +111,13 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
         </Link>
       </div>
 
-      <AbasTorneio torneioId={id} equipas={equipas || []} jogos={jogos || []} />
+      <AbasTorneio
+        torneioId={id}
+        equipas={equipas || []}
+        jogos={jogos || []}
+        fases={fases || []}
+        mapEquipas={mapEquipas}
+      />
     </div>
   );
 }
