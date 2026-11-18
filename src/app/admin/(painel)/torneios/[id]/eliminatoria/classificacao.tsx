@@ -41,6 +41,18 @@ export function Classificacao({ jogos }: ClassificacaoProps) {
     );
   }
 
+  // Verificar se temos rodada 2
+  if (rodada2.length < 2) {
+    return (
+      <div className="rounded-2xl border border-borda-aviso bg-aviso/10 p-6">
+        <p className="font-semibold text-aviso">⚠️ Rodada 2 não gerada</p>
+        <p className="mt-2 text-sm text-suave">
+          Clique em "Gerar Próxima Rodada" para criar a disputa de 3º lugar e final.
+        </p>
+      </div>
+    );
+  }
+
   // Encontrar vencedores e perdedores dos semi-finais
   const sf1 = semifinais[0];
   const sf2 = semifinais[1];
