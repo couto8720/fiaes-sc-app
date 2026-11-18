@@ -7,7 +7,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const supabase = await createClient();
     const body = await req.json();
 
-    const { nome, descricao, formato, num_grupos, equipas_por_grupo, avancar_por_grupo, vitoria_pontos, empate_pontos, estado } = body;
+    const { nome, descricao, formato, num_grupos, equipas_por_grupo, avancar_por_grupo, tem_terceiro_lugar, vitoria_pontos, empate_pontos, estado } = body;
 
     // Validar
     if (!nome || !formato) {
@@ -24,6 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         num_grupos,
         equipas_por_grupo,
         avancar_por_grupo,
+        tem_terceiro_lugar,
         vitoria_pontos,
         empate_pontos,
         estado,

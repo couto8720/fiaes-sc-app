@@ -55,6 +55,58 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
   const [jogoEditando, setJogoEditando] = useState<string | null>(null);
   const [jogoValores, setJogoValores] = useState<Record<string, { golos1: string; golos2: string; dataHora: string; localId: string }>>({});
 
+  // Calcular pontos do confronto direto entre duas equipas
+  function calcularPontosConfrontoDireto(equipaA: Equipa, equipaB: Equipa) {
+    let pontosA = 0;
+    let pontosB = 0;
+    let golosAMarcados = 0;
+    let golosasofridos = 0;
+    let golosBMarcados = 0;
+    let golosBsofridos = 0;
+
+    // Encontrar todos os jogos entre as duas equipas
+    jogos.forEach((jogo) => {
+      const equipa1Final = jogo.equipa1_id || jogo.equipa_1_id;
+      const equipa2Final = jogo.equipa2_id || jogo.equipa_2_id;
+
+      if (!jogo.golos_equipa1 && jogo.golos_equipa1 !== 0) return; // Jogo não foi jogado
+      if (!jogo.golos_equipa2 && jogo.golos_equipa2 !== 0) return; // Jogo não foi jogado
+
+      // Se A jogou contra B
+      if (equipa1Final === equipaA.id && equipa2Final === equipaB.id) {
+        golosAMarcados += jogo.golos_equipa1;
+        golosBsofridos += jogo.golos_equipa1;
+        golosBMarcados += jogo.golos_equipa2;
+        golosasofridos += jogo.golos_equipa2;
+
+        if (jogo.golos_equipa1 > jogo.golos_equipa2) pontosA += 3;
+        else if (jogo.golos_equipa1 < jogo.golos_equipa2) pontosB += 3;
+        else {
+          pontosA += 1;
+          pontosB += 1;
+        }
+      }
+      // Se B jogou contra A
+      else if (equipa1Final === equipaB.id && equipa2Final === equipaA.id) {
+        golosBMarcados += jogo.golos_equipa1;
+        golosasofridos += jogo.golos_equipa1;
+        golosAMarcados += jogo.golos_equipa2;
+        golosBsofridos += jogo.golos_equipa2;
+
+        if (jogo.golos_equipa1 > jogo.golos_equipa2) pontosB += 3;
+        else if (jogo.golos_equipa1 < jogo.golos_equipa2) pontosA += 3;
+        else {
+          pontosB += 1;
+          pontosA += 1;
+        }
+      }
+    });
+
+    // Retornar diferença: se A venceu no confronto direto, retorna número positivo
+    if (pontosA !== pontosB) return pontosB - pontosA; // Diferença de pontos
+    return (golosBMarcados - golosBsofridos) - (golosAMarcados - golosasofridos); // Diferença de golos
+  }
+
   async function gerarJogosDaFase(faseId: string) {
     setCarregandoGerar(true);
     setErroGerar("");
@@ -440,6 +492,29 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
 
       {abaAtiva === "classificacao" && (
         <div className="space-y-6">
+          {/* Legenda dos Critérios de Desempate */}
+          <div className="rounded-xl bg-clube/10 border border-clube/20 p-4">
+            <h3 className="font-semibold text-clube mb-3">📋 Critérios de Desempate</h3>
+            <div className="grid gap-2 text-sm text-suave">
+              <div className="flex items-start gap-2">
+                <span className="font-semibold text-clube min-w-6">1º</span>
+                <span><strong>Pontos</strong> - Vitória = 3 pts, Empate = 1 pt, Derrota = 0 pts</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold text-clube min-w-6">2º</span>
+                <span><strong>Confronto Direto</strong> - Resultado do jogo entre as equipas empatadas</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold text-clube min-w-6">3º</span>
+                <span><strong>Diferença de Golos</strong> - Golos marcados - Golos sofridos</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold text-clube min-w-6">4º</span>
+                <span><strong>Golos Marcados</strong> - Número total de golos marcados</span>
+              </div>
+            </div>
+          </div>
+
           {fases && fases.length > 0 ? (
             fases.map((fase) => {
               const equipasFase = equipas.filter((e) => e.fase_torneio_id === fase.id);
@@ -465,8 +540,20 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                         <tbody>
                           {[...equipasFase]
                             .sort((a, b) => {
+                              // 1º critério: Pontos
                               if (b.pontos !== a.pontos) return b.pontos - a.pontos;
-                              return (b.golos_marcados - b.golos_sofridos) - (a.golos_marcados - a.golos_sofridos);
+
+                              // 2º critério: Confronto Direto
+                              const pontosCD = calcularPontosConfrontoDireto(a, b);
+                              if (pontosCD !== 0) return -pontosCD;
+
+                              // 3º critério: Diferença de Golos
+                              const difA = a.golos_marcados - a.golos_sofridos;
+                              const difB = b.golos_marcados - b.golos_sofridos;
+                              if (difB !== difA) return difB - difA;
+
+                              // 4º critério: Golos Marcados
+                              return b.golos_marcados - a.golos_marcados;
                             })
                             .map((equipa, idx) => (
                               <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
