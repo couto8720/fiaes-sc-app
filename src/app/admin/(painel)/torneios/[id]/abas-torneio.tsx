@@ -55,6 +55,12 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
   const [jogoEditando, setJogoEditando] = useState<string | null>(null);
   const [jogoValores, setJogoValores] = useState<Record<string, { golos1: string; golos2: string; dataHora: string; localId: string }>>({});
 
+  // Mapeamento invertido: nome do local -> id
+  const mapLocaisInvertido = Object.entries(mapLocais).reduce(
+    (acc, [id, nome]) => ({ ...acc, [nome]: id }),
+    {} as Record<string, string>
+  );
+
   // Calcular pontos do confronto direto entre duas equipas
   function calcularPontosConfrontoDireto(equipaA: Equipa, equipaB: Equipa) {
     let pontosA = 0;
@@ -138,6 +144,9 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
     if (!valores) return;
 
     try {
+      // Converter nome do local para ID
+      const localId = valores.localId ? mapLocaisInvertido[valores.localId] : null;
+
       const res = await fetch(`/api/torneios/${torneioId}/jogos/${jogoId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -145,7 +154,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
           golos_equipa_1: valores.golos1 ? parseInt(valores.golos1) : null,
           golos_equipa_2: valores.golos2 ? parseInt(valores.golos2) : null,
           data_hora: valores.dataHora || null,
-          local_id: valores.localId || null,
+          local_id: localId,
           estado: valores.golos1 || valores.golos2 ? "final" : "agendado",
         }),
       });
@@ -412,10 +421,13 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                     type="datetime-local"
                                     className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
                                     value={jogoValores[jogo.id]?.dataHora || (jogo.data_hora ? jogo.data_hora.slice(0, 16) : "")}
-                                    onChange={(e) => setJogoValores({
-                                      ...jogoValores,
-                                      [jogo.id]: { ...jogoValores[jogo.id], dataHora: e.target.value }
-                                    })}
+                                    onChange={(e) => {
+                                      const valores = jogoValores[jogo.id] || { golos1: "", golos2: "", dataHora: "", localId: "" };
+                                      setJogoValores({
+                                        ...jogoValores,
+                                        [jogo.id]: { ...valores, dataHora: e.target.value }
+                                      });
+                                    }}
                                   />
                                 </div>
                                 <div>
@@ -423,10 +435,13 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                   <select
                                     className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
                                     value={jogoValores[jogo.id]?.localId || (jogo.local_id && mapLocais[jogo.local_id] ? mapLocais[jogo.local_id] : "")}
-                                    onChange={(e) => setJogoValores({
-                                      ...jogoValores,
-                                      [jogo.id]: { ...jogoValores[jogo.id], localId: e.target.value }
-                                    })}
+                                    onChange={(e) => {
+                                      const valores = jogoValores[jogo.id] || { golos1: "", golos2: "", dataHora: "", localId: "" };
+                                      setJogoValores({
+                                        ...jogoValores,
+                                        [jogo.id]: { ...valores, localId: e.target.value }
+                                      });
+                                    }}
                                   >
                                     <option value="">Selecionar local...</option>
                                     {["Campo 1", "Campo 2", "Campo 3", "Campo 4", "Campo 5", "Campo 6"].map((campo) => (
@@ -460,6 +475,8 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                   [jogo.id]: {
                                     golos1: (jogo.golos_equipa_1 ?? "").toString(),
                                     golos2: (jogo.golos_equipa_2 ?? "").toString(),
+                                    dataHora: jogo.data_hora || "",
+                                    localId: (jogo.local_id && mapLocais[jogo.local_id] ? mapLocais[jogo.local_id] : "")
                                   }
                                 });
                               }}
