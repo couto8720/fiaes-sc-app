@@ -32,8 +32,11 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (erroCriar || !torneio) {
-      console.error("Erro ao criar torneio:", erroCriar);
-      return NextResponse.json({ error: "Erro ao criar torneio" }, { status: 500 });
+      console.error("Erro ao criar torneio:", erroCriar?.message || erroCriar);
+      return NextResponse.json({
+        error: "Erro ao criar torneio",
+        details: erroCriar?.message || "Desconhecido"
+      }, { status: 500 });
     }
 
     // Criar fases/grupos automaticamente
