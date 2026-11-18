@@ -7,6 +7,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
+    console.log("✅ API gerar-eliminatoria chamada para torneio:", id);
     const supabase = await createClient();
 
     // 1. Buscar equipas apuradas COM A RELAÇÃO DE EQUIPAS
@@ -35,6 +36,7 @@ export async function POST(
 
     // Verificar se equipas estão carregadas
     const equipasValidas = apuramentos.filter((a) => a.equipa && a.equipa.id);
+    console.log("Equipas válidas encontradas:", equipasValidas.length);
     if (equipasValidas.length < 4) {
       console.error("Equipas não carregadas correctamente:", apuramentos);
       return NextResponse.json(
@@ -44,18 +46,23 @@ export async function POST(
     }
 
     // 2. Verificar se já existe fase de eliminação
+    console.log("Verificando se fase de eliminação já existe...");
     const { data: fasesExistentes } = await supabase
       .from("fases_torneio")
       .select("id")
       .eq("torneio_id", id)
       .eq("tipo", "eliminatoria");
 
+    console.log("Fases de eliminação encontradas:", fasesExistentes?.length || 0);
     if (fasesExistentes && fasesExistentes.length > 0) {
+      console.error("❌ Fase de eliminação já existe!");
       return NextResponse.json(
         { error: "Fase de eliminação já existe" },
         { status: 400 }
       );
     }
+
+    console.log("✅ Nenhuma fase de eliminação existente, criando...");
 
     // 3. Criar fase de eliminação
     const { data: novasFases, error: erroFase } = await supabase
