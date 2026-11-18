@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { exigirSessao } from "@/lib/sessao";
 import { FormularioNovoTorneio } from "./formulario";
 
 export const metadata: Metadata = { title: "Novo Torneio" };
 
-export default async function PaginaNovoTorneio() {
+export default function PaginaNovoTorneio() {
+  return (
+    <Suspense fallback={<div className="animate-pulse">Carregando...</div>}>
+      <ConteudoNovoTorneio />
+    </Suspense>
+  );
+}
+
+async function ConteudoNovoTorneio() {
   const sessao = await exigirSessao();
 
   return (
