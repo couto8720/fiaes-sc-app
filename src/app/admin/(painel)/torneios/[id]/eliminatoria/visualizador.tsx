@@ -46,12 +46,10 @@ export function VisualizadorEliminatoria({
   const [jogoEditando, setJogoEditando] = useState<string | null>(null);
   const [jogoValores, setJogoValores] = useState<Record<string, { g1: string; g2: string }>>({});
 
-  // Separar jogos por tipo e rodada
-  const semifinais = jogos.filter((j) => j.tipo_jogo === "semifinal" && j.rodada === 1);
-  const disputaTerceiro = jogos.find(
-    (j) => j.tipo_jogo === "disputa_terceiro" && j.rodada === 2
-  );
-  const final = jogos.find((j) => j.tipo_jogo === "final" && j.rodada === 2);
+  // Separar jogos por rodada
+  const semifinais = jogos.filter((j) => j.rodada === 1);
+  const disputaTerceiro = jogos.find((j) => j.rodada === 2 && jogos.filter(x => x.rodada === 2).indexOf(j) === 0);
+  const final = jogos.find((j) => j.rodada === 2 && jogos.filter(x => x.rodada === 2).indexOf(j) === 1);
 
   async function salvarResultado(jogoId: string) {
     const valores = jogoValores[jogoId];
