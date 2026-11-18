@@ -10,6 +10,7 @@ export function FormularioNovoTorneio({ usuarioId }: { usuarioId: string }) {
   const router = useRouter();
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
+  const [instrucoes, setInstrucoes] = useState("");
 
   const [form, setForm] = useState({
     nome: "",
@@ -39,7 +40,13 @@ export function FormularioNovoTorneio({ usuarioId }: { usuarioId: string }) {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Erro ao criar torneio");
+        const msgErro = data.error || "Erro ao criar torneio";
+
+        if (data.instrucoes) {
+          setInstrucoes(data.instrucoes);
+        }
+
+        throw new Error(msgErro);
       }
 
       const { id } = await res.json();
@@ -54,9 +61,21 @@ export function FormularioNovoTorneio({ usuarioId }: { usuarioId: string }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-borda bg-superficie p-6">
       {erro && (
-        <p className="rounded-xl bg-derrota/10 px-4 py-3 text-sm font-medium text-derrota">
-          ❌ {erro}
-        </p>
+        <div className="space-y-3">
+          <p className="rounded-xl bg-derrota/10 px-4 py-3 text-sm font-medium text-derrota">
+            ❌ {erro}
+          </p>
+          {instrucoes && (
+            <div className="rounded-xl bg-aviso/10 px-4 py-3 text-sm text-aviso">
+              <p className="mb-2 font-semibold">Como resolver:</p>
+              <ol className="list-inside list-decimal space-y-1">
+                {instrucoes.split("\n").map((linha, i) => (
+                  <li key={i}>{linha}</li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
       )}
 
       <Campo rotulo="Nome do Torneio" nome="nome" ajuda="Ex: Torneio de Verão 2026">
@@ -172,7 +191,7 @@ export function FormularioNovoTorneio({ usuarioId }: { usuarioId: string }) {
           Cancelar
         </button>
         <div className="flex-1">
-          <BotaoSubmeter>Criar Torneio</BotaoSubmeter>
+          <BotaoSubmeter disabled={carregando}>Criar Torneio</BotaoSubmeter>
         </div>
       </div>
     </form>

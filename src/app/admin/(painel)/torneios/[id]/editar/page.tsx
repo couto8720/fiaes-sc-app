@@ -6,15 +6,17 @@ import { createClient } from "@/lib/supabase/server";
 import { FormularioEditarTorneio } from "./formulario";
 
 export const metadata: Metadata = { title: "Editar Torneio" };
+export const instant = false;
 
-export default async function PaginaEditarTorneio({ params }: { params: { id: string } }) {
+export default async function PaginaEditarTorneio({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const sessao = await exigirSessao();
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
     .from("torneios")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!torneio) {

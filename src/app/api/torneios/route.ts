@@ -33,9 +33,25 @@ export async function POST(req: NextRequest) {
 
     if (erroCriar || !torneio) {
       console.error("Erro ao criar torneio:", erroCriar?.message || erroCriar);
+
+      const mensagemErro = erroCriar?.message || "Desconhecido";
+
+      // Se o erro é sobre tabela não existente, mostra instruções
+      if (
+        mensagemErro.includes("Could not find the table") ||
+        (mensagemErro.includes("relation") && mensagemErro.includes("does not exist")) ||
+        mensagemErro.includes("PGRST205")
+      ) {
+        return NextResponse.json({
+          error: "Tabelas de torneios não estão criadas no banco de dados",
+          details: "Você precisa aplicar a migration Supabase",
+          instrucoes: "1. Vá para https://app.supabase.com/project/yxbrnfcvmkctrcgexmld/sql/new\n2. Copie o conteúdo do arquivo supabase/migrations/20261118000013_torneios.sql\n3. Cole no editor SQL e execute\n4. Volte e tente criar o torneio novamente"
+        }, { status: 500 });
+      }
+
       return NextResponse.json({
         error: "Erro ao criar torneio",
-        details: erroCriar?.message || "Desconhecido"
+        details: mensagemErro
       }, { status: 500 });
     }
 

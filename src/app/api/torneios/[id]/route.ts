@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
     const body = await req.json();
 
@@ -28,7 +29,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         estado,
         atualizado_em: new Date().toISOString(),
       })
-      .eq("id", params.id);
+      .eq("id", id);
 
     if (erroAtualizacao) {
       console.error("Erro ao atualizar torneio:", erroAtualizacao);
@@ -42,12 +43,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const supabase = await createClient();
 
     // Deletar torneio
-    const { error } = await supabase.from("torneios").delete().eq("id", params.id);
+    const { error } = await supabase.from("torneios").delete().eq("id", id);
 
     if (error) {
       console.error("Erro ao deletar torneio:", error);

@@ -5,15 +5,17 @@ import { exigirSessao } from "@/lib/sessao";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Detalhes do Torneio" };
+export const instant = false;
 
-export default async function PaginaDetalhesTorneio({ params }: { params: { id: string } }) {
+export default async function PaginaDetalhesTorneio({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const sessao = await exigirSessao();
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
     .from("torneios")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!torneio) {
@@ -23,13 +25,13 @@ export default async function PaginaDetalhesTorneio({ params }: { params: { id: 
   const { data: equipas } = await supabase
     .from("equipas_torneio")
     .select("*")
-    .eq("torneio_id", params.id)
+    .eq("torneio_id", id)
     .order("nome");
 
   const { data: jogos } = await supabase
     .from("jogos_torneio")
     .select("*")
-    .eq("torneio_id", params.id)
+    .eq("torneio_id", id)
     .order("criado_em", { ascending: false });
 
   const formatoTexto: Record<string, string> = {
