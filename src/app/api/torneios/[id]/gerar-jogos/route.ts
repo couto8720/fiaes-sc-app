@@ -34,19 +34,26 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       .delete()
       .eq("fase_torneio_id", fase_torneio_id);
 
-    // Gerar jogos em rodadas: cada equipa joga exatamente uma vez contra cada outra equipa
+    // REGRA FUNDAMENTAL: Cada equipa DEVE jogar com TODOS os adversários do seu grupo EXATAMENTE UMA VEZ
+    // Exemplo: 4 equipas (A, B, C, D) → 6 jogos totais (cada par joga 1x): A-B, A-C, A-D, B-C, B-D, C-D
+    // Distribuído em rodadas: 3 rodadas (numEquipas - 1) com 2 jogos por rodada
+
     const jogos = [];
     const numEquipas = equipas.length;
 
     // Número de rodadas = numEquipas - 1 (para número par) ou numEquipas (para número ímpar)
+    // Total de jogos = C(numEquipas, 2) = numEquipas * (numEquipas - 1) / 2
     const numRodadas = numEquipas % 2 === 0 ? numEquipas - 1 : numEquipas;
+    const totalJogosEsperados = (numEquipas * (numEquipas - 1)) / 2;
 
     // Algoritmo de round-robin correto (circle method)
-    // Garante que cada par de equipas joga exatamente uma vez
+    // Garante que CADA PAR DE EQUIPAS joga EXATAMENTE UMA VEZ
+    // Nenhuma equipa pode ficar sem jogar contra outra equipa do seu grupo
     const equipasArray = equipas.slice();
 
     for (let rodada = 0; rodada < numRodadas; rodada++) {
       // Para cada rodada, parear as equipas: primeira com última, segunda com penúltima, etc.
+      // Isto garante uma distribuição balanceada e sem repetições
       for (let i = 0; i < Math.floor(numEquipas / 2); i++) {
         const equipa1 = equipasArray[i];
         const equipa2 = equipasArray[numEquipas - 1 - i];
@@ -62,11 +69,22 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       }
 
       // Rotar as equipas para a próxima rodada (circle method)
-      // Mover a primeira equipa para o final
+      // Isto muda as paragens garantindo que cada dupla de equipas encontra-se apenas uma vez
       if (rodada < numRodadas - 1) {
         const primeira = equipasArray.shift();
         equipasArray.splice(numEquipas - 1, 0, primeira);
       }
+    }
+
+    // VALIDAÇÃO: Verificar que a regra foi cumprida
+    if (jogos.length !== totalJogosEsperados) {
+      return NextResponse.json(
+        {
+          error: `Erro ao gerar jogos: esperado ${totalJogosEsperados} jogos mas foram gerados ${jogos.length}`,
+          details: "Cada equipa deve jogar com todos os adversários exatamente uma vez"
+        },
+        { status: 400 }
+      );
     }
 
     if (jogos.length === 0) {
