@@ -71,8 +71,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     if (regraEliminatoria) {
       console.log("🏆 Regra de eliminatória encontrada. Criando fase...");
 
-      // Primeiro, criar a fase de eliminação simples
-      const { data: novaFaseElim, error: erroFaseElim } = await supabase
+      // Deletar TODAS as fases de eliminação antigas
+      await supabase
+        .from("fases_torneio")
+        .delete()
+        .eq("torneio_id", id)
+        .eq("tipo", "eliminatoria");
+
+      // Criar uma nova fase de eliminação
+      const { data: novaFase, error: erroFase } = await supabase
         .from("fases_torneio")
         .insert({
           torneio_id: id,
@@ -80,14 +87,16 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           tipo: "eliminatoria",
           estado: "planejamento",
         })
-        .select();
+        .select()
+        .single();
 
-      if (erroFaseElim) {
-        console.error("🔴 Erro ao criar fase de eliminação:", erroFaseElim);
-        return NextResponse.json({ error: `Erro ao criar fase: ${JSON.stringify(erroFaseElim)}` }, { status: 500 });
+      if (erroFase || !novaFase) {
+        console.error("🔴 Erro ao criar fase de eliminação:", erroFase);
+        return NextResponse.json({ error: `Erro ao criar fase: ${JSON.stringify(erroFase)}` }, { status: 500 });
       }
 
-      console.log("✅ Fase de eliminação criada:", novaFaseElim?.length || 0, "registros");
+      const faseEliminacaoId = novaFase.id;
+      console.log("✅ Fase de eliminação criada:", faseEliminacaoId);
       // Obter grupos
       let { data: grupos } = await supabase
         .from("fases_torneio")
@@ -95,20 +104,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         .eq("torneio_id", id)
         .eq("tipo", "grupos");
 
-      // Se não há fases de grupos registradas, criar baseado nos jogos
+      // Se não há fases de grupos registradas, buscar TODOS os jogos e agrupar manualmente
       if (!grupos || grupos.length === 0) {
-        // Buscar todas as fases do torneio e criar fases de grupos se necessário
+        // Buscar todas as fases do torneio
         const { data: todasAsFases } = await supabase
           .from("fases_torneio")
           .select("*")
-          .eq("torneio_id", id);
+          .eq("torneio_id", id)
+          .neq("tipo", "eliminatoria");
 
-        // Se há fases mas nenhuma é de grupos, procurar por grupos nos jogos
+        // Usar todas as fases que não são de eliminatória como grupos
         if (todasAsFases && todasAsFases.length > 0) {
-          // Usar a primeira fase como grupos (assumindo que é a fase de grupos)
-          grupos = [todasAsFases[0]];
+          grupos = todasAsFases;
+          console.log("📂 Fases encontradas (não-eliminatória):", grupos.length);
         } else {
-          // Se ainda não há fases, criar uma fase de grupos
+          // Se ainda não há nenhuma fase, criar uma genérica
           const { data: novaFase, error: erroNovaFase } = await supabase
             .from("fases_torneio")
             .insert({
@@ -117,41 +127,59 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
               tipo: "grupos",
               estado: "planejamento",
             })
-            .select();
+            .select()
+            .single();
 
-          if (erroNovaFase || !novaFase || novaFase.length === 0) {
+          if (erroNovaFase || !novaFase) {
             return NextResponse.json(
               { error: "Erro ao criar fase de grupos" },
               { status: 400 }
             );
           }
-          grupos = novaFase;
+          grupos = [novaFase];
         }
       }
 
       // Para cada grupo, buscar as top 2 equipas e criar apuramentos
       const equipasApuradas = [];
+      console.log("📊 Total de grupos:", grupos.length);
+
       for (const grupo of grupos) {
+        console.log("📂 Processando grupo:", grupo.id, "-", grupo.nome);
+
         // Buscar classificação do grupo
         const { data: jogosGrupo } = await supabase
           .from("jogos_torneio")
           .select("*, equipa_1:equipa_1_id(*), equipa_2:equipa_2_id(*)")
           .eq("fase_torneio_id", grupo.id);
 
-        if (!jogosGrupo || jogosGrupo.length === 0) continue;
+        console.log("🎮 Jogos encontrados para grupo:", jogosGrupo?.length || 0);
+
+        if (!jogosGrupo || jogosGrupo.length === 0) {
+          console.log("⏭️  Nenhum jogo encontrado, pulando grupo");
+          continue;
+        }
 
         // Calcular pontos das equipas
         const equipasPontos: Record<string, { id: string; nome: string; pontos: number; saldo: number }> = {};
 
+        let jogosProcessados = 0;
         for (const jogo of jogosGrupo) {
           if (
-            !jogo.golos_equipa_1 ||
-            !jogo.golos_equipa_2 ||
+            jogo.golos_equipa_1 === null ||
+            jogo.golos_equipa_2 === null ||
             !jogo.equipa_1 ||
             !jogo.equipa_2
           ) {
+            console.log("⏭️ Jogo sem resultado:", {
+              g1: jogo.golos_equipa_1,
+              g2: jogo.golos_equipa_2,
+              e1: jogo.equipa_1?.nome,
+              e2: jogo.equipa_2?.nome,
+            });
             continue;
           }
+          jogosProcessados++;
 
           const equipa1 = jogo.equipa_1;
           const equipa2 = jogo.equipa_2;
@@ -180,15 +208,32 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           }
         }
 
+        // Buscar TODAS as equipas do torneio e adicionar as que não têm resultados
+        const { data: todasEquipas } = await supabase
+          .from("equipas_torneio")
+          .select("id, nome")
+          .eq("torneio_id", id);
+
+        if (todasEquipas) {
+          for (const equipa of todasEquipas) {
+            if (!equipasPontos[equipa.id]) {
+              equipasPontos[equipa.id] = { id: equipa.id, nome: equipa.nome, pontos: 0, saldo: 0 };
+            }
+          }
+        }
+
         // Ordenar equipas por pontos e saldo
         const equipasOrdenadas = Object.values(equipasPontos).sort((a, b) => {
           if (b.pontos !== a.pontos) return b.pontos - a.pontos;
           return b.saldo - a.saldo;
         });
 
+        console.log("🏆 Equipas ordenadas para grupo:", equipasOrdenadas.map(e => `${e.nome} (${e.pontos}pts)`));
+
         // Pegar top N equipas conforme a posição
         for (const posicao of regraEliminatoria.posicoes) {
           if (equipasOrdenadas[posicao - 1]) {
+            console.log(`✅ Apurando equipa posição ${posicao}:`, equipasOrdenadas[posicao - 1].nome);
             equipasApuradas.push({
               torneio_id: id,
               equipa_id: equipasOrdenadas[posicao - 1].id,
@@ -198,6 +243,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           }
         }
       }
+
+      console.log("📋 Total equipas apuradas encontradas:", equipasApuradas.length);
 
       // Verificar se temos as equipas apuradas
       if (equipasApuradas.length > 0) {
@@ -209,58 +256,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           await supabase.from("apuramentos_torneio").insert(apuramento);
         }
 
-        // Criar fase de eliminação
-        const { error: erroFase } = await supabase
-          .from("fases_torneio")
-          .insert({
-            torneio_id: id,
-            nome: "Eliminatória",
-            tipo: "eliminatoria",
-            estado: "planejamento",
-          });
-
-        if (erroFase) {
-          console.error("Erro ao criar fase de eliminação:", erroFase);
-        }
-
-        // Gerar jogos de eliminação (semi-finais)
-        const faseEliminacao = await supabase
-          .from("fases_torneio")
-          .select("id")
-          .eq("torneio_id", id)
-          .eq("tipo", "eliminatoria")
-          .single();
-
-        if (faseEliminacao.data) {
-          // Buscar as 8 equipas apuradas
-          const { data: apuramentos } = await supabase
-            .from("apuramentos_torneio")
-            .select("*, equipa:equipa_id(id, nome)")
-            .eq("torneio_id", id)
-            .order("posicao");
-
-          if (apuramentos && apuramentos.length >= 8) {
-            // Criar 4 jogos de semi-finais (1º vs 8º, 2º vs 7º, 3º vs 6º, 4º vs 5º)
-            const matchups = [
-              [0, 7], // 1º vs 8º
-              [1, 6], // 2º vs 7º
-              [2, 5], // 3º vs 6º
-              [3, 4], // 4º vs 5º
-            ];
-
-            for (const [idx1, idx2] of matchups) {
-              await supabase.from("jogos_torneio").insert({
-                torneio_id: id,
-                fase_torneio_id: faseEliminacao.data.id,
-                equipa_1_id: apuramentos[idx1].equipa_id,
-                equipa_2_id: apuramentos[idx2].equipa_id,
-                rodada: 1,
-                tipo_jogo: "meia_final",
-                estado: "agendado",
-              });
-            }
-          }
-        }
+        console.log("✅ Apuramentos criados:", equipasApuradas.length);
       }
     }
 
