@@ -45,6 +45,8 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
   const [abaAtiva, setAbaAtiva] = useState<"equipas" | "jogos" | "classificacao">("equipas");
   const [carregandoGerar, setCarregandoGerar] = useState(false);
   const [erroGerar, setErroGerar] = useState("");
+  const [jogoEditando, setJogoEditando] = useState<string | null>(null);
+  const [jogoValores, setJogoValores] = useState<Record<string, { golos1: string; golos2: string }>>({});
 
   async function gerarJogosDaFase(faseId: string) {
     setCarregandoGerar(true);
@@ -69,6 +71,34 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
       setErroGerar(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
       setCarregandoGerar(false);
+    }
+  }
+
+  async function salvarGolosJogo(jogoId: string) {
+    const valores = jogoValores[jogoId];
+    if (!valores) return;
+
+    try {
+      const res = await fetch(`/api/torneios/${torneioId}/jogos/${jogoId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          golos_equipa_1: valores.golos1 ? parseInt(valores.golos1) : null,
+          golos_equipa_2: valores.golos2 ? parseInt(valores.golos2) : null,
+          estado: "final",
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Erro ao salvar jogo");
+      }
+
+      alert("✅ Jogo atualizado com sucesso!");
+      setJogoEditando(null);
+      window.location.reload();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro desconhecido");
     }
   }
 
@@ -261,21 +291,82 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
                         <div key={jogo.id} className="rounded-xl border border-borda bg-superficie p-4">
                           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="flex-1 text-center sm:text-right">
-                              <p className="font-semibold">{mapEquipas[jogo.equipa1_id] || "?"}</p>
+                              <p className="font-semibold">{mapEquipas[jogo.equipa_1_id] || "?"}</p>
                             </div>
                             <div className="flex items-center gap-3">
-                              <p className="font-bold text-lg min-w-12 text-center">
-                                {jogo.golos_equipa1 ?? "—"}
-                              </p>
-                              <p className="font-semibold text-suave">vs</p>
-                              <p className="font-bold text-lg min-w-12 text-center">
-                                {jogo.golos_equipa2 ?? "—"}
-                              </p>
+                              {jogoEditando === jogo.id ? (
+                                <>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    className="w-12 h-8 rounded border border-borda bg-fundo text-center"
+                                    value={jogoValores[jogo.id]?.golos1 ?? jogo.golos_equipa_1 ?? ""}
+                                    onChange={(e) => setJogoValores({
+                                      ...jogoValores,
+                                      [jogo.id]: { ...jogoValores[jogo.id], golos1: e.target.value }
+                                    })}
+                                  />
+                                  <p className="font-semibold text-suave">vs</p>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    className="w-12 h-8 rounded border border-borda bg-fundo text-center"
+                                    value={jogoValores[jogo.id]?.golos2 ?? jogo.golos_equipa_2 ?? ""}
+                                    onChange={(e) => setJogoValores({
+                                      ...jogoValores,
+                                      [jogo.id]: { ...jogoValores[jogo.id], golos2: e.target.value }
+                                    })}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <p className="font-bold text-lg min-w-12 text-center">
+                                    {jogo.golos_equipa_1 ?? "—"}
+                                  </p>
+                                  <p className="font-semibold text-suave">vs</p>
+                                  <p className="font-bold text-lg min-w-12 text-center">
+                                    {jogo.golos_equipa_2 ?? "—"}
+                                  </p>
+                                </>
+                              )}
                             </div>
                             <div className="flex-1 text-center sm:text-left">
-                              <p className="font-semibold">{mapEquipas[jogo.equipa2_id] || "?"}</p>
+                              <p className="font-semibold">{mapEquipas[jogo.equipa_2_id] || "?"}</p>
                             </div>
                           </div>
+                          {jogoEditando === jogo.id && (
+                            <div className="mt-3 flex gap-2">
+                              <button
+                                onClick={() => salvarGolosJogo(jogo.id)}
+                                className="flex-1 rounded bg-vitoria px-3 py-2 text-sm font-semibold text-white hover:opacity-80"
+                              >
+                                ✓ Guardar
+                              </button>
+                              <button
+                                onClick={() => setJogoEditando(null)}
+                                className="flex-1 rounded border border-borda px-3 py-2 text-sm font-semibold hover:opacity-80"
+                              >
+                                ✕ Cancelar
+                              </button>
+                            </div>
+                          )}
+                          {jogoEditando !== jogo.id && (
+                            <button
+                              onClick={() => {
+                                setJogoEditando(jogo.id);
+                                setJogoValores({
+                                  ...jogoValores,
+                                  [jogo.id]: {
+                                    golos1: (jogo.golos_equipa_1 ?? "").toString(),
+                                    golos2: (jogo.golos_equipa_2 ?? "").toString(),
+                                  }
+                                });
+                              }}
+                              className="mt-3 w-full rounded bg-clube/10 px-3 py-2 text-sm font-semibold text-clube hover:bg-clube/20"
+                            >
+                              ✏️ Editar Resultado
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
