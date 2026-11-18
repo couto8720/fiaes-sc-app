@@ -63,17 +63,22 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
   // Calcular estatísticas das equipas baseado nos jogos realizados
   function calcularEstatisticasEquipas(equipas: Equipa[], jogos: Jogo[]): Record<string, Equipa> {
     const stats: Record<string, Equipa> = {};
+    const equipasMap = new Map(equipas.map(e => [e.id, e]));
 
     // Inicializar com dados das equipas
     equipas.forEach(equipa => {
       stats[equipa.id] = { ...equipa, jogos: 0, vitorias: 0, empates: 0, derrotas: 0, golos_marcados: 0, golos_sofridos: 0, pontos: 0 };
     });
 
-    // Processar cada jogo realizado
-    jogos.forEach(jogo => {
-      if (jogo.golos_equipa_1 === null || jogo.golos_equipa_1 === undefined) return;
-      if (jogo.golos_equipa_2 === null || jogo.golos_equipa_2 === undefined) return;
+    // Processar cada jogo realizado (aqueles que têm resultado definido)
+    jogos.forEach((jogo) => {
+      // Apenas contar jogos que têm AMBOS os resultados definidos
+      if (jogo.golos_equipa_1 === null || jogo.golos_equipa_1 === undefined ||
+          jogo.golos_equipa_2 === null || jogo.golos_equipa_2 === undefined) {
+        return; // Pular jogos sem resultado
+      }
 
+      // Verificar se ambas as equipas existem nesta fase
       const e1 = stats[jogo.equipa_1_id];
       const e2 = stats[jogo.equipa_2_id];
       if (!e1 || !e2) return;
@@ -610,11 +615,13 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
 
           {fases && fases.length > 0 ? (
             fases.map((fase) => {
-              const equipasFase = equipas.filter((e) => e.fase_torneio_id === fase.id).map(e => equipasComEstatisticas[e.id] || e);
+              const equipasFase = equipas.filter((e) => e.fase_torneio_id === fase.id);
+              const equipasComEstatisticasFase = calcularEstatisticasEquipas(equipasFase, jogos);
+              const equipasFaseComStats = equipasFase.map(e => equipasComEstatisticasFase[e.id] || e);
               return (
                 <div key={fase.id} className="space-y-4">
                   <h3 className="text-lg font-bold">{fase.nome}</h3>
-                  {equipasFase.length > 0 ? (
+                  {equipasFaseComStats.length > 0 ? (
                     <div className="overflow-x-auto rounded-xl border border-borda">
                       <table className="w-full text-sm">
                         <thead>
@@ -631,7 +638,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                           </tr>
                         </thead>
                         <tbody>
-                          {[...equipasFase]
+                          {[...equipasFaseComStats]
                             .sort((a, b) => {
                               // 1º critério: Pontos
                               if ((b.pontos || 0) !== (a.pontos || 0)) return (b.pontos || 0) - (a.pontos || 0);
