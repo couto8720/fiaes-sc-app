@@ -42,6 +42,7 @@ export function VisualizadorEliminatoria({
   jogos,
   apuramentos,
   temTerceiroLugar,
+  mapLocais = {},
 }: VisualizadorEliminatoriaProps) {
   const router = useRouter();
   const [carregando, setCarregando] = useState(false);

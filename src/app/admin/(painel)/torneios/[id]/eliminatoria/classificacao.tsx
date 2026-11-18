@@ -21,9 +21,33 @@ interface ClassificacaoProps {
 }
 
 export function Classificacao({ jogos }: ClassificacaoProps) {
+  // Verificar se há jogos
+  if (!jogos || jogos.length === 0) {
+    return (
+      <div className="rounded-2xl border border-borda-aviso bg-aviso/10 p-6">
+        <p className="font-semibold text-aviso">⚠️ Sem jogos de eliminação</p>
+        <p className="mt-2 text-sm text-suave">
+          Nenhum jogo de eliminação foi criado.
+        </p>
+      </div>
+    );
+  }
+
   // Separar por rodadas
   const semifinais = jogos.filter((j) => j.rodada === 1);
   const rodada2 = jogos.filter((j) => j.rodada === 2);
+
+  // Verificar se temos semi-finais
+  if (semifinais.length < 2) {
+    return (
+      <div className="rounded-2xl border border-borda-aviso bg-aviso/10 p-6">
+        <p className="font-semibold text-aviso">⚠️ Semi-finais não geradas</p>
+        <p className="mt-2 text-sm text-suave">
+          Clique em "Gerar Próxima Rodada" para criar os semi-finais.
+        </p>
+      </div>
+    );
+  }
 
   // Verificar se todos os jogos têm resultado
   const todosConcluidos = jogos.every(
