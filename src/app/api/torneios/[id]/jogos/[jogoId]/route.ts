@@ -12,13 +12,43 @@ export async function PUT(
 
     const { golos_equipa_1, golos_equipa_2, estado, data_hora, local_id } = body;
 
+    let finalLocalId = local_id;
+
+    // Se foi passado um local_id que é um string (nome do local), procurar ou criar
+    if (local_id && typeof local_id === "string" && !local_id.match(/^[0-9a-f-]{36}$/i)) {
+      // É um nome, não um UUID
+      const { data: localExistente } = await supabase
+        .from("locais")
+        .select("id")
+        .eq("nome", local_id)
+        .single();
+
+      if (localExistente) {
+        finalLocalId = localExistente.id;
+      } else {
+        // Criar novo local
+        const { data: novoLocal, error: erroInserirLocal } = await supabase
+          .from("locais")
+          .insert({ nome: local_id })
+          .select("id")
+          .single();
+
+        if (erroInserirLocal || !novoLocal) {
+          console.error("Erro ao criar local:", erroInserirLocal);
+          finalLocalId = null;
+        } else {
+          finalLocalId = novoLocal.id;
+        }
+      }
+    }
+
     const { error: erroAtualizar } = await supabase
       .from("jogos_torneio")
       .update({
         golos_equipa_1,
         golos_equipa_2,
         data_hora,
-        local_id,
+        local_id: finalLocalId || null,
         estado: estado || "final",
         atualizado_em: new Date().toISOString(),
       })

@@ -85,18 +85,6 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
     const valores = jogoValores[jogoId];
     if (!valores) return;
 
-    // Se o utilizador digitou um nome, procurar o ID correspondente
-    let localId = valores.localId;
-    if (localId) {
-      const localEncontrado = locais.find(l => l.nome === localId);
-      if (localEncontrado) {
-        localId = localEncontrado.id;
-      } else {
-        // Se não encontrar, deixar como NULL (será tratado como sem local)
-        localId = "";
-      }
-    }
-
     try {
       const res = await fetch(`/api/torneios/${torneioId}/jogos/${jogoId}`, {
         method: "PUT",
@@ -105,7 +93,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
           golos_equipa_1: valores.golos1 ? parseInt(valores.golos1) : null,
           golos_equipa_2: valores.golos2 ? parseInt(valores.golos2) : null,
           data_hora: valores.dataHora || null,
-          local_id: localId || null,
+          local_id: valores.localId || null,
           estado: valores.golos1 || valores.golos2 ? "final" : "agendado",
         }),
       });
