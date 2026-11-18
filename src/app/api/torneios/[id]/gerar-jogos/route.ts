@@ -34,20 +34,29 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       .delete()
       .eq("fase_torneio_id", fase_torneio_id);
 
-    // Gerar jogos: cada equipa joga uma vez contra cada outra (liga simples)
+    // Gerar jogos em rodadas: cada equipa joga uma vez por rodada contra cada outra
     const jogos = [];
     const numEquipas = equipas.length;
 
-    // Gerar todas as combinações de pares de equipas sem repetição
-    for (let i = 0; i < numEquipas; i++) {
-      for (let j = i + 1; j < numEquipas; j++) {
-        jogos.push({
-          torneio_id: id,
-          fase_torneio_id: fase_torneio_id,
-          equipa_1_id: equipas[i].id,
-          equipa_2_id: equipas[j].id,
-          estado: "agendado",
-        });
+    // Número de rodadas = numEquipas - 1 (para número par) ou numEquipas (para número ímpar)
+    const numRodadas = numEquipas % 2 === 0 ? numEquipas - 1 : numEquipas;
+
+    // Algoritmo de round-robin circular para organizar em rodadas
+    for (let rodada = 0; rodada < numRodadas; rodada++) {
+      for (let i = 0; i < Math.floor(numEquipas / 2); i++) {
+        let idx1 = (rodada + i) % numEquipas;
+        let idx2 = (rodada + numEquipas - 1 - i) % numEquipas;
+
+        // Evitar jogo de equipa contra ela mesma
+        if (idx1 !== idx2) {
+          jogos.push({
+            torneio_id: id,
+            fase_torneio_id: fase_torneio_id,
+            equipa_1_id: equipas[idx1].id,
+            equipa_2_id: equipas[idx2].id,
+            estado: "agendado",
+          });
+        }
       }
     }
 
