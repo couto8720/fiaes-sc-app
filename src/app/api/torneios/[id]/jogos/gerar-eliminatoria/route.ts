@@ -60,6 +60,7 @@ export async function POST(
 
     // 4. Preparar os jogos
     const equipas = apuramentos.map((a) => a.equipa);
+    const agora = new Date().toISOString();
     const jogos = [
       // Semi-finais (rodada 1)
       {
@@ -71,7 +72,10 @@ export async function POST(
         rodada: 1,
         golos_equipa_1: null,
         golos_equipa_2: null,
+        realizado: false,
         estado: "pendente",
+        criado_em: agora,
+        atualizado_em: agora,
       },
       {
         torneio_id: id,
@@ -82,7 +86,10 @@ export async function POST(
         rodada: 1,
         golos_equipa_1: null,
         golos_equipa_2: null,
+        realizado: false,
         estado: "pendente",
+        criado_em: agora,
+        atualizado_em: agora,
       },
       // Disputa de 3º lugar (rodada 2)
       {
@@ -94,7 +101,10 @@ export async function POST(
         rodada: 2,
         golos_equipa_1: null,
         golos_equipa_2: null,
+        realizado: false,
         estado: "pendente",
+        criado_em: agora,
+        atualizado_em: agora,
       },
       // Final (rodada 2)
       {
@@ -106,20 +116,18 @@ export async function POST(
         rodada: 2,
         golos_equipa_1: null,
         golos_equipa_2: null,
+        realizado: false,
         estado: "pendente",
+        criado_em: agora,
+        atualizado_em: agora,
       },
     ];
 
-    // 5. Inserir jogos com campo "realizado"
-    const jogosComRealizado = jogos.map(jogo => ({
-      ...jogo,
-      realizado: false,
-    }));
-
-    console.log("Tentando inserir jogos:", JSON.stringify(jogosComRealizado, null, 2));
+    // 5. Inserir jogos
+    console.log("Tentando inserir jogos:", JSON.stringify(jogos, null, 2));
     const { data: jogosInseridos, error: erroJogos } = await supabase
       .from("jogos_torneio")
-      .insert(jogosComRealizado)
+      .insert(jogos)
       .select();
 
     console.log("Jogos inseridos:", jogosInseridos);
