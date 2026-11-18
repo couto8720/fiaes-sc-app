@@ -9,213 +9,133 @@ export async function POST(
     const { id } = await params;
     const supabase = await createClient();
 
-    // 1. Buscar torneio
-    const { data: torneio } = await supabase
-      .from("torneios")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (!torneio || torneio.formato !== "grupos_eliminatoria") {
-      return NextResponse.json(
-        { error: "Torneio não tem fase de eliminatória configurada" },
-        { status: 400 }
-      );
-    }
-
-    // 2. Buscar equipas apuradas para eliminatória
-    const { data: apuramentos } = await supabase
+    // 1. Buscar equipas apuradas
+    const { data: apuramentos, error: erroApuramentos } = await supabase
       .from("apuramentos_torneio")
-      .select("equipa_id, regra:regra_id(tipo)")
-      .eq("torneio_id", id);
+      .select("*, equipa:equipa_id(id, nome)")
+      .eq("torneio_id", id)
+      .order("id"); // Manter ordem de inserção
 
-    if (!apuramentos || apuramentos.length === 0) {
+    if (erroApuramentos || !apuramentos || apuramentos.length < 4) {
       return NextResponse.json(
-        { error: "Nenhuma equipa apurada para a eliminatória" },
+        { error: "É necessário ter 4 equipas apuradas para gerar a eliminatória" },
         { status: 400 }
       );
     }
 
-    // Buscar equipas completas
-    const equipasIds = apuramentos.map((a) => a.equipa_id);
-    const { data: equipas } = await supabase
-      .from("equipas_torneio")
-      .select("*")
-      .in("id", equipasIds);
+    // 2. Verificar se já existe fase de eliminação
+    const { data: fasesExistentes } = await supabase
+      .from("fases_torneio")
+      .select("id")
+      .eq("torneio_id", id)
+      .eq("tipo", "eliminatoria");
 
-    if (!equipas || equipas.length === 0) {
+    if (fasesExistentes && fasesExistentes.length > 0) {
       return NextResponse.json(
-        { error: "Erro ao buscar equipas apuradas" },
+        { error: "Fase de eliminação já existe" },
+        { status: 400 }
+      );
+    }
+
+    // 3. Criar fase de eliminação
+    const { data: novasFases, error: erroFase } = await supabase
+      .from("fases_torneio")
+      .insert({
+        torneio_id: id,
+        nome: "Eliminatória",
+        tipo: "eliminatoria",
+        numero_grupo: null,
+      })
+      .select();
+
+    if (erroFase || !novasFases || novasFases.length === 0) {
+      console.error("Erro ao criar fase:", erroFase);
+      return NextResponse.json(
+        { error: erroFase?.message || "Erro ao criar fase de eliminação" },
         { status: 500 }
       );
     }
 
-    // 3. Buscar ou criar fase de eliminação
-    const { data: faseEliminatoria } = await supabase
-      .from("fases_torneio")
-      .select("*")
-      .eq("torneio_id", id)
-      .eq("tipo", "eliminatoria")
-      .single();
+    const faseNova = novasFases[0];
 
-    let faseId: string;
-    if (!faseEliminatoria) {
-      const { data: novaFase, error: erroFase } = await supabase
-        .from("fases_torneio")
-        .insert({
-          torneio_id: id,
-          nome: "Eliminatória",
-          tipo: "eliminatoria",
-          numero_grupo: 0,
-          bloqueada: false,
-        })
-        .select()
-        .single();
-
-      if (erroFase || !novaFase) {
-        throw new Error("Erro ao criar fase de eliminação");
-      }
-      faseId = novaFase.id;
-    } else {
-      faseId = faseEliminatoria.id;
-    }
-
-    // 4. Gerar jogos de eliminação
-    const jogosParaInserir: any[] = [];
-    const numEquipas = equipas.length;
-
-    if (numEquipas === 2) {
-      // Final direta
-      jogosParaInserir.push({
+    // 4. Preparar os jogos
+    const equipas = apuramentos.map((a) => a.equipa);
+    const jogos = [
+      // Semi-finais (rodada 1)
+      {
         torneio_id: id,
-        fase_torneio_id: faseId,
-        equipa_1_id: equipas[0].id,
-        equipa_2_id: equipas[1].id,
+        fase_torneio_id: faseNova.id,
+        equipa_1_id: equipas[0]?.id,
+        equipa_2_id: equipas[2]?.id,
+        tipo_jogo: "semifinal",
         rodada: 1,
-        tipo_jogo: "final",
-        realizado: false,
-      });
-    } else if (numEquipas === 4) {
-      // Semi-finais
-      jogosParaInserir.push(
-        {
-          torneio_id: id,
-          fase_torneio_id: faseId,
-          equipa_1_id: equipas[0].id,
-          equipa_2_id: equipas[3].id,
-          rodada: 1,
-          tipo_jogo: "semifinal",
-          realizado: false,
-        },
-        {
-          torneio_id: id,
-          fase_torneio_id: faseId,
-          equipa_1_id: equipas[1].id,
-          equipa_2_id: equipas[2].id,
-          rodada: 1,
-          tipo_jogo: "semifinal",
-          realizado: false,
-        }
-      );
-
-      // Disputa de 3º lugar (se configurado)
-      if (torneio.tem_terceiro_lugar) {
-        jogosParaInserir.push({
-          torneio_id: id,
-          fase_torneio_id: faseId,
-          equipa_1_id: null, // Será preenchido com perdedores das semi
-          equipa_2_id: null,
-          rodada: 2,
-          tipo_jogo: "disputa_terceiro",
-          realizado: false,
-        });
-      }
-
-      // Final
-      jogosParaInserir.push({
+        golos_equipa_1: null,
+        golos_equipa_2: null,
+        estado: "pendente",
+      },
+      {
         torneio_id: id,
-        fase_torneio_id: faseId,
-        equipa_1_id: null, // Será preenchido com vencedores das semi
-        equipa_2_id: null,
-        rodada: 2,
-        tipo_jogo: "final",
-        realizado: false,
-      });
-    } else if (numEquipas === 8) {
-      // Quartas, semi-finais, final
-      const quartas = [
-        [0, 7],
-        [3, 4],
-        [1, 6],
-        [2, 5],
-      ];
-
-      quartas.forEach((par, idx) => {
-        jogosParaInserir.push({
-          torneio_id: id,
-          fase_torneio_id: faseId,
-          equipa_1_id: equipas[par[0]].id,
-          equipa_2_id: equipas[par[1]].id,
-          rodada: 1,
-          tipo_jogo: "quarta",
-          realizado: false,
-        });
-      });
-
-      // Semi-finais
-      for (let i = 0; i < 2; i++) {
-        jogosParaInserir.push({
-          torneio_id: id,
-          fase_torneio_id: faseId,
-          equipa_1_id: null,
-          equipa_2_id: null,
-          rodada: 2,
-          tipo_jogo: "semifinal",
-          realizado: false,
-        });
-      }
-
-      // Final
-      jogosParaInserir.push({
+        fase_torneio_id: faseNova.id,
+        equipa_1_id: equipas[1]?.id,
+        equipa_2_id: equipas[3]?.id,
+        tipo_jogo: "semifinal",
+        rodada: 1,
+        golos_equipa_1: null,
+        golos_equipa_2: null,
+        estado: "pendente",
+      },
+      // Disputa de 3º lugar (rodada 2)
+      {
         torneio_id: id,
-        fase_torneio_id: faseId,
+        fase_torneio_id: faseNova.id,
         equipa_1_id: null,
         equipa_2_id: null,
-        rodada: 3,
+        tipo_jogo: "disputa_terceiro",
+        rodada: 2,
+        golos_equipa_1: null,
+        golos_equipa_2: null,
+        estado: "pendente",
+      },
+      // Final (rodada 2)
+      {
+        torneio_id: id,
+        fase_torneio_id: faseNova.id,
+        equipa_1_id: null,
+        equipa_2_id: null,
         tipo_jogo: "final",
-        realizado: false,
-      });
-    }
+        rodada: 2,
+        golos_equipa_1: null,
+        golos_equipa_2: null,
+        estado: "pendente",
+      },
+    ];
 
-    // 5. Limpar jogos antigos da eliminatória
-    await supabase
+    // 5. Inserir jogos
+    console.log("Tentando inserir jogos:", jogos);
+    const { data: jogosInseridos, error: erroJogos } = await supabase
       .from("jogos_torneio")
-      .delete()
-      .eq("torneio_id", id)
-      .eq("fase_torneio_id", faseId);
+      .insert(jogos)
+      .select();
 
-    // 6. Inserir novos jogos
-    if (jogosParaInserir.length > 0) {
-      const { error: erroJogos } = await supabase
-        .from("jogos_torneio")
-        .insert(jogosParaInserir);
+    console.log("Jogos inseridos:", jogosInseridos);
+    console.log("Erro ao inserir:", erroJogos);
 
-      if (erroJogos) {
-        console.error("Erro ao inserir jogos:", erroJogos);
-        return NextResponse.json(
-          { error: "Erro ao gerar jogos de eliminação" },
-          { status: 500 }
-        );
-      }
+    if (erroJogos || !jogosInseridos) {
+      console.error("Erro ao inserir jogos:", erroJogos);
+      return NextResponse.json(
+        { error: erroJogos?.message || "Erro ao criar jogos de eliminação" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       sucesso: true,
-      faseId,
-      jogosGerados: jogosParaInserir.length,
+      mensagem: "Fase de eliminação criada com sucesso",
+      faseId: faseNova.id,
+      jogos: 4,
     });
   } catch (erro) {
-    console.error("Erro na geração de jogos:", erro);
+    console.error("Erro na geração de eliminatória:", erro);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }

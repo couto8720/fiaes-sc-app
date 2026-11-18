@@ -28,7 +28,7 @@ export async function POST(
       .from("fases_torneio")
       .select("*")
       .eq("torneio_id", id)
-      .eq("tipo", "grupos");
+      .eq("tipo", "grupo");
 
     if (!fases || fases.length === 0) {
       return NextResponse.json(
