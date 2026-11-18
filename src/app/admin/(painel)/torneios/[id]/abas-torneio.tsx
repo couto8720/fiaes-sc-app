@@ -616,7 +616,10 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
           {fases && fases.length > 0 ? (
             fases.map((fase) => {
               const equipasFase = equipas.filter((e) => e.fase_torneio_id === fase.id);
-              const equipasComEstatisticasFase = calcularEstatisticasEquipas(equipasFase, jogos);
+              const equipasIdsFase = new Set(equipasFase.map(e => e.id));
+              // Filtrar APENAS jogos que envolvem equipas desta fase
+              const jogosFase = jogos.filter(j => equipasIdsFase.has(j.equipa_1_id) && equipasIdsFase.has(j.equipa_2_id));
+              const equipasComEstatisticasFase = calcularEstatisticasEquipas(equipasFase, jogosFase);
               const equipasFaseComStats = equipasFase.map(e => equipasComEstatisticasFase[e.id] || e);
               return (
                 <div key={fase.id} className="space-y-4">
