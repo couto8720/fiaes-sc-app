@@ -48,8 +48,37 @@ export function VisualizadorEliminatoria({
 
   // Separar jogos por rodada
   const semifinais = jogos.filter((j) => j.rodada === 1);
-  const disputaTerceiro = jogos.find((j) => j.rodada === 2 && jogos.filter(x => x.rodada === 2).indexOf(j) === 0);
-  const final = jogos.find((j) => j.rodada === 2 && jogos.filter(x => x.rodada === 2).indexOf(j) === 1);
+  const jogosRodada2 = jogos.filter((j) => j.rodada === 2);
+  const disputaTerceiro = jogosRodada2[0];
+  const final = jogosRodada2[1];
+
+  // Verificar se todos os semi-finais têm resultado
+  const semifinaisConcluidos = semifinais.every(
+    (s) => s.golos_equipa_1 !== null && s.golos_equipa_2 !== null
+  );
+
+  async function gerarRodada2() {
+    setCarregando(true);
+    setErro("");
+
+    try {
+      const res = await fetch(`/api/torneios/${torneioId}/jogos/gerar-proxima-rodada`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Erro ao gerar rodada 2");
+      }
+
+      router.refresh();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setCarregando(false);
+    }
+  }
 
   async function salvarResultado(jogoId: string) {
     const valores = jogoValores[jogoId];
@@ -120,7 +149,18 @@ export function VisualizadorEliminatoria({
       <div className="space-y-8">
         {/* Semi-finais */}
         <div>
-          <h3 className="mb-4 text-lg font-bold">🥈 Semi-finais</h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-lg font-bold">🥈 Semi-finais</h3>
+            {semifinaisConcluidos && !jogosRodada2.length && (
+              <button
+                onClick={gerarRodada2}
+                disabled={carregando}
+                className="rounded-lg bg-clube px-3 py-2 text-sm font-semibold text-clube-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+              >
+                ➡️ Gerar Próxima Rodada
+              </button>
+            )}
+          </div>
           <div className="space-y-3">
             {semifinais.map((jogo) => (
               <div

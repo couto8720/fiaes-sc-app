@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { exigirSessao } from "@/lib/sessao";
 import { createClient } from "@/lib/supabase/server";
 import { VisualizadorEliminatoria } from "./visualizador";
+import { Classificacao } from "./classificacao";
 
 export const metadata: Metadata = { title: "Eliminatória" };
 export const instant = false;
@@ -71,12 +72,15 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
           </Link>
         </div>
       ) : (
-        <VisualizadorEliminatoria
-          torneioId={id}
-          jogos={jogos || []}
-          apuramentos={apuramentos || []}
-          temTerceiroLugar={torneio.tem_terceiro_lugar || false}
-        />
+        <div className="space-y-8">
+          <VisualizadorEliminatoria
+            torneioId={id}
+            jogos={jogos || []}
+            apuramentos={apuramentos || []}
+            temTerceiroLugar={torneio.tem_terceiro_lugar || false}
+          />
+          <Classificacao jogos={jogos || []} />
+        </div>
       )}
     </div>
   );
