@@ -131,7 +131,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
 
       const data = await res.json();
       alert(`✅ ${data.jogos_criados} jogos gerados com sucesso!`);
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       setErroGerar(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
@@ -166,7 +166,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
 
       alert("✅ Jogo atualizado com sucesso!");
       setJogoEditando(null);
-      window.location.reload();
+      router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Erro desconhecido");
     }
