@@ -28,7 +28,6 @@ interface Jogo {
   fase_torneio_id: string;
   data_hora?: string;
   local_id?: string;
-  rodada?: number;
 }
 
 interface Fase {
@@ -358,31 +357,12 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
             fases.map((fase) => {
               const jogosFase = jogos.filter((j) => j.fase_torneio_id === fase.id);
 
-              // Agrupar jogos por rodada
-              const jogosPorRodada = new Map<number, typeof jogosFase>();
-              jogosFase.forEach((jogo) => {
-                const rodada = jogo.rodada || 0;
-                if (!jogosPorRodada.has(rodada)) {
-                  jogosPorRodada.set(rodada, []);
-                }
-                jogosPorRodada.get(rodada)!.push(jogo);
-              });
-
-              // Ordenar rodadas
-              const rodasOrdenadas = Array.from(jogosPorRodada.keys()).sort((a, b) => a - b);
-
               return (
                 <div key={fase.id} className="space-y-4">
                   <h3 className="text-lg font-bold">{fase.nome}</h3>
                   {jogosFase.length > 0 ? (
-                    <div className="space-y-6">
-                      {rodasOrdenadas.map((rodada) => (
-                        <div key={`rodada-${rodada}`} className="space-y-2">
-                          {rodada > 0 && (
-                            <h4 className="text-sm font-semibold text-clube">🎯 Rodada {rodada}</h4>
-                          )}
-                          <div className="space-y-3">
-                            {jogosPorRodada.get(rodada)!.map((jogo) => (
+                    <div className="space-y-3">
+                      {jogosFase.map((jogo) => (
                         <div key={jogo.id} className="rounded-xl border border-borda bg-superficie p-4">
                           <div className="text-xs text-suave mb-2">
                             {jogo.data_hora && (
@@ -510,9 +490,6 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                               ✏️ Editar Resultado
                             </button>
                           )}
-                        </div>
-                      ))}
-                    </div>
                         </div>
                       ))}
                     </div>

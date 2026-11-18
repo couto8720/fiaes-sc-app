@@ -55,7 +55,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             fase_torneio_id: fase_torneio_id,
             equipa_1_id: equipas[idx1].id,
             equipa_2_id: equipas[idx2].id,
-            rodada: rodada + 1,
             estado: "agendado",
           });
         }
