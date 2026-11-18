@@ -49,7 +49,25 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { id } = await params;
     const supabase = await createClient();
 
-    // Deletar torneio
+    // Deletar todas as fases associadas (cascade deleta jogos automaticamente)
+    await supabase
+      .from("fases_torneio")
+      .delete()
+      .eq("torneio_id", id);
+
+    // Deletar todas as equipas
+    await supabase
+      .from("equipas_torneio")
+      .delete()
+      .eq("torneio_id", id);
+
+    // Deletar todos os apuramentos
+    await supabase
+      .from("apuramentos_torneio")
+      .delete()
+      .eq("torneio_id", id);
+
+    // Deletar o torneio
     const { error } = await supabase.from("torneios").delete().eq("id", id);
 
     if (error) {

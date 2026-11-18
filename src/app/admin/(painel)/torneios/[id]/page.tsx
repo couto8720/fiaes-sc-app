@@ -71,6 +71,21 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
     finalizado: "Finalizado",
   };
 
+  async function apagarTorneio() {
+    if (!confirm("Tem certeza que deseja apagar este torneio? Esta ação não pode ser desfeita.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/torneios/${torneio.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Erro ao apagar torneio");
+
+      window.location.href = "/admin/torneios";
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Erro desconhecido");
+    }
+  }
+
   return (
     <div className="max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
@@ -81,12 +96,20 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
           <h1 className="text-3xl font-black tracking-tight">{torneio.nome}</h1>
           <p className="text-suave mt-1">{torneio.descricao || formatoTexto[torneio.formato]}</p>
         </div>
-        <Link
-          href={`/admin/torneios/${torneio.id}/editar`}
-          className="rounded-xl bg-clube px-5 py-3 font-semibold text-clube-texto transition-opacity hover:opacity-80"
-        >
-          ✏️ Editar
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            href={`/admin/torneios/${torneio.id}/editar`}
+            className="rounded-xl bg-clube px-5 py-3 font-semibold text-clube-texto transition-opacity hover:opacity-80"
+          >
+            ✏️ Editar
+          </Link>
+          <button
+            onClick={apagarTorneio}
+            className="rounded-xl bg-derrota px-5 py-3 font-semibold text-derrota-texto transition-opacity hover:opacity-80"
+          >
+            🗑️ Apagar
+          </button>
+        </div>
       </div>
 
       {/* Info do Torneio */}

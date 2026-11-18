@@ -17,6 +17,8 @@ interface Jogo {
   realizado: boolean;
   tipo_jogo: string;
   rodada: number;
+  data_hora?: string;
+  local_id?: string;
   equipa_1?: Equipa | null;
   equipa_2?: Equipa | null;
 }
@@ -32,6 +34,7 @@ interface VisualizadorEliminatoriaProps {
   jogos: Jogo[];
   apuramentos: Apuramento[];
   temTerceiroLugar: boolean;
+  mapLocais?: Record<string, string>;
 }
 
 export function VisualizadorEliminatoria({
@@ -44,7 +47,7 @@ export function VisualizadorEliminatoria({
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState("");
   const [jogoEditando, setJogoEditando] = useState<string | null>(null);
-  const [jogoValores, setJogoValores] = useState<Record<string, { g1: string; g2: string }>>({});
+  const [jogoValores, setJogoValores] = useState<Record<string, { g1: string; g2: string; dataHora: string; localId: string }>>({});
 
   // Separar jogos por rodada
   const semifinais = jogos.filter((j) => j.rodada === 1);
@@ -88,13 +91,15 @@ export function VisualizadorEliminatoria({
     setErro("");
 
     try {
-      const res = await fetch(`/api/torneios/${torneioId}/jogos/${jogoId}/resultado`, {
+      const res = await fetch(`/api/torneios/${torneioId}/jogos/${jogoId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           golos_equipa_1: parseInt(valores.g1),
           golos_equipa_2: parseInt(valores.g2),
           estado: "final",
+          data_hora: valores.dataHora || null,
+          local_id: valores.localId || null,
         }),
       });
 
@@ -118,6 +123,8 @@ export function VisualizadorEliminatoria({
       [jogo.id]: {
         g1: jogo.golos_equipa_1?.toString() || "",
         g2: jogo.golos_equipa_2?.toString() || "",
+        dataHora: jogo.data_hora ? jogo.data_hora.slice(0, 16) : "",
+        localId: jogo.local_id ? (mapLocais?.[jogo.local_id] || "") : "",
       },
     });
   }
@@ -167,6 +174,16 @@ export function VisualizadorEliminatoria({
                 key={jogo.id}
                 className="rounded-2xl border border-borda bg-superficie p-6"
               >
+                {(jogo.data_hora || jogo.local_id) && (
+                  <div className="text-xs text-suave mb-3">
+                    {jogo.data_hora && (
+                      <span>📅 {new Date(jogo.data_hora).toLocaleString('pt-PT')}</span>
+                    )}
+                    {jogo.local_id && mapLocais?.[jogo.local_id] && (
+                      <span className="ml-3">📍 {mapLocais[jogo.local_id]}</span>
+                    )}
+                  </div>
+                )}
                 <div className="flex items-center gap-6">
                   {/* Equipa 1 */}
                   <div className="flex flex-1 items-center gap-3">
@@ -221,20 +238,56 @@ export function VisualizadorEliminatoria({
 
                   {/* Botão Editar/Salvar */}
                   {jogoEditando === jogo.id ? (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => salvarResultado(jogo.id)}
-                        disabled={carregando}
-                        className="rounded-lg bg-vitoria px-3 py-2 text-sm font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
-                      >
-                        ✅ Salvar
-                      </button>
-                      <button
-                        onClick={() => setJogoEditando(null)}
-                        className="rounded-lg border border-borda px-3 py-2 text-sm font-semibold transition-colors hover:bg-fundo"
-                      >
-                        ✕ Cancelar
-                      </button>
+                    <div className="flex gap-2 flex-col">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs font-semibold text-suave">Data/Hora</label>
+                          <input
+                            type="datetime-local"
+                            className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                            value={jogoValores[jogo.id]?.dataHora || ""}
+                            onChange={(e) => {
+                              setJogoValores({
+                                ...jogoValores,
+                                [jogo.id]: { ...jogoValores[jogo.id], dataHora: e.target.value },
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-suave">Local</label>
+                          <select
+                            className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                            value={jogoValores[jogo.id]?.localId || ""}
+                            onChange={(e) => {
+                              setJogoValores({
+                                ...jogoValores,
+                                [jogo.id]: { ...jogoValores[jogo.id], localId: e.target.value },
+                              });
+                            }}
+                          >
+                            <option value="">Selecionar local...</option>
+                            {Object.entries(mapLocais || {}).map(([id, nome]) => (
+                              <option key={id} value={nome}>{nome}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => salvarResultado(jogo.id)}
+                          disabled={carregando}
+                          className="flex-1 rounded-lg bg-vitoria px-3 py-2 text-sm font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+                        >
+                          ✅ Salvar
+                        </button>
+                        <button
+                          onClick={() => setJogoEditando(null)}
+                          className="flex-1 rounded-lg border border-borda px-3 py-2 text-sm font-semibold transition-colors hover:bg-fundo"
+                        >
+                          ✕ Cancelar
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <button
@@ -255,6 +308,16 @@ export function VisualizadorEliminatoria({
           <div>
             <h3 className="mb-4 text-lg font-bold">🥉 Disputa de 3º Lugar</h3>
             <div className="rounded-2xl border border-borda bg-superficie p-6">
+              {(disputaTerceiro.data_hora || disputaTerceiro.local_id) && (
+                <div className="text-xs text-suave mb-3">
+                  {disputaTerceiro.data_hora && (
+                    <span>📅 {new Date(disputaTerceiro.data_hora).toLocaleString('pt-PT')}</span>
+                  )}
+                  {disputaTerceiro.local_id && mapLocais?.[disputaTerceiro.local_id] && (
+                    <span className="ml-3">📍 {mapLocais[disputaTerceiro.local_id]}</span>
+                  )}
+                </div>
+              )}
               <div className="flex items-center gap-6">
                 {/* Equipa 1 */}
                 <div className="flex flex-1 items-center gap-3">
@@ -316,20 +379,56 @@ export function VisualizadorEliminatoria({
 
                 {/* Botão Editar/Salvar */}
                 {jogoEditando === disputaTerceiro.id ? (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => salvarResultado(disputaTerceiro.id)}
-                      disabled={carregando}
-                      className="rounded-lg bg-vitoria px-3 py-2 text-sm font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
-                    >
-                      ✅ Salvar
-                    </button>
-                    <button
-                      onClick={() => setJogoEditando(null)}
-                      className="rounded-lg border border-borda px-3 py-2 text-sm font-semibold transition-colors hover:bg-fundo"
-                    >
-                      ✕ Cancelar
-                    </button>
+                  <div className="flex gap-2 flex-col">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-xs font-semibold text-suave">Data/Hora</label>
+                        <input
+                          type="datetime-local"
+                          className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                          value={jogoValores[disputaTerceiro.id]?.dataHora || ""}
+                          onChange={(e) => {
+                            setJogoValores({
+                              ...jogoValores,
+                              [disputaTerceiro.id]: { ...jogoValores[disputaTerceiro.id], dataHora: e.target.value },
+                            });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-suave">Local</label>
+                        <select
+                          className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                          value={jogoValores[disputaTerceiro.id]?.localId || ""}
+                          onChange={(e) => {
+                            setJogoValores({
+                              ...jogoValores,
+                              [disputaTerceiro.id]: { ...jogoValores[disputaTerceiro.id], localId: e.target.value },
+                            });
+                          }}
+                        >
+                          <option value="">Selecionar local...</option>
+                          {Object.entries(mapLocais || {}).map(([id, nome]) => (
+                            <option key={id} value={nome}>{nome}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => salvarResultado(disputaTerceiro.id)}
+                        disabled={carregando}
+                        className="flex-1 rounded-lg bg-vitoria px-3 py-2 text-sm font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+                      >
+                        ✅ Salvar
+                      </button>
+                      <button
+                        onClick={() => setJogoEditando(null)}
+                        className="flex-1 rounded-lg border border-borda px-3 py-2 text-sm font-semibold transition-colors hover:bg-fundo"
+                      >
+                        ✕ Cancelar
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button
@@ -349,6 +448,16 @@ export function VisualizadorEliminatoria({
           <div>
             <h3 className="mb-4 text-lg font-bold">🏆 Final</h3>
             <div className="rounded-2xl border-2 border-vitoria bg-vitoria/5 p-6">
+              {(final.data_hora || final.local_id) && (
+                <div className="text-xs text-suave mb-3">
+                  {final.data_hora && (
+                    <span>📅 {new Date(final.data_hora).toLocaleString('pt-PT')}</span>
+                  )}
+                  {final.local_id && mapLocais?.[final.local_id] && (
+                    <span className="ml-3">📍 {mapLocais[final.local_id]}</span>
+                  )}
+                </div>
+              )}
               <div className="flex items-center gap-6">
                 {/* Equipa 1 */}
                 <div className="flex flex-1 items-center gap-3">
@@ -403,20 +512,56 @@ export function VisualizadorEliminatoria({
 
                 {/* Botão Editar/Salvar */}
                 {jogoEditando === final.id ? (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => salvarResultado(final.id)}
-                      disabled={carregando}
-                      className="rounded-lg bg-vitoria px-3 py-2 text-sm font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
-                    >
-                      ✅ Salvar
-                    </button>
-                    <button
-                      onClick={() => setJogoEditando(null)}
-                      className="rounded-lg border border-borda px-3 py-2 text-sm font-semibold transition-colors hover:bg-fundo"
-                    >
-                      ✕ Cancelar
-                    </button>
+                  <div className="flex gap-2 flex-col">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-xs font-semibold text-suave">Data/Hora</label>
+                        <input
+                          type="datetime-local"
+                          className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                          value={jogoValores[final.id]?.dataHora || ""}
+                          onChange={(e) => {
+                            setJogoValores({
+                              ...jogoValores,
+                              [final.id]: { ...jogoValores[final.id], dataHora: e.target.value },
+                            });
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-suave">Local</label>
+                        <select
+                          className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                          value={jogoValores[final.id]?.localId || ""}
+                          onChange={(e) => {
+                            setJogoValores({
+                              ...jogoValores,
+                              [final.id]: { ...jogoValores[final.id], localId: e.target.value },
+                            });
+                          }}
+                        >
+                          <option value="">Selecionar local...</option>
+                          {Object.entries(mapLocais || {}).map(([id, nome]) => (
+                            <option key={id} value={nome}>{nome}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => salvarResultado(final.id)}
+                        disabled={carregando}
+                        className="flex-1 rounded-lg bg-vitoria px-3 py-2 text-sm font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+                      >
+                        ✅ Salvar
+                      </button>
+                      <button
+                        onClick={() => setJogoEditando(null)}
+                        className="flex-1 rounded-lg border border-borda px-3 py-2 text-sm font-semibold transition-colors hover:bg-fundo"
+                      >
+                        ✕ Cancelar
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <button

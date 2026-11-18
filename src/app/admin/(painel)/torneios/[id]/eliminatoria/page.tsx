@@ -49,6 +49,16 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
     .select("*, equipa:equipa_id(id, nome)")
     .eq("torneio_id", id);
 
+  // Buscar locais
+  const { data: locais } = await supabase
+    .from("locais")
+    .select("id, nome");
+
+  const mapLocais = (locais || []).reduce(
+    (acc, l) => ({ ...acc, [l.id]: l.nome }),
+    {} as Record<string, string>
+  );
+
   return (
     <div className="max-w-6xl">
       <Link href={`/admin/torneios/${id}`} className="mb-4 inline-flex items-center text-clube">
@@ -78,6 +88,7 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
             jogos={jogos || []}
             apuramentos={apuramentos || []}
             temTerceiroLugar={torneio.tem_terceiro_lugar || false}
+            mapLocais={mapLocais}
           />
           <Classificacao jogos={jogos || []} />
         </div>
