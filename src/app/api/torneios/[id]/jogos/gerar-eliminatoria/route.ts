@@ -9,17 +9,37 @@ export async function POST(
     const { id } = await params;
     const supabase = await createClient();
 
-    // 1. Buscar equipas apuradas
+    // 1. Buscar equipas apuradas COM A RELAÇÃO DE EQUIPAS
     const { data: apuramentos, error: erroApuramentos } = await supabase
       .from("apuramentos_torneio")
-      .select("*, equipa:equipa_id(id, nome)")
+      .select("id, equipa_id, equipa:equipa_id(id, nome)")
       .eq("torneio_id", id)
-      .order("id"); // Manter ordem de inserção
+      .order("id");
 
-    if (erroApuramentos || !apuramentos || apuramentos.length < 4) {
+    console.log("Apuramentos encontrados:", JSON.stringify(apuramentos, null, 2));
+
+    if (erroApuramentos) {
+      console.error("Erro ao buscar apuramentos:", erroApuramentos);
+      return NextResponse.json(
+        { error: erroApuramentos.message },
+        { status: 400 }
+      );
+    }
+
+    if (!apuramentos || apuramentos.length < 4) {
       return NextResponse.json(
         { error: "É necessário ter 4 equipas apuradas para gerar a eliminatória" },
         { status: 400 }
+      );
+    }
+
+    // Verificar se equipas estão carregadas
+    const equipasValidas = apuramentos.filter((a) => a.equipa && a.equipa.id);
+    if (equipasValidas.length < 4) {
+      console.error("Equipas não carregadas correctamente:", apuramentos);
+      return NextResponse.json(
+        { error: "Erro ao carregar dados das equipas apuradas" },
+        { status: 500 }
       );
     }
 
@@ -59,15 +79,26 @@ export async function POST(
     const faseNova = novasFases[0];
 
     // 4. Preparar os jogos
-    const equipas = apuramentos.map((a) => a.equipa);
+    const equipasArray = apuramentos.map((a) => a.equipa).filter((e) => e !== null);
+
+    console.log("Equipas para jogos:", JSON.stringify(equipasArray, null, 2));
+
+    if (equipasArray.length < 4) {
+      console.error("Equipas insuficientes para criar jogos:", equipasArray);
+      return NextResponse.json(
+        { error: "Não foi possível carregar as 4 equipas apuradas" },
+        { status: 500 }
+      );
+    }
+
     const agora = new Date().toISOString();
     const jogos = [
       // Semi-finais (rodada 1)
       {
         torneio_id: id,
         fase_torneio_id: faseNova.id,
-        equipa_1_id: equipas[0]?.id,
-        equipa_2_id: equipas[2]?.id,
+        equipa_1_id: equipasArray[0].id,
+        equipa_2_id: equipasArray[2].id,
         tipo_jogo: "semifinal",
         rodada: 1,
         golos_equipa_1: null,
@@ -80,8 +111,8 @@ export async function POST(
       {
         torneio_id: id,
         fase_torneio_id: faseNova.id,
-        equipa_1_id: equipas[1]?.id,
-        equipa_2_id: equipas[3]?.id,
+        equipa_1_id: equipasArray[1].id,
+        equipa_2_id: equipasArray[3].id,
         tipo_jogo: "semifinal",
         rodada: 1,
         golos_equipa_1: null,
