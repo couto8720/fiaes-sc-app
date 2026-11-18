@@ -45,8 +45,8 @@ export async function POST(
       );
     }
 
-    // 2. Verificar se já existe fase de eliminação
-    console.log("Verificando se fase de eliminação já existe...");
+    // 2. Deletar fase anterior se existir (limpeza automática)
+    console.log("Limpando fases anteriores...");
     const { data: fasesExistentes } = await supabase
       .from("fases_torneio")
       .select("id")
@@ -55,14 +55,21 @@ export async function POST(
 
     console.log("Fases de eliminação encontradas:", fasesExistentes?.length || 0);
     if (fasesExistentes && fasesExistentes.length > 0) {
-      console.error("❌ Fase de eliminação já existe!");
-      return NextResponse.json(
-        { error: "Fase de eliminação já existe" },
-        { status: 400 }
-      );
+      const faseIdAnterior = fasesExistentes[0].id;
+      console.log("Deletando jogos da fase anterior...");
+      await supabase
+        .from("jogos_torneio")
+        .delete()
+        .eq("fase_torneio_id", faseIdAnterior);
+
+      console.log("Deletando fase anterior...");
+      await supabase
+        .from("fases_torneio")
+        .delete()
+        .eq("id", faseIdAnterior);
     }
 
-    console.log("✅ Nenhuma fase de eliminação existente, criando...");
+    console.log("✅ Pronto para criar nova fase de eliminação...");
 
     // 3. Criar fase de eliminação
     const { data: novasFases, error: erroFase } = await supabase
