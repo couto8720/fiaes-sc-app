@@ -8,7 +8,6 @@ export function LinksAdmin({ superAdmin }: { superAdmin: boolean }) {
   const links = [
     { href: "/admin", rotulo: "Jogos", ativo: caminho === "/admin" || caminho.startsWith("/admin/jogos") },
     { href: "/admin/classificacao", rotulo: "Classificação" },
-    { href: "/admin/torneios", rotulo: "Torneios" },
     { href: "/admin/post", rotulo: "Post" },
     { href: "/admin/locais", rotulo: "Locais" },
     ...(superAdmin
