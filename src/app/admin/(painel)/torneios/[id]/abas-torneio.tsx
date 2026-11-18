@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Equipa {
   id: string;
@@ -18,13 +19,16 @@ interface Equipa {
 
 interface Jogo {
   id: string;
-  nome: string;
-  equipa1_id: string;
-  equipa2_id: string;
-  golos_equipa1: number | null;
-  golos_equipa2: number | null;
-  criado_em: string;
+  nome?: string;
+  equipa_1_id: string;
+  equipa_2_id: string;
+  golos_equipa_1: number | null;
+  golos_equipa_2: number | null;
+  criado_em?: string;
   fase_torneio_id: string;
+  data_hora?: string;
+  local_id?: string;
+  rodada?: number;
 }
 
 interface Fase {
@@ -49,6 +53,7 @@ interface AbasTorneioProps {
 }
 
 export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, locais, mapLocais }: AbasTorneioProps) {
+  const router = useRouter();
   const [abaAtiva, setAbaAtiva] = useState<"equipas" | "jogos" | "classificacao">("equipas");
   const [carregandoGerar, setCarregandoGerar] = useState(false);
   const [erroGerar, setErroGerar] = useState("");
@@ -72,21 +77,21 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
 
     // Encontrar todos os jogos entre as duas equipas
     jogos.forEach((jogo) => {
-      const equipa1Final = jogo.equipa1_id || jogo.equipa_1_id;
-      const equipa2Final = jogo.equipa2_id || jogo.equipa_2_id;
+      const equipa1Final = jogo.equipa_1_id;
+      const equipa2Final = jogo.equipa_2_id;
 
-      if (!jogo.golos_equipa1 && jogo.golos_equipa1 !== 0) return; // Jogo não foi jogado
-      if (!jogo.golos_equipa2 && jogo.golos_equipa2 !== 0) return; // Jogo não foi jogado
+      if (!jogo.golos_equipa_1 && jogo.golos_equipa_1 !== 0) return; // Jogo não foi jogado
+      if (!jogo.golos_equipa_2 && jogo.golos_equipa_2 !== 0) return; // Jogo não foi jogado
 
       // Se A jogou contra B
       if (equipa1Final === equipaA.id && equipa2Final === equipaB.id) {
-        golosAMarcados += jogo.golos_equipa1;
-        golosBsofridos += jogo.golos_equipa1;
-        golosBMarcados += jogo.golos_equipa2;
-        golosasofridos += jogo.golos_equipa2;
+        golosAMarcados += jogo.golos_equipa_1;
+        golosBsofridos += jogo.golos_equipa_1;
+        golosBMarcados += jogo.golos_equipa_2;
+        golosasofridos += jogo.golos_equipa_2;
 
-        if (jogo.golos_equipa1 > jogo.golos_equipa2) pontosA += 3;
-        else if (jogo.golos_equipa1 < jogo.golos_equipa2) pontosB += 3;
+        if (jogo.golos_equipa_1 > jogo.golos_equipa_2) pontosA += 3;
+        else if (jogo.golos_equipa_1 < jogo.golos_equipa_2) pontosB += 3;
         else {
           pontosA += 1;
           pontosB += 1;
@@ -94,13 +99,13 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
       }
       // Se B jogou contra A
       else if (equipa1Final === equipaB.id && equipa2Final === equipaA.id) {
-        golosBMarcados += jogo.golos_equipa1;
-        golosasofridos += jogo.golos_equipa1;
-        golosAMarcados += jogo.golos_equipa2;
-        golosBsofridos += jogo.golos_equipa2;
+        golosBMarcados += jogo.golos_equipa_1;
+        golosasofridos += jogo.golos_equipa_1;
+        golosAMarcados += jogo.golos_equipa_2;
+        golosBsofridos += jogo.golos_equipa_2;
 
-        if (jogo.golos_equipa1 > jogo.golos_equipa2) pontosB += 3;
-        else if (jogo.golos_equipa1 < jogo.golos_equipa2) pontosA += 3;
+        if (jogo.golos_equipa_1 > jogo.golos_equipa_2) pontosB += 3;
+        else if (jogo.golos_equipa_1 < jogo.golos_equipa_2) pontosA += 3;
         else {
           pontosB += 1;
           pontosA += 1;
