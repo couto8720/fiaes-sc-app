@@ -110,10 +110,7 @@ export async function POST(
         rodada: 1,
         golos_equipa_1: null,
         golos_equipa_2: null,
-        realizado: false,
         estado: "pendente",
-        criado_em: agora,
-        atualizado_em: agora,
       },
       {
         torneio_id: id,
@@ -124,10 +121,7 @@ export async function POST(
         rodada: 1,
         golos_equipa_1: null,
         golos_equipa_2: null,
-        realizado: false,
         estado: "pendente",
-        criado_em: agora,
-        atualizado_em: agora,
       },
       // Disputa de 3º lugar (rodada 2)
       {
@@ -139,10 +133,7 @@ export async function POST(
         rodada: 2,
         golos_equipa_1: null,
         golos_equipa_2: null,
-        realizado: false,
         estado: "pendente",
-        criado_em: agora,
-        atualizado_em: agora,
       },
       // Final (rodada 2)
       {
@@ -154,10 +145,7 @@ export async function POST(
         rodada: 2,
         golos_equipa_1: null,
         golos_equipa_2: null,
-        realizado: false,
         estado: "pendente",
-        criado_em: agora,
-        atualizado_em: agora,
       },
     ];
 
