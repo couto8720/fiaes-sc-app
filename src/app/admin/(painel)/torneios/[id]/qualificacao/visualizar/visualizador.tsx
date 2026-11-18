@@ -90,6 +90,29 @@ export function VisualizadorQualificacao({
     }
   }
 
+  async function gerarJogosEliminatoria() {
+    setCarregando(true);
+    setErro("");
+
+    try {
+      const res = await fetch(`/api/torneios/${torneioId}/jogos/gerar-eliminatoria`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Erro ao gerar jogos");
+      }
+
+      router.refresh();
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setCarregando(false);
+    }
+  }
+
   // Agrupar equipas por fase e calcular classificação
   const equipasPorFase = fases.map((fase) => {
     const equipasDaFase = equipas.filter((e) => e.fase_torneio_id === fase.id);
@@ -215,14 +238,26 @@ export function VisualizadorQualificacao({
         </div>
       )}
 
-      {/* Botão Aplicar */}
-      <button
-        onClick={aplicarQualificacao}
-        disabled={carregando || regras.length === 0}
-        className="w-full rounded-xl bg-clube px-6 py-4 font-semibold text-clube-texto transition-opacity hover:opacity-80 disabled:opacity-50"
-      >
-        {carregando ? "Aplicando..." : "✨ Aplicar Regras de Qualificação"}
-      </button>
+      {/* Botões */}
+      <div className="space-y-3">
+        <button
+          onClick={aplicarQualificacao}
+          disabled={carregando || regras.length === 0}
+          className="w-full rounded-xl bg-clube px-6 py-4 font-semibold text-clube-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+        >
+          {carregando ? "Aplicando..." : "✨ Aplicar Regras de Qualificação"}
+        </button>
+
+        {apuramentos.length > 0 && (
+          <button
+            onClick={gerarJogosEliminatoria}
+            disabled={carregando}
+            className="w-full rounded-xl bg-vitoria px-6 py-4 font-semibold text-vitoria-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+          >
+            {carregando ? "Gerando..." : "🎮 Gerar Jogos de Eliminação"}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
