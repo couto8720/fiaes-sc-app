@@ -60,6 +60,56 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
   const [jogoEditando, setJogoEditando] = useState<string | null>(null);
   const [jogoValores, setJogoValores] = useState<Record<string, { golos1: string; golos2: string; dataHora: string; localId: string }>>({});
 
+  // Calcular estatísticas das equipas baseado nos jogos realizados
+  function calcularEstatisticasEquipas(equipas: Equipa[], jogos: Jogo[]): Record<string, Equipa> {
+    const stats: Record<string, Equipa> = {};
+
+    // Inicializar com dados das equipas
+    equipas.forEach(equipa => {
+      stats[equipa.id] = { ...equipa, jogos: 0, vitorias: 0, empates: 0, derrotas: 0, golos_marcados: 0, golos_sofridos: 0, pontos: 0 };
+    });
+
+    // Processar cada jogo realizado
+    jogos.forEach(jogo => {
+      if (jogo.golos_equipa_1 === null || jogo.golos_equipa_1 === undefined) return;
+      if (jogo.golos_equipa_2 === null || jogo.golos_equipa_2 === undefined) return;
+
+      const e1 = stats[jogo.equipa_1_id];
+      const e2 = stats[jogo.equipa_2_id];
+      if (!e1 || !e2) return;
+
+      // Atualizar jogos
+      e1.jogos = (e1.jogos || 0) + 1;
+      e2.jogos = (e2.jogos || 0) + 1;
+
+      // Atualizar golos
+      e1.golos_marcados = (e1.golos_marcados || 0) + jogo.golos_equipa_1;
+      e1.golos_sofridos = (e1.golos_sofridos || 0) + jogo.golos_equipa_2;
+      e2.golos_marcados = (e2.golos_marcados || 0) + jogo.golos_equipa_2;
+      e2.golos_sofridos = (e2.golos_sofridos || 0) + jogo.golos_equipa_1;
+
+      // Atualizar resultado e pontos
+      if (jogo.golos_equipa_1 > jogo.golos_equipa_2) {
+        e1.vitorias = (e1.vitorias || 0) + 1;
+        e1.pontos = (e1.pontos || 0) + 3;
+        e2.derrotas = (e2.derrotas || 0) + 1;
+      } else if (jogo.golos_equipa_1 < jogo.golos_equipa_2) {
+        e2.vitorias = (e2.vitorias || 0) + 1;
+        e2.pontos = (e2.pontos || 0) + 3;
+        e1.derrotas = (e1.derrotas || 0) + 1;
+      } else {
+        e1.empates = (e1.empates || 0) + 1;
+        e1.pontos = (e1.pontos || 0) + 1;
+        e2.empates = (e2.empates || 0) + 1;
+        e2.pontos = (e2.pontos || 0) + 1;
+      }
+    });
+
+    return stats;
+  }
+
+  const equipasComEstatisticas = calcularEstatisticasEquipas(equipas, jogos);
+
   // Mapeamento invertido: nome do local -> id
   const mapLocaisInvertido = Object.entries(mapLocais).reduce(
     (acc, [id, nome]) => ({ ...acc, [nome]: id }),
@@ -241,19 +291,22 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {equipasFase.map((equipa) => (
-                                    <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
-                                      <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
-                                      <td className="px-4 py-3 text-center">{equipa.jogos || 0}</td>
-                                      <td className="px-4 py-3 text-center text-sm">
-                                        {equipa.vitorias || 0}-{equipa.empates || 0}-{equipa.derrotas || 0}
-                                      </td>
-                                      <td className="px-4 py-3 text-center text-sm">
-                                        {equipa.golos_marcados || 0}/{equipa.golos_sofridos || 0}
-                                      </td>
-                                      <td className="px-4 py-3 text-center font-bold">{equipa.pontos || 0}</td>
-                                    </tr>
-                                  ))}
+                                  {equipasFase.map((equipa) => {
+                                    const stats = equipasComEstatisticas[equipa.id] || equipa;
+                                    return (
+                                      <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
+                                        <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
+                                        <td className="px-4 py-3 text-center">{stats.jogos || 0}</td>
+                                        <td className="px-4 py-3 text-center text-sm">
+                                          {stats.vitorias || 0}-{stats.empates || 0}-{stats.derrotas || 0}
+                                        </td>
+                                        <td className="px-4 py-3 text-center text-sm">
+                                          {stats.golos_marcados || 0}/{stats.golos_sofridos || 0}
+                                        </td>
+                                        <td className="px-4 py-3 text-center font-bold">{stats.pontos || 0}</td>
+                                      </tr>
+                                    );
+                                  })}
                                 </tbody>
                               </table>
                             </div>
@@ -292,19 +345,22 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                 </tr>
                               </thead>
                               <tbody>
-                                {equipasSemFase.map((equipa) => (
-                                  <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
-                                    <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
-                                    <td className="px-4 py-3 text-center">{equipa.jogos || 0}</td>
-                                    <td className="px-4 py-3 text-center text-sm">
-                                      {equipa.vitorias || 0}-{equipa.empates || 0}-{equipa.derrotas || 0}
-                                    </td>
-                                    <td className="px-4 py-3 text-center text-sm">
-                                      {equipa.golos_marcados || 0}/{equipa.golos_sofridos || 0}
-                                    </td>
-                                    <td className="px-4 py-3 text-center font-bold">{equipa.pontos || 0}</td>
-                                  </tr>
-                                ))}
+                                {equipasSemFase.map((equipa) => {
+                                  const stats = equipasComEstatisticas[equipa.id] || equipa;
+                                  return (
+                                    <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
+                                      <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
+                                      <td className="px-4 py-3 text-center">{stats.jogos || 0}</td>
+                                      <td className="px-4 py-3 text-center text-sm">
+                                        {stats.vitorias || 0}-{stats.empates || 0}-{stats.derrotas || 0}
+                                      </td>
+                                      <td className="px-4 py-3 text-center text-sm">
+                                        {stats.golos_marcados || 0}/{stats.golos_sofridos || 0}
+                                      </td>
+                                      <td className="px-4 py-3 text-center font-bold">{stats.pontos || 0}</td>
+                                    </tr>
+                                  );
+                                })}
                               </tbody>
                             </table>
                           </div>
@@ -326,19 +382,22 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                       </tr>
                     </thead>
                     <tbody>
-                      {equipas.map((equipa) => (
-                        <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
-                          <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
-                          <td className="px-4 py-3 text-center">{equipa.jogos || 0}</td>
-                          <td className="px-4 py-3 text-center text-sm">
-                            {equipa.vitorias || 0}-{equipa.empates || 0}-{equipa.derrotas || 0}
-                          </td>
-                          <td className="px-4 py-3 text-center text-sm">
-                            {equipa.golos_marcados || 0}/{equipa.golos_sofridos || 0}
-                          </td>
-                          <td className="px-4 py-3 text-center font-bold">{equipa.pontos || 0}</td>
-                        </tr>
-                      ))}
+                      {equipas.map((equipa) => {
+                        const stats = equipasComEstatisticas[equipa.id] || equipa;
+                        return (
+                          <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
+                            <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
+                            <td className="px-4 py-3 text-center">{stats.jogos || 0}</td>
+                            <td className="px-4 py-3 text-center text-sm">
+                              {stats.vitorias || 0}-{stats.empates || 0}-{stats.derrotas || 0}
+                            </td>
+                            <td className="px-4 py-3 text-center text-sm">
+                              {stats.golos_marcados || 0}/{stats.golos_sofridos || 0}
+                            </td>
+                            <td className="px-4 py-3 text-center font-bold">{stats.pontos || 0}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -551,7 +610,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
 
           {fases && fases.length > 0 ? (
             fases.map((fase) => {
-              const equipasFase = equipas.filter((e) => e.fase_torneio_id === fase.id);
+              const equipasFase = equipas.filter((e) => e.fase_torneio_id === fase.id).map(e => equipasComEstatisticas[e.id] || e);
               return (
                 <div key={fase.id} className="space-y-4">
                   <h3 className="text-lg font-bold">{fase.nome}</h3>
@@ -575,19 +634,19 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                           {[...equipasFase]
                             .sort((a, b) => {
                               // 1º critério: Pontos
-                              if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+                              if ((b.pontos || 0) !== (a.pontos || 0)) return (b.pontos || 0) - (a.pontos || 0);
 
                               // 2º critério: Confronto Direto
                               const pontosCD = calcularPontosConfrontoDireto(a, b);
                               if (pontosCD !== 0) return -pontosCD;
 
                               // 3º critério: Diferença de Golos
-                              const difA = a.golos_marcados - a.golos_sofridos;
-                              const difB = b.golos_marcados - b.golos_sofridos;
+                              const difA = (a.golos_marcados || 0) - (a.golos_sofridos || 0);
+                              const difB = (b.golos_marcados || 0) - (b.golos_sofridos || 0);
                               if (difB !== difA) return difB - difA;
 
                               // 4º critério: Golos Marcados
-                              return b.golos_marcados - a.golos_marcados;
+                              return (b.golos_marcados || 0) - (a.golos_marcados || 0);
                             })
                             .map((equipa, idx) => (
                               <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
