@@ -34,30 +34,38 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       .delete()
       .eq("fase_torneio_id", fase_torneio_id);
 
-    // Gerar jogos em rodadas: cada equipa joga uma vez por rodada contra cada outra
+    // Gerar jogos em rodadas: cada equipa joga exatamente uma vez contra cada outra equipa
     const jogos = [];
     const numEquipas = equipas.length;
 
     // Número de rodadas = numEquipas - 1 (para número par) ou numEquipas (para número ímpar)
     const numRodadas = numEquipas % 2 === 0 ? numEquipas - 1 : numEquipas;
 
-    // Algoritmo de round-robin circular para organizar em rodadas
-    for (let rodada = 0; rodada < numRodadas; rodada++) {
-      for (let i = 0; i < Math.floor(numEquipas / 2); i++) {
-        let idx1 = (rodada + i) % numEquipas;
-        let idx2 = (rodada + numEquipas - 1 - i) % numEquipas;
+    // Algoritmo de round-robin correto (circle method)
+    // Garante que cada par de equipas joga exatamente uma vez
+    const equipasArray = equipas.slice();
 
-        // Evitar jogo de equipa contra ela mesma
-        if (idx1 !== idx2) {
-          jogos.push({
-            torneio_id: id,
-            fase_torneio_id: fase_torneio_id,
-            equipa_1_id: equipas[idx1].id,
-            equipa_2_id: equipas[idx2].id,
-            estado: "agendado",
-            rodada: rodada + 1,
-          });
-        }
+    for (let rodada = 0; rodada < numRodadas; rodada++) {
+      // Para cada rodada, parear as equipas: primeira com última, segunda com penúltima, etc.
+      for (let i = 0; i < Math.floor(numEquipas / 2); i++) {
+        const equipa1 = equipasArray[i];
+        const equipa2 = equipasArray[numEquipas - 1 - i];
+
+        jogos.push({
+          torneio_id: id,
+          fase_torneio_id: fase_torneio_id,
+          equipa_1_id: equipa1.id,
+          equipa_2_id: equipa2.id,
+          estado: "agendado",
+          rodada: rodada + 1,
+        });
+      }
+
+      // Rotar as equipas para a próxima rodada (circle method)
+      // Mover a primeira equipa para o final
+      if (rodada < numRodadas - 1) {
+        const primeira = equipasArray.shift();
+        equipasArray.splice(numEquipas - 1, 0, primeira);
       }
     }
 
