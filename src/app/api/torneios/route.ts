@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     // Criar fases/grupos automaticamente
     if (formato === "grupos" || formato === "grupos_eliminatoria") {
       const fases = [];
-      for (let i = 1; i <= num_grupos; i++) {
+      for (let i = 1; i <= (num_grupos || 2); i++) {
         fases.push({
           torneio_id: torneio.id,
           nome: `Grupo ${String.fromCharCode(64 + i)}`,
@@ -68,7 +68,18 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      await supabase.from("fases_torneio").insert(fases);
+      const { error: erroFases, data: fasesCriadas } = await supabase
+        .from("fases_torneio")
+        .insert(fases)
+        .select();
+
+      if (erroFases) {
+        console.error("Erro ao criar fases:", erroFases?.message || erroFases);
+        // Mesmo com erro nas fases, o torneio foi criado, então retorna o torneio
+        // e o usuário pode adicionar as fases manualmente
+      } else {
+        console.log(`Fases criadas com sucesso: ${fasesCriadas?.length || 0} fases`);
+      }
     }
 
     return NextResponse.json({ id: torneio.id, torneio });
