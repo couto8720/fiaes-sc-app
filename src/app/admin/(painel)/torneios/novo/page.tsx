@@ -5,6 +5,7 @@ import { exigirSessao } from "@/lib/sessao";
 import { FormularioNovoTorneio } from "./formulario";
 
 export const metadata: Metadata = { title: "Novo Torneio" };
+export const instant = false;
 
 export default function PaginaNovoTorneio() {
   return (
@@ -28,7 +29,7 @@ async function ConteudoNovoTorneio() {
         Configure os detalhes do torneio, equipas e critérios de classificação
       </p>
 
-      <FormularioNovoTorneio usuarioId={sessao.user.id} />
+      <FormularioNovoTorneio usuarioId={sessao.userId} />
     </div>
   );
 }

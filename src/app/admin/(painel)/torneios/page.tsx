@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { exigirSessao } from "@/lib/sessao";
+import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Torneios" };
 
@@ -15,6 +16,31 @@ export default function PaginaTorneios() {
 
 async function ConteudoTorneios() {
   const sessao = await exigirSessao();
+  const supabase = await createClient();
+
+  const { data: torneios } = await supabase
+    .from("torneios")
+    .select("*")
+    .order("criado_em", { ascending: false });
+
+  const formatoTexto: Record<string, string> = {
+    grupos: "Em grupos",
+    eliminatoria: "Eliminatória",
+    grupos_eliminatoria: "Grupos + Eliminatória",
+    suico: "Sistema Suíço",
+  };
+
+  const estadoTexto: Record<string, string> = {
+    planejamento: "Planejamento",
+    em_curso: "Em curso",
+    finalizado: "Finalizado",
+  };
+
+  const estadoCor: Record<string, string> = {
+    planejamento: "bg-laranja/15 text-laranja",
+    em_curso: "bg-ao-vivo/15 text-ao-vivo",
+    finalizado: "bg-vitoria/15 text-vitoria",
+  };
 
   return (
     <div className="space-y-6">
@@ -41,39 +67,48 @@ async function ConteudoTorneios() {
 
       {/* Grid de Torneios */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Exemplo de Card de Torneio */}
-        <div className="rounded-xl border border-borda bg-superficie p-4">
-          <div className="mb-3 flex items-start justify-between">
-            <div>
-              <h3 className="font-bold">Torneio Exemplo</h3>
-              <p className="text-sm text-suave">Em grupos</p>
+        {torneios && torneios.length > 0 ? (
+          torneios.map((torneio) => (
+            <div key={torneio.id} className="rounded-xl border border-borda bg-superficie p-4">
+              <div className="mb-3 flex items-start justify-between">
+                <div>
+                  <h3 className="font-bold">{torneio.nome}</h3>
+                  <p className="text-sm text-suave">{formatoTexto[torneio.formato]}</p>
+                </div>
+                <span className={`inline-flex items-center rounded-lg px-2 py-1 text-xs font-semibold ${estadoCor[torneio.estado]}`}>
+                  {estadoTexto[torneio.estado]}
+                </span>
+              </div>
+
+              <div className="mb-4 space-y-1 text-sm">
+                {torneio.descricao && <p>{torneio.descricao}</p>}
+                {torneio.equipas_por_grupo && (
+                  <p>👥 {torneio.num_grupos * torneio.equipas_por_grupo} equipas ({torneio.num_grupos} grupos)</p>
+                )}
+                {torneio.avancar_por_grupo && <p>🏆 Avançam {torneio.avancar_por_grupo} por grupo</p>}
+              </div>
+
+              <div className="flex gap-2">
+                <Link
+                  href={`/admin/torneios/${torneio.id}`}
+                  className="flex-1 rounded-lg border border-borda px-3 py-2 text-center text-sm font-semibold transition-opacity hover:opacity-80"
+                >
+                  Ver
+                </Link>
+                <Link
+                  href={`/admin/torneios/${torneio.id}/editar`}
+                  className="flex-1 rounded-lg bg-clube px-3 py-2 text-center text-sm font-semibold text-clube-texto transition-opacity hover:opacity-80"
+                >
+                  Editar
+                </Link>
+              </div>
             </div>
-            <span className="inline-flex items-center rounded-lg bg-ao-vivo/15 px-2 py-1 text-xs font-semibold text-ao-vivo">
-              Em curso
-            </span>
+          ))
+        ) : (
+          <div className="col-span-full rounded-xl border border-borda bg-superficie p-8 text-center">
+            <p className="text-suave">Nenhum torneio criado ainda</p>
           </div>
-
-          <div className="mb-4 space-y-1 text-sm">
-            <p>📅 21 nov - 30 nov</p>
-            <p>👥 12 equipas (3 grupos)</p>
-            <p>🏆 Avançam 2 por grupo</p>
-          </div>
-
-          <div className="flex gap-2">
-            <Link
-              href="#"
-              className="flex-1 rounded-lg border border-borda px-3 py-2 text-center text-sm font-semibold transition-opacity hover:opacity-80"
-            >
-              Ver
-            </Link>
-            <Link
-              href="#"
-              className="flex-1 rounded-lg bg-clube px-3 py-2 text-center text-sm font-semibold text-clube-texto transition-opacity hover:opacity-80"
-            >
-              Editar
-            </Link>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Info Box */}
