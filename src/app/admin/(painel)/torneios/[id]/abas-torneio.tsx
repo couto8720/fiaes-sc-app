@@ -33,20 +33,27 @@ interface Fase {
   ordem: number;
 }
 
+interface Local {
+  id: string;
+  nome: string;
+}
+
 interface AbasTorneioProps {
   torneioId: string;
   equipas: Equipa[];
   jogos: Jogo[];
   fases: Fase[];
   mapEquipas: Record<string, string>;
+  locais: Local[];
+  mapLocais: Record<string, string>;
 }
 
-export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: AbasTorneioProps) {
+export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, locais, mapLocais }: AbasTorneioProps) {
   const [abaAtiva, setAbaAtiva] = useState<"equipas" | "jogos" | "classificacao">("equipas");
   const [carregandoGerar, setCarregandoGerar] = useState(false);
   const [erroGerar, setErroGerar] = useState("");
   const [jogoEditando, setJogoEditando] = useState<string | null>(null);
-  const [jogoValores, setJogoValores] = useState<Record<string, { golos1: string; golos2: string }>>({});
+  const [jogoValores, setJogoValores] = useState<Record<string, { golos1: string; golos2: string; dataHora: string; localId: string }>>({});
 
   async function gerarJogosDaFase(faseId: string) {
     setCarregandoGerar(true);
@@ -85,7 +92,9 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
         body: JSON.stringify({
           golos_equipa_1: valores.golos1 ? parseInt(valores.golos1) : null,
           golos_equipa_2: valores.golos2 ? parseInt(valores.golos2) : null,
-          estado: "final",
+          data_hora: valores.dataHora || null,
+          local_id: valores.localId || null,
+          estado: valores.golos1 || valores.golos2 ? "final" : "agendado",
         }),
       });
 
@@ -289,6 +298,14 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
                     <div className="space-y-3">
                       {jogosFase.map((jogo) => (
                         <div key={jogo.id} className="rounded-xl border border-borda bg-superficie p-4">
+                          <div className="text-xs text-suave mb-2">
+                            {jogo.data_hora && (
+                              <span>📅 {new Date(jogo.data_hora).toLocaleString('pt-PT')}</span>
+                            )}
+                            {jogo.local_id && mapLocais[jogo.local_id] && (
+                              <span className="ml-3">📍 {mapLocais[jogo.local_id]}</span>
+                            )}
+                          </div>
                           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="flex-1 text-center sm:text-right">
                               <p className="font-semibold">{mapEquipas[jogo.equipa_1_id] || "?"}</p>
@@ -335,19 +352,53 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
                             </div>
                           </div>
                           {jogoEditando === jogo.id && (
-                            <div className="mt-3 flex gap-2">
-                              <button
-                                onClick={() => salvarGolosJogo(jogo.id)}
-                                className="flex-1 rounded bg-vitoria px-3 py-2 text-sm font-semibold text-white hover:opacity-80"
-                              >
-                                ✓ Guardar
-                              </button>
-                              <button
-                                onClick={() => setJogoEditando(null)}
-                                className="flex-1 rounded border border-borda px-3 py-2 text-sm font-semibold hover:opacity-80"
-                              >
-                                ✕ Cancelar
-                              </button>
+                            <div className="mt-3 space-y-3">
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <label className="text-xs font-semibold text-suave">Data/Hora</label>
+                                  <input
+                                    type="datetime-local"
+                                    className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                                    value={jogoValores[jogo.id]?.dataHora || (jogo.data_hora ? jogo.data_hora.slice(0, 16) : "")}
+                                    onChange={(e) => setJogoValores({
+                                      ...jogoValores,
+                                      [jogo.id]: { ...jogoValores[jogo.id], dataHora: e.target.value }
+                                    })}
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-xs font-semibold text-suave">Local</label>
+                                  <select
+                                    className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
+                                    value={jogoValores[jogo.id]?.localId || jogo.local_id || ""}
+                                    onChange={(e) => setJogoValores({
+                                      ...jogoValores,
+                                      [jogo.id]: { ...jogoValores[jogo.id], localId: e.target.value }
+                                    })}
+                                  >
+                                    <option value="">Sem local</option>
+                                    {locais.map((local) => (
+                                      <option key={local.id} value={local.id}>
+                                        {local.nome}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => salvarGolosJogo(jogo.id)}
+                                  className="flex-1 rounded bg-vitoria px-3 py-2 text-sm font-semibold text-white hover:opacity-80"
+                                >
+                                  ✓ Guardar
+                                </button>
+                                <button
+                                  onClick={() => setJogoEditando(null)}
+                                  className="flex-1 rounded border border-borda px-3 py-2 text-sm font-semibold hover:opacity-80"
+                                >
+                                  ✕ Cancelar
+                                </button>
+                              </div>
                             </div>
                           )}
                           {jogoEditando !== jogo.id && (

@@ -45,8 +45,17 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
     .eq("torneio_id", id)
     .order("criado_em", { ascending: false });
 
+  const { data: locais } = await supabase
+    .from("locais")
+    .select("id, nome");
+
   const mapEquipas = (equipasMap || []).reduce(
     (acc, e) => ({ ...acc, [e.id]: e.nome }),
+    {} as Record<string, string>
+  );
+
+  const mapLocais = (locais || []).reduce(
+    (acc, l) => ({ ...acc, [l.id]: l.nome }),
     {} as Record<string, string>
   );
 
@@ -117,6 +126,8 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
         jogos={jogos || []}
         fases={fases || []}
         mapEquipas={mapEquipas}
+        locais={locais || []}
+        mapLocais={mapLocais}
       />
     </div>
   );

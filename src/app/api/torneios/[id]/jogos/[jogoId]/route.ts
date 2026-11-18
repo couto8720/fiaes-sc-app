@@ -10,13 +10,15 @@ export async function PUT(
     const supabase = await createClient();
     const body = await req.json();
 
-    const { golos_equipa_1, golos_equipa_2, estado } = body;
+    const { golos_equipa_1, golos_equipa_2, estado, data_hora, local_id } = body;
 
     const { error: erroAtualizar } = await supabase
       .from("jogos_torneio")
       .update({
         golos_equipa_1,
         golos_equipa_2,
+        data_hora,
+        local_id,
         estado: estado || "final",
         atualizado_em: new Date().toISOString(),
       })
