@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { exigirSessao } from "@/lib/sessao";
 import { createClient } from "@/lib/supabase/server";
 import { AbasTorneio } from "./abas-torneio";
+import { BotaoApagarTorneio } from "./botao-apagar";
 
 export const metadata: Metadata = { title: "Detalhes do Torneio" };
 export const instant = false;
@@ -71,20 +72,6 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
     finalizado: "Finalizado",
   };
 
-  async function apagarTorneio() {
-    if (!confirm("Tem certeza que deseja apagar este torneio? Esta ação não pode ser desfeita.")) {
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/torneios/${torneio.id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Erro ao apagar torneio");
-
-      window.location.href = "/admin/torneios";
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Erro desconhecido");
-    }
-  }
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -103,12 +90,7 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
           >
             ✏️ Editar
           </Link>
-          <button
-            onClick={apagarTorneio}
-            className="rounded-xl bg-derrota px-5 py-3 font-semibold text-derrota-texto transition-opacity hover:opacity-80"
-          >
-            🗑️ Apagar
-          </button>
+          <BotaoApagarTorneio torneioId={torneio.id} />
         </div>
       </div>
 
