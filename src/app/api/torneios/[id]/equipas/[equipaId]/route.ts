@@ -17,8 +17,12 @@ export async function DELETE(
 
     if (error) {
       console.error("Erro ao deletar equipa:", error);
+      let mensagem = "Erro ao remover equipa";
+      if (error.code === "23503") {
+        mensagem = "Não é possível remover esta equipa pois possui jogos ou outras associações";
+      }
       return NextResponse.json(
-        { error: error.message || "Erro ao remover equipa" },
+        { error: mensagem },
         { status: 500 }
       );
     }
