@@ -28,6 +28,7 @@ interface Jogo {
   fase_torneio_id: string;
   data_hora?: string;
   local_id?: string;
+  rodada?: number;
 }
 
 interface Fase {
@@ -356,13 +357,25 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
           {fases && fases.length > 0 ? (
             fases.map((fase) => {
               const jogosFase = jogos.filter((j) => j.fase_torneio_id === fase.id);
+              const jogosPorRodada = new Map<number, typeof jogosFase>();
+              jogosFase.forEach((jogo) => {
+                const rodada = jogo.rodada || 1;
+                if (!jogosPorRodada.has(rodada)) {
+                  jogosPorRodada.set(rodada, []);
+                }
+                jogosPorRodada.get(rodada)!.push(jogo);
+              });
+              const rodasOrdenadas = Array.from(jogosPorRodada.keys()).sort((a, b) => a - b);
 
               return (
                 <div key={fase.id} className="space-y-4">
                   <h3 className="text-lg font-bold">{fase.nome}</h3>
                   {jogosFase.length > 0 ? (
-                    <div className="space-y-3">
-                      {jogosFase.map((jogo) => (
+                    <div className="space-y-6">
+                      {rodasOrdenadas.map((rodada) => (
+                        <div key={`rodada-${rodada}`} className="space-y-3">
+                          <h4 className="text-sm font-semibold text-suave">Rodada {rodada}</h4>
+                          {jogosPorRodada.get(rodada)?.map((jogo) => (
                         <div key={jogo.id} className="rounded-xl border border-borda bg-superficie p-4">
                           <div className="text-xs text-suave mb-2">
                             {jogo.data_hora && (
@@ -490,6 +503,8 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                               ✏️ Editar Resultado
                             </button>
                           )}
+                        </div>
+                      ))}
                         </div>
                       ))}
                     </div>

@@ -55,6 +55,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             equipa_1_id: equipas[idx1].id,
             equipa_2_id: equipas[idx2].id,
             estado: "agendado",
+            rodada: rodada + 1,
           });
         }
       }
