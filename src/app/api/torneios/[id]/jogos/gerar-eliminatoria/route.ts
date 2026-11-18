@@ -110,18 +110,25 @@ export async function POST(
       },
     ];
 
-    // 5. Inserir jogos
-    console.log("Tentando inserir jogos:", jogos);
+    // 5. Inserir jogos com campo "realizado"
+    const jogosComRealizado = jogos.map(jogo => ({
+      ...jogo,
+      realizado: false,
+    }));
+
+    console.log("Tentando inserir jogos:", JSON.stringify(jogosComRealizado, null, 2));
     const { data: jogosInseridos, error: erroJogos } = await supabase
       .from("jogos_torneio")
-      .insert(jogos)
+      .insert(jogosComRealizado)
       .select();
 
     console.log("Jogos inseridos:", jogosInseridos);
-    console.log("Erro ao inserir:", erroJogos);
+    if (erroJogos) {
+      console.error("Erro ao inserir jogos:", JSON.stringify(erroJogos, null, 2));
+    }
 
-    if (erroJogos || !jogosInseridos) {
-      console.error("Erro ao inserir jogos:", erroJogos);
+    if (erroJogos || !jogosInseridos || jogosInseridos.length === 0) {
+      console.error("Erro ao inserir jogos - detalhes:", erroJogos);
       return NextResponse.json(
         { error: erroJogos?.message || "Erro ao criar jogos de eliminação" },
         { status: 500 }
