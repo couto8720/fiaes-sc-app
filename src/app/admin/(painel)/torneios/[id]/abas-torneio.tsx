@@ -420,22 +420,19 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                 </div>
                                 <div>
                                   <label className="text-xs font-semibold text-suave">Local</label>
-                                  <input
-                                    type="text"
-                                    placeholder="Digite ou selecione"
-                                    list={`locais-${jogo.id}`}
+                                  <select
                                     className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
                                     value={jogoValores[jogo.id]?.localId || (jogo.local_id && mapLocais[jogo.local_id] ? mapLocais[jogo.local_id] : "")}
                                     onChange={(e) => setJogoValores({
                                       ...jogoValores,
                                       [jogo.id]: { ...jogoValores[jogo.id], localId: e.target.value }
                                     })}
-                                  />
-                                  <datalist id={`locais-${jogo.id}`}>
-                                    {locais.map((local) => (
-                                      <option key={local.id} value={local.nome} />
+                                  >
+                                    <option value="">Selecionar local...</option>
+                                    {["Campo 1", "Campo 2", "Campo 3", "Campo 4", "Campo 5", "Campo 6"].map((campo) => (
+                                      <option key={campo} value={campo}>{campo}</option>
                                     ))}
-                                  </datalist>
+                                  </select>
                                 </div>
                               </div>
                               <div className="flex gap-2">
