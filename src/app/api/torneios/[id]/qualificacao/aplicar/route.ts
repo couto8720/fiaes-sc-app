@@ -23,38 +23,46 @@ export async function POST(
       );
     }
 
-    // 2. Buscar todas as equipas e jogos
-    const { data: equipas } = await supabase
-      .from("equipas_torneio")
-      .select("*")
-      .eq("torneio_id", id);
-
+    // 2. Buscar todas as fases de grupos
     const { data: fases } = await supabase
       .from("fases_torneio")
       .select("*")
-      .eq("torneio_id", id);
-
-    const { data: jogos } = await supabase
-      .from("jogos_torneio")
-      .select("*")
       .eq("torneio_id", id)
-      .eq("realizado", true);
+      .eq("tipo", "grupos");
 
-    if (!equipas || !fases || !jogos) {
+    if (!fases || fases.length === 0) {
       return NextResponse.json(
-        { error: "Erro ao buscar dados" },
-        { status: 500 }
+        { error: "Nenhuma fase de grupos encontrada" },
+        { status: 400 }
       );
     }
 
-    // 3. Calcular classificação por grupo
-    const equipasPorGrupo = new Map<string, any[]>();
+    // 3. Buscar todos os jogos realizados
+    const { data: jogos } = await supabase
+      .from("jogos_torneio")
+      .select("*")
+      .eq("torneio_id", id);
 
-    fases.forEach((fase) => {
-      const equipasDaFase = equipas.filter((e) => e.fase_torneio_id === fase.id);
-      const classificacao = equipasDaFase.map((equipa) => {
-        const jogosEquipa = jogos.filter(
-          (j) => (j.equipa_1_id === equipa.id || j.equipa_2_id === equipa.id)
+    // 4. Para cada fase de grupo, calcular classificação
+    const apurantesParaInserir: any[] = [];
+
+    for (const fase of fases) {
+      // Buscar equipas desta fase
+      const { data: equipasFase } = await supabase
+        .from("equipas_torneio")
+        .select("*")
+        .eq("fase_torneio_id", fase.id);
+
+      if (!equipasFase || equipasFase.length === 0) continue;
+
+      // Calcular estatísticas para cada equipa
+      const estatisticas = equipasFase.map((equipa) => {
+        const jogosEquipa = (jogos || []).filter(
+          (j) =>
+            (j.equipa_1_id === equipa.id || j.equipa_2_id === equipa.id) &&
+            j.fase_torneio_id === fase.id &&
+            j.golos_equipa_1 !== null &&
+            j.golos_equipa_2 !== null
         );
 
         let pontos = 0;
@@ -63,93 +71,80 @@ export async function POST(
 
         jogosEquipa.forEach((jogo) => {
           const eh1 = jogo.equipa_1_id === equipa.id;
-          const golsF = eh1 ? jogo.gols_equipa_1 : jogo.gols_equipa_2;
-          const golsC = eh1 ? jogo.gols_equipa_2 : jogo.gols_equipa_1;
+          const golsF = eh1 ? jogo.golos_equipa_1 : jogo.golos_equipa_2;
+          const golsC = eh1 ? jogo.golos_equipa_2 : jogo.golos_equipa_1;
 
-          if (golsF == null || golsC == null) return;
-
-          gm += golsF;
-          gs += golsC;
+          gm += golsF || 0;
+          gs += golsC || 0;
 
           if (golsF > golsC) pontos += 3;
           else if (golsF === golsC) pontos += 1;
         });
 
-        return { equipa, pontos, gm, gs, dg: gm - gs };
+        return {
+          id: equipa.id,
+          nome: equipa.nome,
+          pontos,
+          gm,
+          gs,
+          dg: gm - gs,
+          jogos: jogosEquipa.length,
+        };
       });
 
-      classificacao.sort((a, b) => {
+      // Ordenar por pontos, diferença de golos, golos marcados
+      estatisticas.sort((a, b) => {
         if (b.pontos !== a.pontos) return b.pontos - a.pontos;
         if (b.dg !== a.dg) return b.dg - a.dg;
         return b.gm - a.gm;
       });
 
-      equipasPorGrupo.set(fase.id, classificacao);
-    });
+      // 5. Aplicar regras de qualificação
+      for (const regra of regras) {
+        const posicoes = regra.posicoes || [];
+        const equipasQualificadas = estatisticas
+          .filter((e, idx) => posicoes.includes(idx + 1))
+          .slice(0, regra.num_equipas);
 
-    // 4. Aplicar regras de qualificação
-    const apuramentosParaInserir: any[] = [];
-    const equipasApuradas = new Set<string>();
-
-    for (const regra of regras) {
-      const equipasRegra: any[] = [];
-
-      // Buscar equipas conforme o critério
-      if (regra.criterio === "posicao") {
-        // Buscar por posições específicas (1º, 2º, etc)
-        for (const faseId of equipasPorGrupo.keys()) {
-          const classificacao = equipasPorGrupo.get(faseId) || [];
-          regra.posicoes.forEach((posicao) => {
-            const equipa = classificacao[posicao - 1];
-            if (equipa && !equipasApuradas.has(equipa.equipa.id)) {
-              equipasRegra.push(equipa.equipa);
-            }
+        for (const equipa of equipasQualificadas) {
+          apurantesParaInserir.push({
+            torneio_id: id,
+            equipa_id: equipa.id,
+            regra_id: regra.id,
           });
         }
-      } else if (regra.criterio === "todos_de_posicao") {
-        // Todos que ficarem numa posição específica
-        const posicao = regra.posicoes[0] || 1;
-        for (const faseId of equipasPorGrupo.keys()) {
-          const classificacao = equipasPorGrupo.get(faseId) || [];
-          const equipa = classificacao[posicao - 1];
-          if (equipa && !equipasApuradas.has(equipa.equipa.id)) {
-            equipasRegra.push(equipa.equipa);
-          }
-        }
       }
-
-      // Limitar ao número de equipas da regra
-      equipasRegra.slice(0, regra.num_equipas).forEach((equipa) => {
-        apuramentosParaInserir.push({
-          torneio_id: id,
-          regra_id: regra.id,
-          equipa_id: equipa.id,
-        });
-        equipasApuradas.add(equipa.id);
-      });
     }
 
-    // 5. Limpar apuramentos antigos
-    await supabase.from("apuramentos_torneio").delete().eq("torneio_id", id);
+    if (apurantesParaInserir.length === 0) {
+      return NextResponse.json(
+        { error: "Nenhuma equipa qualificada pelas regras" },
+        { status: 400 }
+      );
+    }
 
-    // 6. Inserir novos apuramentos
-    if (apuramentosParaInserir.length > 0) {
-      const { error: erroInserir } = await supabase
-        .from("apuramentos_torneio")
-        .insert(apuramentosParaInserir);
+    // 6. Limpar apuramentos antigos
+    await supabase
+      .from("apuramentos_torneio")
+      .delete()
+      .eq("torneio_id", id);
 
-      if (erroInserir) {
-        console.error("Erro ao inserir apuramentos:", erroInserir);
-        return NextResponse.json(
-          { error: "Erro ao aplicar qualificação" },
-          { status: 500 }
-        );
-      }
+    // 7. Inserir novos apuramentos
+    const { error: erroInserir } = await supabase
+      .from("apuramentos_torneio")
+      .insert(apurantesParaInserir);
+
+    if (erroInserir) {
+      console.error("Erro ao inserir apuramentos:", erroInserir);
+      return NextResponse.json(
+        { error: "Erro ao aplicar qualificação" },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
       sucesso: true,
-      equipasApuradas: apuramentosParaInserir.length,
+      equipasApuradas: apurantesParaInserir.length,
     });
   } catch (erro) {
     console.error("Erro na aplicação de qualificação:", erro);
