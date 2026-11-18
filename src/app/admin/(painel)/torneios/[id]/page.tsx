@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { exigirSessao } from "@/lib/sessao";
 import { createClient } from "@/lib/supabase/server";
+import { AbasTorneio } from "./abas-torneio";
 
 export const metadata: Metadata = { title: "Detalhes do Torneio" };
 export const instant = false;
@@ -85,64 +86,17 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
         </div>
       </div>
 
-      {/* Abas */}
-      <div className="border-b border-borda">
-        <div className="flex gap-4">
-          <button className="border-b-2 border-clube px-4 py-3 font-semibold text-clube">
-            Equipas
-          </button>
-          <button className="px-4 py-3 font-semibold text-suave">Jogos</button>
-          <button className="px-4 py-3 font-semibold text-suave">Classificação</button>
-        </div>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold">Equipas ({equipas?.length || 0})</h2>
+        <Link
+          href={`/admin/torneios/${torneio.id}/equipas/nova`}
+          className="rounded-lg bg-clube px-3 py-2 text-sm font-semibold text-clube-texto transition-opacity hover:opacity-80"
+        >
+          + Adicionar Equipa
+        </Link>
       </div>
 
-      {/* Equipas */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">Equipas ({equipas?.length || 0})</h2>
-          <Link
-            href={`/admin/torneios/${torneio.id}/equipas/nova`}
-            className="rounded-lg bg-clube px-3 py-2 text-sm font-semibold text-clube-texto transition-opacity hover:opacity-80"
-          >
-            + Adicionar Equipa
-          </Link>
-        </div>
-
-        {equipas && equipas.length > 0 ? (
-          <div className="overflow-x-auto rounded-xl border border-borda">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-borda bg-fundo">
-                  <th className="px-4 py-3 text-left text-sm font-semibold">Nome</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold">Jogos</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold">V-E-D</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold">GF/GC</th>
-                  <th className="px-4 py-3 text-center text-sm font-semibold">Pontos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {equipas.map((equipa) => (
-                  <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
-                    <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
-                    <td className="px-4 py-3 text-center">{equipa.jogos || 0}</td>
-                    <td className="px-4 py-3 text-center text-sm">
-                      {equipa.vitorias || 0}-{equipa.empates || 0}-{equipa.derrotas || 0}
-                    </td>
-                    <td className="px-4 py-3 text-center text-sm">
-                      {equipa.golos_marcados || 0}/{equipa.golos_sofridos || 0}
-                    </td>
-                    <td className="px-4 py-3 text-center font-bold">{equipa.pontos || 0}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="rounded-xl border border-borda bg-superficie p-8 text-center">
-            <p className="text-suave">Nenhuma equipa adicionada ainda</p>
-          </div>
-        )}
-      </div>
+      <AbasTorneio torneioId={id} equipas={equipas || []} jogos={jogos || []} />
     </div>
   );
 }
