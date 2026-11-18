@@ -49,7 +49,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Algoritmo de round-robin correto (circle method)
     // Garante que CADA PAR DE EQUIPAS joga EXATAMENTE UMA VEZ
     // Nenhuma equipa pode ficar sem jogar contra outra equipa do seu grupo
-    const equipasArray = equipas.slice();
+    let equipasArray = equipas.slice();
 
     for (let rodada = 0; rodada < numRodadas; rodada++) {
       // Para cada rodada, parear as equipas: primeira com última, segunda com penúltima, etc.
@@ -68,11 +68,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         });
       }
 
-      // Rotar as equipas para a próxima rodada (circle method)
-      // Isto muda as paragens garantindo que cada dupla de equipas encontra-se apenas uma vez
+      // Rotar as equipas para a próxima rodada (circle method correto)
+      // Manter a primeira equipa fixa, rodar as outras
       if (rodada < numRodadas - 1) {
-        const primeira = equipasArray.shift();
-        equipasArray.splice(numEquipas - 1, 0, primeira);
+        const primeira = equipasArray[0];
+        const resto = equipasArray.slice(1);
+        const ultimo = resto.pop()!;
+        equipasArray = [primeira, ultimo, ...resto];
       }
     }
 
