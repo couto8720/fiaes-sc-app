@@ -35,10 +35,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         jogos.push({
           torneio_id: id,
           fase_torneio_id: fase_torneio_id,
-          equipa1_id: equipas[i].id,
-          equipa2_id: equipas[j].id,
-          nome: `${equipas[i].nome} vs ${equipas[j].nome}`,
-          estado: "planejamento",
+          equipa_1_id: equipas[i].id,
+          equipa_2_id: equipas[j].id,
+          estado: "agendado",
         });
       }
     }
