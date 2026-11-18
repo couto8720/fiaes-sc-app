@@ -73,7 +73,11 @@ export function GerenciadorEquipas({
       }
 
       const data = await res.json();
-      setEquipas([...equipas, data.equipa]);
+      const novaEquipaCom = {
+        ...data.equipa,
+        fase_torneio: fases[0] ? { id: fases[0].id, nome: fases[0].nome } : null,
+      };
+      setEquipas([...equipas, novaEquipaCom]);
       setNovaEquipa("");
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Erro desconhecido");
@@ -83,8 +87,6 @@ export function GerenciadorEquipas({
   }
 
   async function removerEquipa(equipaId: string) {
-    if (!confirm("Tem certeza que deseja remover esta equipa?")) return;
-
     setCarregando(true);
     setErro("");
 
@@ -99,6 +101,7 @@ export function GerenciadorEquipas({
       }
 
       setEquipas(equipas.filter((e) => e.id !== equipaId));
+      router.refresh();
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
@@ -127,15 +130,17 @@ export function GerenciadorEquipas({
         throw new Error(data.error || "Erro ao trocar grupo");
       }
 
+      const novaFaseNome = fases.find(f => f.id === novaFaseId)?.nome || "Sem grupo";
       setEquipas(
         equipas.map((e) =>
           e.id === equipaParaTrocar
-            ? { ...e, fase_torneio_id: novaFaseId }
+            ? { ...e, fase_torneio_id: novaFaseId, fase_torneio: { id: novaFaseId, nome: novaFaseNome } }
             : e
         )
       );
       setEquipaParaTrocar(null);
       setNovaFaseId("");
+      router.refresh();
     } catch (err) {
       setErro(err instanceof Error ? err.message : "Erro desconhecido");
     } finally {
@@ -144,9 +149,6 @@ export function GerenciadorEquipas({
   }
 
   async function distribuirAutomaticamente() {
-    if (!confirm("Vai distribuir equipas automaticamente pelos grupos. Deseja continuar?"))
-      return;
-
     setCarregando(true);
     setErro("");
 

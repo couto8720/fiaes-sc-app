@@ -18,7 +18,7 @@ export async function DELETE(
     if (error) {
       console.error("Erro ao deletar equipa:", error);
       return NextResponse.json(
-        { error: "Erro ao remover equipa" },
+        { error: error.message || "Erro ao remover equipa" },
         { status: 500 }
       );
     }
