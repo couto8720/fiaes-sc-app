@@ -109,6 +109,26 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
         </div>
       </div>
 
+      {/* Links para Qualificação e Eliminatória */}
+      {torneio.formato === "grupos_eliminatoria" && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            href={`/admin/torneios/${torneio.id}/qualificacao`}
+            className="rounded-xl border border-borda bg-superficie p-4 transition-colors hover:bg-fundo"
+          >
+            <p className="font-semibold text-clube">📊 Qualificação</p>
+            <p className="text-sm text-suave">Regras e equipas apuradas</p>
+          </Link>
+          <Link
+            href={`/admin/torneios/${torneio.id}/eliminatoria`}
+            className="rounded-xl border border-borda bg-superficie p-4 transition-colors hover:bg-fundo"
+          >
+            <p className="font-semibold text-vitoria">🏆 Eliminatória</p>
+            <p className="text-sm text-suave">Bracket e jogos</p>
+          </Link>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold">Equipas ({equipas?.length || 0})</h2>
         <Link
