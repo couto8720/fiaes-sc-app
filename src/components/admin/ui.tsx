@@ -43,7 +43,7 @@ export function BotaoSubmeter({
 }: {
   children: ReactNode;
   variante?: "principal" | "perigo" | "secundario";
-  /** Pergunta de confirmação antes de submeter (ex.: apagar). */
+  /** Aviso antes de submeter (ex.: apagar). */
   confirmar?: string;
   name?: string;
   value?: string;
@@ -56,17 +56,21 @@ export function BotaoSubmeter({
   }[variante];
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      onClick={(e) => {
-        if (confirmar && !window.confirm(confirmar)) e.preventDefault();
-      }}
-      className={`h-12 shrink-0 whitespace-nowrap rounded-xl px-5 font-semibold transition-opacity disabled:opacity-60 ${estilos}`}
-      {...resto}
-    >
-      {pending ? "A guardar…" : children}
-    </button>
+    <>
+      {confirmar && (
+        <p className="mb-3 rounded-lg bg-aviso/15 p-3 text-center text-sm text-aviso">
+          ⚠️ {confirmar}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={pending}
+        className={`h-12 shrink-0 whitespace-nowrap rounded-xl px-5 font-semibold transition-opacity disabled:opacity-60 ${estilos}`}
+        {...resto}
+      >
+        {pending ? "A guardar…" : children}
+      </button>
+    </>
   );
 }
 
