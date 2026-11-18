@@ -119,19 +119,25 @@ export function Marcador({ jogo, nomeClube, escalao, local, golos, expulsoes, su
 
       {/* Ação principal: estado seguinte */}
       {acao ? (
-        <button
-          type="button"
-          disabled={bloqueado}
-          onClick={() => {
-            if (acao.confirmar && !window.confirm(acao.confirmar)) return;
-            alterar(mudarEstado(valores, acao.seguinte));
-          }}
-          className={`mt-5 h-16 w-full rounded-2xl text-lg font-bold shadow-sm active:scale-[0.99] disabled:opacity-40 ${
-            acao.seguinte === "final" ? "bg-texto text-fundo" : "bg-ao-vivo text-white"
-          }`}
-        >
-          ▶ {acao.rotulo}
-        </button>
+        <div className="mt-5 space-y-2">
+          {acao.confirmar && (
+            <p className="rounded-lg bg-aviso/15 p-3 text-center text-sm text-aviso">
+              ⚠️ {acao.confirmar}
+            </p>
+          )}
+          <button
+            type="button"
+            disabled={bloqueado}
+            onClick={() => {
+              alterar(mudarEstado(valores, acao.seguinte));
+            }}
+            className={`h-16 w-full rounded-2xl text-lg font-bold shadow-sm active:scale-[0.99] disabled:opacity-40 ${
+              acao.seguinte === "final" ? "bg-texto text-fundo" : "bg-ao-vivo text-white"
+            }`}
+          >
+            ▶ {acao.rotulo}
+          </button>
+        </div>
       ) : (
         <p className="mt-5 rounded-2xl bg-borda/60 p-4 text-center font-semibold">
           {valores.estado === "final" ? "Jogo terminado. O resultado já está no site." : `Jogo ${ROTULO_ESTADO[valores.estado].toLowerCase()}.`}
