@@ -43,6 +43,34 @@ interface AbasTorneioProps {
 
 export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: AbasTorneioProps) {
   const [abaAtiva, setAbaAtiva] = useState<"equipas" | "jogos" | "classificacao">("equipas");
+  const [carregandoGerar, setCarregandoGerar] = useState(false);
+  const [erroGerar, setErroGerar] = useState("");
+
+  async function gerarJogosDaFase(faseId: string) {
+    setCarregandoGerar(true);
+    setErroGerar("");
+
+    try {
+      const res = await fetch(`/api/torneios/${torneioId}/gerar-jogos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fase_torneio_id: faseId }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Erro ao gerar jogos");
+      }
+
+      const data = await res.json();
+      alert(`✅ ${data.jogos_criados} jogos gerados com sucesso!`);
+      window.location.reload();
+    } catch (err) {
+      setErroGerar(err instanceof Error ? err.message : "Erro desconhecido");
+    } finally {
+      setCarregandoGerar(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -95,33 +123,42 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas }: Ab
                       <div key={fase.id} className="space-y-4">
                         <h3 className="text-lg font-bold">{fase.nome}</h3>
                         {equipasFase.length > 0 ? (
-                          <div className="overflow-x-auto rounded-xl border border-borda">
-                            <table className="w-full">
-                              <thead>
-                                <tr className="border-b border-borda bg-fundo">
-                                  <th className="px-4 py-3 text-left text-sm font-semibold">Nome</th>
-                                  <th className="px-4 py-3 text-center text-sm font-semibold">Jogos</th>
-                                  <th className="px-4 py-3 text-center text-sm font-semibold">V-E-D</th>
-                                  <th className="px-4 py-3 text-center text-sm font-semibold">GF/GC</th>
-                                  <th className="px-4 py-3 text-center text-sm font-semibold">Pontos</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {equipasFase.map((equipa) => (
-                                  <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
-                                    <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
-                                    <td className="px-4 py-3 text-center">{equipa.jogos || 0}</td>
-                                    <td className="px-4 py-3 text-center text-sm">
-                                      {equipa.vitorias || 0}-{equipa.empates || 0}-{equipa.derrotas || 0}
-                                    </td>
-                                    <td className="px-4 py-3 text-center text-sm">
-                                      {equipa.golos_marcados || 0}/{equipa.golos_sofridos || 0}
-                                    </td>
-                                    <td className="px-4 py-3 text-center font-bold">{equipa.pontos || 0}</td>
+                          <div className="space-y-3">
+                            <div className="overflow-x-auto rounded-xl border border-borda">
+                              <table className="w-full">
+                                <thead>
+                                  <tr className="border-b border-borda bg-fundo">
+                                    <th className="px-4 py-3 text-left text-sm font-semibold">Nome</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold">Jogos</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold">V-E-D</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold">GF/GC</th>
+                                    <th className="px-4 py-3 text-center text-sm font-semibold">Pontos</th>
                                   </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                                </thead>
+                                <tbody>
+                                  {equipasFase.map((equipa) => (
+                                    <tr key={equipa.id} className="border-b border-borda hover:bg-fundo/50">
+                                      <td className="px-4 py-3 font-semibold">{equipa.nome}</td>
+                                      <td className="px-4 py-3 text-center">{equipa.jogos || 0}</td>
+                                      <td className="px-4 py-3 text-center text-sm">
+                                        {equipa.vitorias || 0}-{equipa.empates || 0}-{equipa.derrotas || 0}
+                                      </td>
+                                      <td className="px-4 py-3 text-center text-sm">
+                                        {equipa.golos_marcados || 0}/{equipa.golos_sofridos || 0}
+                                      </td>
+                                      <td className="px-4 py-3 text-center font-bold">{equipa.pontos || 0}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            <button
+                              onClick={() => gerarJogosDaFase(fase.id)}
+                              disabled={carregandoGerar}
+                              className="w-full rounded-lg bg-clube px-4 py-2 text-sm font-semibold text-clube-texto transition-opacity hover:opacity-80 disabled:opacity-50"
+                            >
+                              {carregandoGerar ? "Gerando..." : "⚽ Gerar Jogos Automáticos"}
+                            </button>
                           </div>
                         ) : (
                           <div className="rounded-xl border border-borda bg-superficie p-6 text-center">
