@@ -14,13 +14,18 @@ interface Regra {
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    console.log("🔵 POST /api/qualificacao - ID:", id);
+
     const supabase = await createClient();
     const body = await req.json();
     const { regras } = body as { regras: Regra[] };
 
     if (!regras || regras.length === 0) {
+      console.log("🔴 Erro: Nenhuma regra fornecida");
       return NextResponse.json({ error: "Nenhuma regra fornecida" }, { status: 400 });
     }
+
+    console.log("📋 Regras recebidas:", regras.length, regras.map(r => r.tipo));
 
     // Obter torneio
     const { data: torneio, error: erroTorneio } = await supabase
@@ -30,16 +35,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       .single();
 
     if (erroTorneio || !torneio) {
+      console.log("🔴 Erro: Torneio não encontrado");
       return NextResponse.json({ error: "Torneio não encontrado" }, { status: 404 });
     }
 
+    console.log("✅ Torneio encontrado:", torneio.nome);
+
     // Deletar regras antigas
     await supabase.from("regras_qualificacao_torneio").delete().eq("torneio_id", id);
+    console.log("🗑️ Regras antigas deletadas");
 
     // Inserir novas regras
     for (let i = 0; i < regras.length; i++) {
       const regra = regras[i];
-      await supabase.from("regras_qualificacao_torneio").insert({
+      const { error: erroInsert } = await supabase.from("regras_qualificacao_torneio").insert({
         torneio_id: id,
         nome: regra.nome,
         descricao: regra.descricao,
@@ -49,11 +58,36 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         posicoes: regra.posicoes,
         ordem: i,
       });
+
+      if (erroInsert) {
+        console.error("🔴 Erro ao inserir regra:", erroInsert);
+      } else {
+        console.log(`✅ Regra ${i + 1} inserida:`, regra.tipo);
+      }
     }
 
     // Se há uma regra de eliminatória, gerar apuramentos e criar fase
     const regraEliminatoria = regras.find((r) => r.tipo === "eliminatoria");
     if (regraEliminatoria) {
+      console.log("🏆 Regra de eliminatória encontrada. Criando fase...");
+
+      // Primeiro, criar a fase de eliminação simples
+      const { data: novaFaseElim, error: erroFaseElim } = await supabase
+        .from("fases_torneio")
+        .insert({
+          torneio_id: id,
+          nome: "Eliminatória",
+          tipo: "eliminatoria",
+          estado: "planejamento",
+        })
+        .select();
+
+      if (erroFaseElim) {
+        console.error("🔴 Erro ao criar fase de eliminação:", erroFaseElim);
+        return NextResponse.json({ error: `Erro ao criar fase: ${JSON.stringify(erroFaseElim)}` }, { status: 500 });
+      }
+
+      console.log("✅ Fase de eliminação criada:", novaFaseElim?.length || 0, "registros");
       // Obter grupos
       let { data: grupos } = await supabase
         .from("fases_torneio")
@@ -81,7 +115,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
               torneio_id: id,
               nome: "Grupos",
               tipo: "grupos",
-              ordem: 1,
+              estado: "planejamento",
             })
             .select();
 
@@ -182,7 +216,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             torneio_id: id,
             nome: "Eliminatória",
             tipo: "eliminatoria",
-            ordem: 2,
+            estado: "planejamento",
           });
 
         if (erroFase) {
