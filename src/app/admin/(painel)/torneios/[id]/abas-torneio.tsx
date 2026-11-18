@@ -85,6 +85,18 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
     const valores = jogoValores[jogoId];
     if (!valores) return;
 
+    // Se o utilizador digitou um nome, procurar o ID correspondente
+    let localId = valores.localId;
+    if (localId) {
+      const localEncontrado = locais.find(l => l.nome === localId);
+      if (localEncontrado) {
+        localId = localEncontrado.id;
+      } else {
+        // Se não encontrar, deixar como NULL (será tratado como sem local)
+        localId = "";
+      }
+    }
+
     try {
       const res = await fetch(`/api/torneios/${torneioId}/jogos/${jogoId}`, {
         method: "PUT",
@@ -93,7 +105,7 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
           golos_equipa_1: valores.golos1 ? parseInt(valores.golos1) : null,
           golos_equipa_2: valores.golos2 ? parseInt(valores.golos2) : null,
           data_hora: valores.dataHora || null,
-          local_id: valores.localId || null,
+          local_id: localId || null,
           estado: valores.golos1 || valores.golos2 ? "final" : "agendado",
         }),
       });
@@ -368,21 +380,22 @@ export function AbasTorneio({ torneioId, equipas, jogos, fases, mapEquipas, loca
                                 </div>
                                 <div>
                                   <label className="text-xs font-semibold text-suave">Local</label>
-                                  <select
+                                  <input
+                                    type="text"
+                                    placeholder="Digite ou selecione"
+                                    list={`locais-${jogo.id}`}
                                     className="w-full h-8 mt-1 rounded border border-borda bg-fundo px-2 text-sm"
-                                    value={jogoValores[jogo.id]?.localId || jogo.local_id || ""}
+                                    value={jogoValores[jogo.id]?.localId || (jogo.local_id && mapLocais[jogo.local_id] ? mapLocais[jogo.local_id] : "")}
                                     onChange={(e) => setJogoValores({
                                       ...jogoValores,
                                       [jogo.id]: { ...jogoValores[jogo.id], localId: e.target.value }
                                     })}
-                                  >
-                                    <option value="">Sem local</option>
+                                  />
+                                  <datalist id={`locais-${jogo.id}`}>
                                     {locais.map((local) => (
-                                      <option key={local.id} value={local.id}>
-                                        {local.nome}
-                                      </option>
+                                      <option key={local.id} value={local.nome} />
                                     ))}
-                                  </select>
+                                  </datalist>
                                 </div>
                               </div>
                               <div className="flex gap-2">
