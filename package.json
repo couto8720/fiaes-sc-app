@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test \"tests/*.test.mjs\" \"tests/*.test.ts\"",
     "test:db": "node --test \"tests/*.test.mjs\" \"tests/*.test.ts\"",
+    "test:e2e": "cypress run",
+    "test:e2e:open": "cypress open",
     "db:push": "supabase db push",
     "db:tipos": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts"
   },

@@ -6,13 +6,31 @@ interface RateLimitRecord {
   reset_at: string;
 }
 
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutos
-const MAX_ATTEMPTS = 5; // 5 tentativas
+export interface RateLimitConfig {
+  window: number; // milliseconds
+  max: number; // max attempts
+}
 
-export async function checkRateLimit(identifier: string): Promise<{ allowed: boolean; remaining: number; resetAt: Date }> {
+const DEFAULT_LIMIT: RateLimitConfig = {
+  window: 15 * 60 * 1000, // 15 minutos
+  max: 5, // 5 tentativas
+};
+
+const ENDPOINT_LIMITS: Record<string, RateLimitConfig> = {
+  "login": { window: 15 * 60 * 1000, max: 5 },
+  "api": { window: 60 * 1000, max: 100 }, // 100 requests per minute
+  "tournament-create": { window: 60 * 60 * 1000, max: 50 }, // 50 per hour
+  "game-update": { window: 60 * 1000, max: 300 }, // 300 per minute
+};
+
+export async function checkRateLimit(
+  identifier: string,
+  endpoint?: string
+): Promise<{ allowed: boolean; remaining: number; resetAt: Date }> {
   const supabase = await createClient();
+  const config = endpoint ? ENDPOINT_LIMITS[endpoint] ?? DEFAULT_LIMIT : DEFAULT_LIMIT;
   const now = new Date();
-  const resetAt = new Date(now.getTime() + RATE_LIMIT_WINDOW);
+  const resetAt = new Date(now.getTime() + config.window);
 
   try {
     // Verificar se existe registo de rate limit
@@ -25,7 +43,7 @@ export async function checkRateLimit(identifier: string): Promise<{ allowed: boo
     if (fetchError && fetchError.code !== "PGRST116") {
       console.error("Erro ao verificar rate limit:", fetchError);
       // Em caso de erro, permitir a ação (fail-open)
-      return { allowed: true, remaining: MAX_ATTEMPTS, resetAt };
+      return { allowed: true, remaining: config.max, resetAt };
     }
 
     if (!existing) {
@@ -38,10 +56,10 @@ export async function checkRateLimit(identifier: string): Promise<{ allowed: boo
 
       if (insertError) {
         console.error("Erro ao criar rate limit:", insertError);
-        return { allowed: true, remaining: MAX_ATTEMPTS, resetAt };
+        return { allowed: true, remaining: config.max, resetAt };
       }
 
-      return { allowed: true, remaining: MAX_ATTEMPTS - 1, resetAt };
+      return { allowed: true, remaining: config.max - 1, resetAt };
     }
 
     // Verificar se a janela expirou
@@ -58,14 +76,14 @@ export async function checkRateLimit(identifier: string): Promise<{ allowed: boo
 
       if (updateError) {
         console.error("Erro ao resetar rate limit:", updateError);
-        return { allowed: true, remaining: MAX_ATTEMPTS, resetAt };
+        return { allowed: true, remaining: config.max, resetAt };
       }
 
-      return { allowed: true, remaining: MAX_ATTEMPTS - 1, resetAt };
+      return { allowed: true, remaining: config.max - 1, resetAt };
     }
 
     // Incrementar tentativas
-    if (existing.attempts >= MAX_ATTEMPTS) {
+    if (existing.attempts >= config.max) {
       return { allowed: false, remaining: 0, resetAt: recordResetAt };
     }
 
@@ -78,18 +96,18 @@ export async function checkRateLimit(identifier: string): Promise<{ allowed: boo
 
     if (incrementError) {
       console.error("Erro ao incrementar rate limit:", incrementError);
-      return { allowed: true, remaining: MAX_ATTEMPTS, resetAt };
+      return { allowed: true, remaining: config.max, resetAt };
     }
 
     return {
-      allowed: existing.attempts + 1 < MAX_ATTEMPTS,
-      remaining: Math.max(0, MAX_ATTEMPTS - existing.attempts - 1),
+      allowed: existing.attempts + 1 < config.max,
+      remaining: Math.max(0, config.max - existing.attempts - 1),
       resetAt: recordResetAt,
     };
   } catch (error) {
     console.error("Erro inesperado em rate limit:", error);
     // Em caso de erro, permitir a ação (fail-open)
-    return { allowed: true, remaining: MAX_ATTEMPTS, resetAt };
+    return { allowed: true, remaining: config.max, resetAt };
   }
 }
 
