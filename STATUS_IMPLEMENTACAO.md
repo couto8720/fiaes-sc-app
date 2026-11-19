@@ -59,9 +59,28 @@
 
 ---
 
+### ✅ 4. PÁGINA DIREITOS DE AUTOR & IMAGEM
+**Status:** ✅ **IMPLEMENTADO**  
+**Ficheiro:** `src/app/(site)/direitos/page.tsx`  
+**URL:** `/direitos`
+
+**Inclui:**
+- ✅ Copyright & Propriedade Intelectual
+- ✅ Restrições de Uso
+- ✅ Fotos de Jogadores & Direitos de Imagem
+- ✅ Direito ao Esquecimento (LGPD/GDPR)
+- ✅ Conteúdo de Utilizadores
+- ✅ Responsabilidade de Conteúdo
+- ✅ Aviso de Marca
+- ✅ Conformidade com Leis
+- ✅ Reclamações de Copyright
+- ✅ Link integrado em footer-legal.tsx
+
+---
+
 ## 🔴 TAREFAS CRÍTICAS AINDA A IMPLEMENTAR
 
-### ⏳ 4. VALIDAÇÃO DE PASSWORD ADMIN
+### ⏳ 5. VALIDAÇÃO DE PASSWORD ADMIN
 **Status:** ⏳ **PENDENTE**  
 **Prioridade:** 🔴 **CRÍTICA**  
 **Tempo Estimado:** 1 hora
@@ -78,7 +97,7 @@
 
 ## 🟠 TAREFAS ALTAS A IMPLEMENTAR
 
-### ⏳ 5. AUTENTICAÇÃO 2FA
+### ⏳ 6. AUTENTICAÇÃO 2FA
 **Status:** ⏳ **PENDENTE**  
 **Prioridade:** 🟠 **ALTA**  
 **Tempo Estimado:** 2-3 horas
@@ -91,7 +110,7 @@
 
 ---
 
-### ⏳ 6. RATE LIMITING
+### ⏳ 7. RATE LIMITING
 **Status:** ⏳ **PENDENTE**  
 **Prioridade:** 🟠 **ALTA**  
 **Tempo Estimado:** 1 hora
@@ -104,7 +123,7 @@
 
 ---
 
-### ⏳ 7. LOGS DE AUDITORIA
+### ⏳ 8. LOGS DE AUDITORIA
 **Status:** ⏳ **PENDENTE**  
 **Prioridade:** 🟠 **ALTA**  
 **Tempo Estimado:** 2-3 horas
@@ -122,21 +141,22 @@
 
 ```
 CRÍTICAS:
-[████████████████████] Política Privacidade   ✅ 100%
-[████████████████████] Termos Serviço         ✅ 100%
-[████████████████████] LGPD Banner            ✅ 100%
-[░░░░░░░░░░░░░░░░░░░░] Validação Password    0%
-                                              ───────
-CRÍTICAS TOTAL:                               75%
+[████████████████████] Política Privacidade       ✅ 100%
+[████████████████████] Termos Serviço             ✅ 100%
+[████████████████████] LGPD Banner                ✅ 100%
+[████████████████████] Direitos & Imagem         ✅ 100%
+[░░░░░░░░░░░░░░░░░░░░] Validação Password        0%
+                                                  ───────
+CRÍTICAS TOTAL:                                   80%
 
 ALTOS:
-[░░░░░░░░░░░░░░░░░░░░] 2FA                   0%
-[░░░░░░░░░░░░░░░░░░░░] Rate Limiting         0%
-[░░░░░░░░░░░░░░░░░░░░] Logs Auditoria       0%
-                                              ───────
-ALTOS TOTAL:                                  0%
+[░░░░░░░░░░░░░░░░░░░░] 2FA                       0%
+[░░░░░░░░░░░░░░░░░░░░] Rate Limiting             0%
+[░░░░░░░░░░░░░░░░░░░░] Logs Auditoria           0%
+                                                  ───────
+ALTOS TOTAL:                                      0%
 
-CONFORMIDADE GERAL:                           75%
+CONFORMIDADE GERAL:                               80%
 ```
 
 ---
