@@ -247,6 +247,56 @@ CONFORMIDADE GERAL:                              100%
 [✓] Pronto para v0.2.0 (Conformidade 100% + Segurança Avançada)
 ```
 
+### ✅ 11. OAUTH (SOCIAL LOGIN)
+**Status:** ✅ **IMPLEMENTADO**  
+**Prioridade:** 🟡 **MÉDIA**  
+
+**Implementado:**
+- ✅ Google OAuth login
+- ✅ Microsoft/Azure OAuth login
+- ✅ Integrado na página de login
+- ✅ Documentação de setup (OAUTH_SETUP.md)
+- ✅ Client-side OAuth buttons
+- ✅ Automatic user creation on first login
+
+**Ficheiros:**
+- `src/lib/oauth.ts` - OAuth utilities
+- `src/components/admin/BotoesOAuth.tsx` - OAuth buttons
+- `OAUTH_SETUP.md` - Setup guide for admins
+
+---
+
+### ✅ 12. HEALTH CHECK ENDPOINT
+**Status:** ✅ **IMPLEMENTADO**  
+**Prioridade:** 🟡 **MÉDIA**  
+
+**Implementado:**
+- ✅ `/api/health` endpoint
+- ✅ Database connectivity check
+- ✅ Auth service check
+- ✅ Status codes (200/503/500)
+- ✅ Usage for monitoring/uptime
+
+**Ficheiro:**
+- `src/app/api/health/route.ts` - Health check API
+
+---
+
+### ✅ 13. EMAIL TEMPLATES
+**Status:** ✅ **IMPLEMENTADO**  
+**Prioridade:** 🟡 **MÉDIA**  
+
+**Implementado:**
+- ✅ Password reset email
+- ✅ 2FA enabled notification
+- ✅ Login alert email
+- ✅ GDPR data export email
+- ✅ HTML + plain text versions
+- ✅ Template system (getEmailTemplate)
+
+**Ficheiro:**
+- `src/lib/email-templates.ts` - Email templates
+
 ---
 
 ## 🔐 VERIFICAÇÃO DE CONFORMIDADE

@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { definirPalavraPasse, entrar, pedirRecuperacao } from "@/app/admin/acoes/auth";
 import { ESTADO_INICIAL } from "@/app/admin/acoes/tipos";
 import { BotaoSubmeter, Campo, Mensagem, classeInput } from "./ui";
+import { BotoesOAuth } from "./BotoesOAuth";
 import { REGRAS_PALAVRA_PASSE } from "@/lib/validacao";
 
 export function FormLogin() {
@@ -32,6 +33,7 @@ export function FormLogin() {
           Esqueci-me da palavra-passe
         </Link>
       </p>
+      <BotoesOAuth />
     </form>
   );
 }
