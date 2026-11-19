@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { exigirSessao } from "@/lib/sessao";
 import { createClient } from "@/lib/supabase/server";
 import { AbasTorneio } from "./abas-torneio";
+import { BotaoApagarTorneio } from "./botao-apagar";
 
 export const metadata: Metadata = { title: "Detalhes do Torneio" };
 export const instant = false;
@@ -89,6 +90,7 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
           >
             ✏️ Editar
           </Link>
+          <BotaoApagarTorneio torneioId={torneio.id} />
         </div>
       </div>
 
