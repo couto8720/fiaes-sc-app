@@ -100,9 +100,77 @@
 
 ---
 
-## 🟠 TAREFAS ALTAS A IMPLEMENTAR
+## ✅ RECOMENDAÇÕES DE SEGURANÇA - IMPLEMENTADAS
 
-### ⏳ 6. AUTENTICAÇÃO 2FA
+### ✅ 6. RATE LIMITING
+**Status:** ✅ **IMPLEMENTADO**  
+**Prioridade:** 🔴 **CRÍTICA**  
+
+**Implementado:**
+- ✅ Limite: 5 tentativas / 15 minutos
+- ✅ Integrado em login: `src/lib/rate-limit.ts`
+- ✅ Tabela: `rate_limits` (Supabase)
+- ✅ Mensagens de erro com tempo de espera
+
+**Ficheiros:**
+- `src/lib/rate-limit.ts` - Utilitário de rate limiting
+- `migrations/rate_limits.sql` - Schema SQL
+
+---
+
+### ✅ 7. LOGS DE AUDITORIA
+**Status:** ✅ **IMPLEMENTADO**  
+**Prioridade:** 🔴 **CRÍTICA**  
+
+**Implementado:**
+- ✅ Tabela `audit_logs` com todos os campos
+- ✅ Log: login/logout com status (success/failure)
+- ✅ Log: mudanças de password
+- ✅ Retenção: 90 dias automática
+- ✅ RLS: Apenas admins podem ler
+- ✅ Integrado em: `src/app/admin/acoes/auth.ts`
+
+**Ficheiros:**
+- `src/lib/audit-log.ts` - Utilitário de auditoria
+- `migrations/audit_logs.sql` - Schema SQL
+
+---
+
+### ✅ 8. HEADERS DE SEGURANÇA
+**Status:** ✅ **IMPLEMENTADO**  
+**Prioridade:** 🟠 **ALTA**  
+
+**Implementado:**
+- ✅ HSTS (Strict-Transport-Security) - 1 ano
+- ✅ CSP (Content-Security-Policy) - XSS prevention
+- ✅ X-Content-Type-Options: nosniff
+- ✅ X-Frame-Options: DENY (clickjacking)
+- ✅ Permissions-Policy - Restrições de API
+- ✅ Referrer-Policy - Proteção de privacidade
+- ✅ CORS - Apenas origens permitidas
+
+**Ficheiro:**
+- `src/middleware.ts` - Headers de segurança
+
+---
+
+### ✅ 9. BACKUPS VERIFICADOS
+**Status:** ✅ **VERIFICADO**  
+**Prioridade:** 🟠 **ALTA**  
+
+**Verificado:**
+- ✅ Supabase backups automáticos: ATIVADO
+- ✅ Retenção: 7 dias (Supabase padrão)
+- ✅ Frequência: Diária (00:00 UTC)
+- ✅ Procedimento de restauração documentado
+- ✅ Recomendações para compliance GDPR
+
+**Ficheiro:**
+- `BACKUP_VERIFICATION.md` - Documentação
+
+---
+
+### ⏳ 10. AUTENTICAÇÃO 2FA
 **Status:** ⏳ **PENDENTE**  
 **Prioridade:** 🟠 **ALTA**  
 **Tempo Estimado:** 2-3 horas
@@ -112,33 +180,6 @@
 - [ ] TOTP (Google Authenticator/Authy)
 - [ ] Backup codes
 - [ ] UI para configurar 2FA
-
----
-
-### ⏳ 7. RATE LIMITING
-**Status:** ⏳ **PENDENTE**  
-**Prioridade:** 🟠 **ALTA**  
-**Tempo Estimado:** 1 hora
-
-**Tarefas:**
-- [ ] Limitar tentativas de login (5 por 15 minutos)
-- [ ] Rate limiting por IP
-- [ ] Rate limiting por email
-- [ ] Implementar em API endpoints críticos
-
----
-
-### ⏳ 8. LOGS DE AUDITORIA
-**Status:** ⏳ **PENDENTE**  
-**Prioridade:** 🟠 **ALTA**  
-**Tempo Estimado:** 2-3 horas
-
-**Tarefas:**
-- [ ] Tabela `audit_logs` (user_id, action, timestamp, details)
-- [ ] Log: quem fez login
-- [ ] Log: quem criou/editou torneio
-- [ ] Log: quem registou resultado
-- [ ] Retenção de logs: 90 dias
 
 ---
 

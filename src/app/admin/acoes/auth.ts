@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { origemDoSite } from "@/lib/sessao";
 import { destinoSeguro, mensagemErroPalavraPasse, validarPalavraPasse } from "@/lib/validacao";
+import { checkRateLimit, resetRateLimit } from "@/lib/rate-limit";
+import { logAuditEvent } from "@/lib/audit-log";
 import type { EstadoFormulario } from "./tipos";
 
 export async function entrar(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
@@ -11,19 +13,61 @@ export async function entrar(_: EstadoFormulario, fd: FormData): Promise<EstadoF
   const password = String(fd.get("password") ?? "");
   if (!email || !password) return { erro: "Preenche o email e a palavra-passe.", valores: { email } };
 
+  // Verificar rate limit (5 tentativas por 15 minutos)
+  const rateLimit = await checkRateLimit(`login:${email}`);
+  if (!rateLimit.allowed) {
+    const minutos = Math.ceil((rateLimit.resetAt.getTime() - new Date().getTime()) / 60000);
+    return {
+      erro: `Demasiadas tentativas de login. Tenta novamente em ${minutos} minuto${minutos !== 1 ? "s" : ""}.`,
+      valores: { email },
+    };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
+
   if (error) {
+    // Registar tentativa falhada de login
+    await logAuditEvent({
+      action: "login",
+      resource_type: "authentication",
+      status: "failure",
+      error_message: error.message,
+      details: { email },
+    });
+
     return {
       erro: error.code === "email_not_confirmed" ? "Confirma primeiro o teu email." : "Email ou palavra-passe errados.",
       valores: { email },
     };
   }
+
+  // Login bem-sucedido, resetar rate limit
+  await resetRateLimit(`login:${email}`);
+
+  // Registar login bem-sucedido
+  await logAuditEvent({
+    user_id: authData.user?.id,
+    action: "login",
+    resource_type: "authentication",
+    status: "success",
+    details: { email },
+  });
+
   redirect(destinoSeguro(String(fd.get("seguinte") ?? "")));
 }
 
 export async function sair() {
   const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+
+  await logAuditEvent({
+    user_id: userData.user?.id,
+    action: "logout",
+    resource_type: "authentication",
+    status: "success",
+  });
+
   await supabase.auth.signOut();
   redirect("/admin/login");
 }
@@ -49,11 +93,32 @@ export async function definirPalavraPasse(_: EstadoFormulario, fd: FormData): Pr
   const erro = validarPalavraPasse(String(fd.get("password") ?? ""), String(fd.get("confirmacao") ?? ""));
   if (erro) return { erro };
   const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+
   const { error } = await supabase.auth.updateUser({ password: String(fd.get("password")) });
   if (error) {
     const motivos = "reasons" in error && Array.isArray(error.reasons) ? (error.reasons as string[]) : [];
+
+    // Registar falha ao alterar password
+    await logAuditEvent({
+      user_id: userData.user?.id,
+      action: "password_change",
+      resource_type: "authentication",
+      status: "failure",
+      error_message: error.message,
+    });
+
     return { erro: mensagemErroPalavraPasse(error.code, motivos) };
   }
+
+  // Registar mudança de password bem-sucedida
+  await logAuditEvent({
+    user_id: userData.user?.id,
+    action: "password_change",
+    resource_type: "authentication",
+    status: "success",
+  });
+
   // Staff (tem perfil) vai para o painel; adeptos para a sua conta.
   const { data: auth } = await supabase.auth.getUser();
   const { data: perfil } = auth.user
