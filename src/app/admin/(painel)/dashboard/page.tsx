@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { exigirSessao } from "@/lib/sessao";
 import { agora } from "@/lib/dados";
+import { RecentActivity } from "./activity";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -121,7 +122,7 @@ async function Dashboard() {
         </div>
 
         {/* Seções Principais */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2 mb-8">
           {/* Próximos Jogos */}
           <div>
             <h2 className="mb-4 text-xl font-bold">Próximos Jogos</h2>
@@ -167,6 +168,13 @@ async function Dashboard() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Atividades Recentes */}
+        <div>
+          <Suspense fallback={<div className="animate-pulse">Carregando atividades...</div>}>
+            <RecentActivity />
+          </Suspense>
         </div>
       </div>
     </div>
