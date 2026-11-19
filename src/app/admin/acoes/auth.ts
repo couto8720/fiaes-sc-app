@@ -6,6 +6,7 @@ import { origemDoSite } from "@/lib/sessao";
 import { destinoSeguro, mensagemErroPalavraPasse, validarPalavraPasse } from "@/lib/validacao";
 import { checkRateLimit, resetRateLimit } from "@/lib/rate-limit";
 import { logAuditEvent } from "@/lib/audit-log";
+import { isTwoFactorEnabled, getTwoFactorSecret, verifyTOTPToken, verifyBackupCode } from "@/lib/two-factor";
 import type { EstadoFormulario } from "./tipos";
 
 export async function entrar(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
@@ -52,6 +53,69 @@ export async function entrar(_: EstadoFormulario, fd: FormData): Promise<EstadoF
     resource_type: "authentication",
     status: "success",
     details: { email },
+  });
+
+  redirect(destinoSeguro(String(fd.get("seguinte") ?? "")));
+}
+
+export async function verificarDoisFatores(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  const token = String(fd.get("token") ?? "").replace(/\s+/g, ""); // Remove espaços
+  const backupCode = String(fd.get("backup_code") ?? "");
+
+  if (!token && !backupCode) {
+    return { erro: "Preenche o código de autenticação ou código de backup." };
+  }
+
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+
+  if (!userData.user) {
+    return { erro: "Sessão expirada. Faz login novamente." };
+  }
+
+  let valid = false;
+
+  // Verificar TOTP token
+  if (token) {
+    if (!/^\d{6}$/.test(token)) {
+      return { erro: "Código de autenticação inválido (deve ser 6 dígitos)." };
+    }
+
+    const secret = await getTwoFactorSecret(userData.user.id);
+    if (!secret) {
+      return { erro: "2FA não está configurado." };
+    }
+
+    valid = verifyTOTPToken(secret, token);
+  }
+
+  // Verificar backup code
+  if (!valid && backupCode) {
+    valid = await verifyBackupCode(userData.user.id, backupCode);
+    if (!valid) {
+      return { erro: "Código de backup inválido ou já utilizado." };
+    }
+  }
+
+  if (!valid) {
+    await logAuditEvent({
+      user_id: userData.user.id,
+      action: "login",
+      resource_type: "authentication",
+      status: "failure",
+      error_message: "2FA verification failed",
+    });
+
+    return { erro: "Código de autenticação inválido." };
+  }
+
+  // 2FA válido
+  await logAuditEvent({
+    user_id: userData.user.id,
+    action: "login",
+    resource_type: "authentication",
+    status: "success",
+    details: { twoFactorVerified: true },
   });
 
   redirect(destinoSeguro(String(fd.get("seguinte") ?? "")));

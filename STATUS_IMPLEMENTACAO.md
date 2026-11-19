@@ -170,16 +170,33 @@
 
 ---
 
-### ⏳ 10. AUTENTICAÇÃO 2FA
-**Status:** ⏳ **PENDENTE**  
+### ✅ 10. AUTENTICAÇÃO 2FA (TOTP)
+**Status:** ✅ **IMPLEMENTADO**  
 **Prioridade:** 🟠 **ALTA**  
-**Tempo Estimado:** 2-3 horas
 
-**Tarefas:**
-- [ ] Integração com Supabase 2FA
-- [ ] TOTP (Google Authenticator/Authy)
-- [ ] Backup codes
-- [ ] UI para configurar 2FA
+**Implementado:**
+- ✅ TOTP (Google Authenticator, Authy, Microsoft Authenticator)
+- ✅ Backup codes (8 códigos no formato XXXX-XXXX)
+- ✅ Verificação de 2FA no login
+- ✅ UI para configurar 2FA
+- ✅ Integração com Supabase (tabelas two_factor_secrets e backup_codes)
+- ✅ Logging de verificação de 2FA
+
+**Ficheiros:**
+- `src/lib/two-factor.ts` - Lógica TOTP e gestão de secrets
+- `migrations/two_factor.sql` - Schema SQL com RLS
+- `src/components/admin/FormConfigurar2FA.tsx` - UI para configurar
+- `src/components/admin/FormVerificacao2FA.tsx` - UI para verificar
+- `src/app/admin/verificar-2fa/page.tsx` - Página de verificação
+- `src/app/admin/acoes/auth.ts` - Integração no login
+
+**Features:**
+- ✅ Geração de QR code para scanning
+- ✅ Fallback com secret em texto
+- ✅ Backup codes para recuperação
+- ✅ Sincronização de time window (±1 step)
+- ✅ Rate limiting em verificação
+- ✅ Auditoria de 2FA
 
 ---
 
