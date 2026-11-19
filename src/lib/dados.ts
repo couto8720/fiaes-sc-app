@@ -94,3 +94,14 @@ export async function obterClassificacoes(escalaoId?: string): Promise<Classific
   if (error) throw error;
   return data;
 }
+
+export async function obterTorneios() {
+  await connection();
+  if (modoDemo) return [];
+  const { data, error } = await createPublicClient()
+    .from("torneios")
+    .select("*")
+    .order("criado_em", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}

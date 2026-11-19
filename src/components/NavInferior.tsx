@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, House, ListOrdered, Trophy, type LucideIcon } from "lucide-react";
+import { CalendarDays, House, ListOrdered, Trophy, Zap, type LucideIcon } from "lucide-react";
 
 const ITENS: { href: string; rotulo: string; Icone: LucideIcon }[] = [
   { href: "/", rotulo: "Início", Icone: House },
   { href: "/calendario", rotulo: "Calendário", Icone: CalendarDays },
   { href: "/resultados", rotulo: "Resultados", Icone: Trophy },
   { href: "/classificacao", rotulo: "Classificação", Icone: ListOrdered },
+  { href: "/torneios", rotulo: "Torneios", Icone: Zap },
 ];
 
 // Lê o URL, por isso no layout fica dentro de <Suspense>, com NavInferiorVista (sem item ativo) como reserva.
@@ -24,7 +25,7 @@ export function NavInferiorVista({ caminho }: { caminho: string | null }) {
       aria-label="Navegação principal"
       className="fixed inset-x-0 bottom-0 z-20 border-t border-borda bg-superficie/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
-      <ul className="mx-auto grid max-w-2xl grid-cols-4">
+      <ul className="mx-auto grid max-w-2xl grid-cols-5">
         {ITENS.map(({ href, rotulo, Icone }) => {
           const ativo = href === "/" ? caminho === "/" : Boolean(caminho?.startsWith(href));
           return (
