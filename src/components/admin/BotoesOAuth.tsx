@@ -1,8 +1,8 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import type { OAuthProvider } from "@/lib/oauth";
-import { OAUTH_PROVIDERS } from "@/lib/oauth";
+import type { OAuthProvider } from "@/lib/oauth-config";
+import { OAUTH_PROVIDERS } from "@/lib/oauth-config";
 import { useState } from "react";
 
 export function BotoesOAuth({ redirectUrl }: { redirectUrl?: string }) {
