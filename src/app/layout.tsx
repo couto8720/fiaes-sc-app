@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Cabecalho, CabecalhoProvisorio } from "@/components/Cabecalho";
 import { NavInferior, NavInferiorVista } from "@/components/NavInferior";
 import { RegistarServiceWorker } from "@/components/RegistarServiceWorker";
+import { LGPDBanner } from "@/components/lgpd-banner";
 import "./globals.css";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <NavInferior />
         </Suspense>
         <RegistarServiceWorker />
+        <LGPDBanner />
       </body>
     </html>
   );
