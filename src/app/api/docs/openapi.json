@@ -1,0 +1,386 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Fiães SC API",
+    "description": "API para gestão de torneios, jogos e equipas do Fiães Sport Clube",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Suporte Fiães SC",
+      "email": "admin@fiaes.pt"
+    },
+    "license": {
+      "name": "Proprietário"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://fiaes.pt/api",
+      "description": "Produção"
+    },
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Desenvolvimento"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Verificação de saúde da API",
+        "description": "Verifica o estado de saúde da aplicação e dos serviços",
+        "tags": ["Sistema"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API saudável",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "services": {
+                      "type": "object",
+                      "properties": {
+                        "database": {
+                          "type": "string",
+                          "enum": ["ok", "error"]
+                        },
+                        "auth": {
+                          "type": "string",
+                          "enum": ["ok", "error"]
+                        }
+                      }
+                    },
+                    "version": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Serviço indisponível"
+          }
+        }
+      }
+    },
+    "/torneios": {
+      "get": {
+        "summary": "Listar todos os torneios",
+        "tags": ["Torneios"],
+        "parameters": [
+          {
+            "name": "ativo",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Filtrar por torneios ativos"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de torneios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Torneio"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar novo torneio",
+        "tags": ["Torneios"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TorneioCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Torneio criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Torneio"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos"
+          }
+        }
+      }
+    },
+    "/torneios/{id}": {
+      "get": {
+        "summary": "Obter detalhes de um torneio",
+        "tags": ["Torneios"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do torneio",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Torneio"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Torneio não encontrado"
+          }
+        }
+      }
+    },
+    "/torneios/{id}/jogos": {
+      "get": {
+        "summary": "Listar jogos de um torneio",
+        "tags": ["Jogos"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de jogos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Jogo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/torneios/{id}/equipas": {
+      "get": {
+        "summary": "Listar equipas de um torneio",
+        "tags": ["Equipas"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de equipas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Equipa"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Torneio": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "escalao_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "data_inicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "data_fim": {
+            "type": "string",
+            "format": "date"
+          },
+          "formato": {
+            "type": "string",
+            "enum": ["grupos_eliminatoria", "grupos", "eliminatoria", "circular"]
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TorneioCreate": {
+        "type": "object",
+        "required": ["nome", "escalao_id", "data_inicio", "formato"],
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "escalao_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "data_inicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "data_fim": {
+            "type": "string",
+            "format": "date"
+          },
+          "formato": {
+            "type": "string",
+            "enum": ["grupos_eliminatoria", "grupos", "eliminatoria", "circular"]
+          }
+        }
+      },
+      "Jogo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "torneio_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "equipa_a": {
+            "type": "string"
+          },
+          "equipa_b": {
+            "type": "string"
+          },
+          "golos_a": {
+            "type": "integer"
+          },
+          "golos_b": {
+            "type": "integer"
+          },
+          "data_hora": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "string",
+            "enum": ["agendado", "em_jogo", "finalizado", "adiado", "cancelado"]
+          }
+        }
+      },
+      "Equipa": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "torneio_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "categoria": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtido após autenticação"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Sistema",
+      "description": "Endpoints de saúde e sistema"
+    },
+    {
+      "name": "Torneios",
+      "description": "Gestão de torneios"
+    },
+    {
+      "name": "Jogos",
+      "description": "Gestão de jogos e resultados"
+    },
+    {
+      "name": "Equipas",
+      "description": "Gestão de equipas"
+    }
+  ]
+}
