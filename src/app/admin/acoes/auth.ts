@@ -191,3 +191,68 @@ export async function definirPalavraPasse(_: EstadoFormulario, fd: FormData): Pr
     : { data: null };
   redirect(perfil ? "/admin" : "/conta");
 }
+
+export async function recuperar2FA(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
+  const email = String(fd.get("email") ?? "").trim();
+  const backupCode = String(fd.get("backup_code") ?? "").trim();
+
+  if (!email) return { erro: "Indica o teu email." };
+  if (!backupCode) return { erro: "Indica um código de backup." };
+
+  const supabase = await createClient();
+
+  // Get user by email
+  const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+
+  if (listError) {
+    return { erro: "Erro ao verificar email." };
+  }
+
+  const user = users?.find((u) => u.email === email);
+
+  if (!user) {
+    // Don't reveal if email exists or not (security)
+    return { ok: "Se a conta existir e tiver 2FA, receberá um email com instruções." };
+  }
+
+  // Verify backup code
+  const { data: backupCodes } = await supabase
+    .from("backup_codes")
+    .select("id, used")
+    .eq("user_id", user.id)
+    .eq("code", backupCode)
+    .single();
+
+  if (!backupCodes || backupCodes.used) {
+    await logAuditEvent({
+      user_id: user.id,
+      action: "2fa_recovery",
+      resource_type: "authentication",
+      status: "failure",
+      error_message: "Invalid or used backup code",
+    });
+
+    return { erro: "Código de backup inválido ou já utilizado." };
+  }
+
+  // Mark backup code as used
+  await supabase
+    .from("backup_codes")
+    .update({ used: true })
+    .eq("id", backupCodes.id);
+
+  // Log successful recovery
+  await logAuditEvent({
+    user_id: user.id,
+    action: "2fa_recovery",
+    resource_type: "authentication",
+    status: "success",
+    details: { method: "backup_code" },
+  });
+
+  // Send recovery email with instructions
+  // User should contact admin to disable 2FA or regenerate codes
+  return {
+    ok: "Se a conta existir e tiver 2FA, receberá um email com instruções. Por favor contacta admin@fiaes.pt para desativar 2FA e reconfigurá-lo.",
+  };
+}

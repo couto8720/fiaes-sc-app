@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { definirPalavraPasse, entrar, pedirRecuperacao } from "@/app/admin/acoes/auth";
+import { definirPalavraPasse, entrar, pedirRecuperacao, recuperar2FA } from "@/app/admin/acoes/auth";
 import { ESTADO_INICIAL } from "@/app/admin/acoes/tipos";
 import { BotaoSubmeter, Campo, Mensagem, classeInput } from "./ui";
 import { BotoesOAuth } from "./BotoesOAuth";
@@ -28,11 +28,18 @@ export function FormLogin() {
         <input id="password" name="password" type="password" autoComplete="current-password" required className={classeInput} />
       </Campo>
       <BotaoSubmeter>Entrar</BotaoSubmeter>
-      <p className="text-sm">
-        <Link href="/admin/recuperar" className="text-suave underline underline-offset-2">
-          Esqueci-me da palavra-passe
-        </Link>
-      </p>
+      <div className="space-y-1 text-sm">
+        <p>
+          <Link href="/admin/recuperar" className="text-suave underline underline-offset-2">
+            Esqueci-me da palavra-passe
+          </Link>
+        </p>
+        <p>
+          <Link href="/admin/recuperar-2fa" className="text-suave underline underline-offset-2">
+            Recuperar autenticação 2FA
+          </Link>
+        </p>
+      </div>
       <BotoesOAuth />
     </form>
   );
@@ -106,6 +113,46 @@ export function FormDefinirPalavraPasse() {
       </Campo>
       {confirmacao && confirmacao !== nova && <p className="text-sm font-medium text-derrota">As palavras-passe não coincidem.</p>}
       <BotaoSubmeter>Guardar e entrar</BotaoSubmeter>
+    </form>
+  );
+}
+
+export function FormRecuperar2FA() {
+  const [estado, acao] = useActionState(recuperar2FA, ESTADO_INICIAL);
+  return (
+    <form action={acao} className="space-y-4">
+      {estado.erro && <Mensagem tipo="erro">{estado.erro}</Mensagem>}
+      {estado.ok && <Mensagem tipo="ok">{estado.ok}</Mensagem>}
+      <div className="bg-suave/10 p-3 rounded text-sm text-suave space-y-2">
+        <p>
+          <strong>Opção 1: Usar código de backup</strong><br />
+          Se guardaste os teus códigos de backup quando configuraste 2FA, podes utilizá-los para recuperar acesso.
+        </p>
+        <p>
+          <strong>Opção 2: Contactar suporte</strong><br />
+          Se perdeste os teus códigos de backup, contacta <a href="mailto:admin@fiaes.pt" className="underline text-branco hover:no-underline">admin@fiaes.pt</a> para desativar 2FA.
+        </p>
+      </div>
+      <Campo rotulo="Email" nome="email">
+        <input id="email" name="email" type="email" autoComplete="username" required className={classeInput} />
+      </Campo>
+      <Campo rotulo="Código de Backup (XXXX-XXXX)" nome="backup_code">
+        <input
+          id="backup_code"
+          name="backup_code"
+          type="text"
+          placeholder="0000-0000"
+          pattern="[0-9]{4}-[0-9]{4}"
+          autoComplete="off"
+          className={classeInput}
+        />
+      </Campo>
+      <BotaoSubmeter>Verificar código</BotaoSubmeter>
+      <p className="text-sm">
+        <Link href="/admin/login" className="text-suave underline underline-offset-2">
+          Voltar ao login
+        </Link>
+      </p>
     </form>
   );
 }
