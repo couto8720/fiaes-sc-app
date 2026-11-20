@@ -1,0 +1,886 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ],
+      "regex": "^(?:/(.*))(?:/)?$"
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self'"
+        }
+      ],
+      "regex": "^/sw\\.js(?:/)?$"
+    }
+  ],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/admin/classificacao/[id]",
+      "regex": "^/admin/classificacao/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/classificacao/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/classificacao/[id].segments/admin/!KHBhaW5lbCk/classificacao/$d$id$segment",
+          "source": "^/admin/classificacao/(?<nxtPid>[^/]+?)\\.segments/admin/!KHBhaW5lbCk/classificacao/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/escaloes/[id]",
+      "regex": "^/admin/escaloes/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/escaloes/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/escaloes/[id].segments/admin/!KHBhaW5lbCk/escaloes/$d$id$segment",
+          "source": "^/admin/escaloes/(?<nxtPid>[^/]+?)\\.segments/admin/!KHBhaW5lbCk/escaloes/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/jogos/[id]",
+      "regex": "^/admin/jogos/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/jogos/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/jogos/[id].segments/admin/!KHBhaW5lbCk/jogos/$d$id$segment",
+          "source": "^/admin/jogos/(?<nxtPid>[^/]+?)\\.segments/admin/!KHBhaW5lbCk/jogos/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/jogos/[id]/marcador",
+      "regex": "^/admin/jogos/([^/]+?)/marcador(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/jogos/(?<nxtPid>[^/]+?)/marcador(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/jogos/[id]/marcador.segments/admin/!KHBhaW5lbCk/jogos/$d$id/marcador$segment",
+          "source": "^/admin/jogos/(?<nxtPid>[^/]+?)/marcador\\.segments/admin/!KHBhaW5lbCk/jogos/\\$d\\$id/marcador(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/locais/[id]",
+      "regex": "^/admin/locais/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/locais/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/locais/[id].segments/admin/!KHBhaW5lbCk/locais/$d$id$segment",
+          "source": "^/admin/locais/(?<nxtPid>[^/]+?)\\.segments/admin/!KHBhaW5lbCk/locais/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]",
+      "regex": "^/admin/torneios/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id].segments/admin/!KHBhaW5lbCk/torneios/$d$id$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]/editar",
+      "regex": "^/admin/torneios/([^/]+?)/editar(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)/editar(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id]/editar.segments/admin/!KHBhaW5lbCk/torneios/$d$id/editar$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)/editar\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id/editar(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]/eliminatoria",
+      "regex": "^/admin/torneios/([^/]+?)/eliminatoria(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)/eliminatoria(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id]/eliminatoria.segments/admin/!KHBhaW5lbCk/torneios/$d$id/eliminatoria$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)/eliminatoria\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id/eliminatoria(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]/equipas/gerenciar",
+      "regex": "^/admin/torneios/([^/]+?)/equipas/gerenciar(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)/equipas/gerenciar(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id]/equipas/gerenciar.segments/admin/!KHBhaW5lbCk/torneios/$d$id/equipas/gerenciar$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)/equipas/gerenciar\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id/equipas/gerenciar(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]/equipas/nova",
+      "regex": "^/admin/torneios/([^/]+?)/equipas/nova(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)/equipas/nova(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id]/equipas/nova.segments/admin/!KHBhaW5lbCk/torneios/$d$id/equipas/nova$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)/equipas/nova\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id/equipas/nova(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]/qualificacao",
+      "regex": "^/admin/torneios/([^/]+?)/qualificacao(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)/qualificacao(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id]/qualificacao.segments/admin/!KHBhaW5lbCk/torneios/$d$id/qualificacao$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)/qualificacao\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id/qualificacao(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/torneios/[id]/qualificacao/visualizar",
+      "regex": "^/admin/torneios/([^/]+?)/qualificacao/visualizar(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/torneios/(?<nxtPid>[^/]+?)/qualificacao/visualizar(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/torneios/[id]/qualificacao/visualizar.segments/admin/!KHBhaW5lbCk/torneios/$d$id/qualificacao/visualizar$segment",
+          "source": "^/admin/torneios/(?<nxtPid>[^/]+?)/qualificacao/visualizar\\.segments/admin/!KHBhaW5lbCk/torneios/\\$d\\$id/qualificacao/visualizar(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/admin/utilizadores/[id]",
+      "regex": "^/admin/utilizadores/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/utilizadores/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/admin/utilizadores/[id].segments/admin/!KHBhaW5lbCk/utilizadores/$d$id$segment",
+          "source": "^/admin/utilizadores/(?<nxtPid>[^/]+?)\\.segments/admin/!KHBhaW5lbCk/utilizadores/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/api/torneios/[id]",
+      "regex": "^/api/torneios/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/equipas",
+      "regex": "^/api/torneios/([^/]+?)/equipas(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/equipas(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/equipas/distribuir",
+      "regex": "^/api/torneios/([^/]+?)/equipas/distribuir(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/equipas/distribuir(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/equipas/[equipaId]",
+      "regex": "^/api/torneios/([^/]+?)/equipas/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPequipaId": "nxtPequipaId"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/equipas/(?<nxtPequipaId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/equipas/[equipaId]/grupo",
+      "regex": "^/api/torneios/([^/]+?)/equipas/([^/]+?)/grupo(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPequipaId": "nxtPequipaId"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/equipas/(?<nxtPequipaId>[^/]+?)/grupo(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/gerar-jogos",
+      "regex": "^/api/torneios/([^/]+?)/gerar\\-jogos(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/gerar\\-jogos(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/jogos/gerar-eliminatoria",
+      "regex": "^/api/torneios/([^/]+?)/jogos/gerar\\-eliminatoria(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/jogos/gerar\\-eliminatoria(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/jogos/gerar-proxima-rodada",
+      "regex": "^/api/torneios/([^/]+?)/jogos/gerar\\-proxima\\-rodada(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/jogos/gerar\\-proxima\\-rodada(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/jogos/gerar-semifinais",
+      "regex": "^/api/torneios/([^/]+?)/jogos/gerar\\-semifinais(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/jogos/gerar\\-semifinais(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/jogos/[jogoId]",
+      "regex": "^/api/torneios/([^/]+?)/jogos/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPjogoId": "nxtPjogoId"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/jogos/(?<nxtPjogoId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/jogos/[jogoId]/resultado",
+      "regex": "^/api/torneios/([^/]+?)/jogos/([^/]+?)/resultado(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPjogoId": "nxtPjogoId"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/jogos/(?<nxtPjogoId>[^/]+?)/resultado(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/qualificacao",
+      "regex": "^/api/torneios/([^/]+?)/qualificacao(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/qualificacao(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/qualificacao/aplicar",
+      "regex": "^/api/torneios/([^/]+?)/qualificacao/aplicar(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/qualificacao/aplicar(?:/)?$"
+    },
+    {
+      "page": "/api/torneios/[id]/reset-jogos",
+      "regex": "^/api/torneios/([^/]+?)/reset\\-jogos(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/torneios/(?<nxtPid>[^/]+?)/reset\\-jogos(?:/)?$"
+    },
+    {
+      "page": "/escaloes/[slug]",
+      "regex": "^/escaloes/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/escaloes/(?<nxtPslug>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/escaloes/[slug].segments/escaloes/$d$slug$segment",
+          "source": "^/escaloes/(?<nxtPslug>[^/]+?)\\.segments/escaloes/\\$d\\$slug(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPslug": "nxtPslug"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/icones/[tipo]",
+      "regex": "^/icones/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtipo": "nxtPtipo"
+      },
+      "namedRegex": "^/icones/(?<nxtPtipo>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/jogos/[id]",
+      "regex": "^/jogos/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/jogos/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/jogos/[id].segments/jogos/$d$id$segment",
+          "source": "^/jogos/(?<nxtPid>[^/]+?)\\.segments/jogos/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    },
+    {
+      "page": "/torneios/[id]",
+      "regex": "^/torneios/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/torneios/(?<nxtPid>[^/]+?)(?:/)?$",
+      "prefetchSegmentDataRoutes": [
+        {
+          "destination": "/torneios/[id].segments/torneios/$d$id$segment",
+          "source": "^/torneios/(?<nxtPid>[^/]+?)\\.segments/torneios/\\$d\\$id(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
+          "routeKeys": {
+            "nxtPid": "nxtPid"
+          }
+        }
+      ]
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/admin/classificacao",
+      "regex": "^/admin/classificacao(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/classificacao(?:/)?$"
+    },
+    {
+      "page": "/admin/clube",
+      "regex": "^/admin/clube(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/clube(?:/)?$"
+    },
+    {
+      "page": "/admin/copia",
+      "regex": "^/admin/copia(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/copia(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard",
+      "regex": "^/admin/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard(?:/)?$"
+    },
+    {
+      "page": "/admin/definir-palavra-passe",
+      "regex": "^/admin/definir\\-palavra\\-passe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/definir\\-palavra\\-passe(?:/)?$"
+    },
+    {
+      "page": "/admin/escaloes",
+      "regex": "^/admin/escaloes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/escaloes(?:/)?$"
+    },
+    {
+      "page": "/admin/escaloes/novo",
+      "regex": "^/admin/escaloes/novo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/escaloes/novo(?:/)?$"
+    },
+    {
+      "page": "/admin/jogos/novo",
+      "regex": "^/admin/jogos/novo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/jogos/novo(?:/)?$"
+    },
+    {
+      "page": "/admin/locais",
+      "regex": "^/admin/locais(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/locais(?:/)?$"
+    },
+    {
+      "page": "/admin/login",
+      "regex": "^/admin/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/login(?:/)?$"
+    },
+    {
+      "page": "/admin/manual",
+      "regex": "^/admin/manual(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/manual(?:/)?$"
+    },
+    {
+      "page": "/admin/manual/classificacao",
+      "regex": "^/admin/manual/classificacao(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/manual/classificacao(?:/)?$"
+    },
+    {
+      "page": "/admin/manual/resultados",
+      "regex": "^/admin/manual/resultados(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/manual/resultados(?:/)?$"
+    },
+    {
+      "page": "/admin/post",
+      "regex": "^/admin/post(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/post(?:/)?$"
+    },
+    {
+      "page": "/admin/post/imagem",
+      "regex": "^/admin/post/imagem(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/post/imagem(?:/)?$"
+    },
+    {
+      "page": "/admin/recuperar",
+      "regex": "^/admin/recuperar(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/recuperar(?:/)?$"
+    },
+    {
+      "page": "/admin/recuperar-2fa",
+      "regex": "^/admin/recuperar\\-2fa(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/recuperar\\-2fa(?:/)?$"
+    },
+    {
+      "page": "/admin/sem-acesso",
+      "regex": "^/admin/sem\\-acesso(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/sem\\-acesso(?:/)?$"
+    },
+    {
+      "page": "/admin/torneios",
+      "regex": "^/admin/torneios(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/torneios(?:/)?$"
+    },
+    {
+      "page": "/admin/torneios/novo",
+      "regex": "^/admin/torneios/novo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/torneios/novo(?:/)?$"
+    },
+    {
+      "page": "/admin/utilizadores",
+      "regex": "^/admin/utilizadores(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/utilizadores(?:/)?$"
+    },
+    {
+      "page": "/admin/verificar-2fa",
+      "regex": "^/admin/verificar\\-2fa(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/verificar\\-2fa(?:/)?$"
+    },
+    {
+      "page": "/admin/zerozero",
+      "regex": "^/admin/zerozero(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/zerozero(?:/)?$"
+    },
+    {
+      "page": "/api/admin/limpar-dados",
+      "regex": "^/api/admin/limpar\\-dados(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/limpar\\-dados(?:/)?$"
+    },
+    {
+      "page": "/api/admin/manual/classificacao",
+      "regex": "^/api/admin/manual/classificacao(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/manual/classificacao(?:/)?$"
+    },
+    {
+      "page": "/api/admin/manual/resultado",
+      "regex": "^/api/admin/manual/resultado(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/manual/resultado(?:/)?$"
+    },
+    {
+      "page": "/api/admin/webhooks",
+      "regex": "^/api/admin/webhooks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/webhooks(?:/)?$"
+    },
+    {
+      "page": "/api/admin/zerozero/import",
+      "regex": "^/api/admin/zerozero/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/zerozero/import(?:/)?$"
+    },
+    {
+      "page": "/api/admin/zerozero/save",
+      "regex": "^/api/admin/zerozero/save(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/zerozero/save(?:/)?$"
+    },
+    {
+      "page": "/api/debug/adicionar-resultados",
+      "regex": "^/api/debug/adicionar\\-resultados(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/debug/adicionar\\-resultados(?:/)?$"
+    },
+    {
+      "page": "/api/debug/delete-fase-sql",
+      "regex": "^/api/debug/delete\\-fase\\-sql(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/debug/delete\\-fase\\-sql(?:/)?$"
+    },
+    {
+      "page": "/api/debug/inspecionar-jogos",
+      "regex": "^/api/debug/inspecionar\\-jogos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/debug/inspecionar\\-jogos(?:/)?$"
+    },
+    {
+      "page": "/api/debug/jogos",
+      "regex": "^/api/debug/jogos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/debug/jogos(?:/)?$"
+    },
+    {
+      "page": "/api/debug/limpar-eliminatoria",
+      "regex": "^/api/debug/limpar\\-eliminatoria(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/debug/limpar\\-eliminatoria(?:/)?$"
+    },
+    {
+      "page": "/api/debug/listar-fases",
+      "regex": "^/api/debug/listar\\-fases(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/debug/listar\\-fases(?:/)?$"
+    },
+    {
+      "page": "/api/docs",
+      "regex": "^/api/docs(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/docs(?:/)?$"
+    },
+    {
+      "page": "/api/docs/openapi",
+      "regex": "^/api/docs/openapi(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/docs/openapi(?:/)?$"
+    },
+    {
+      "page": "/api/health",
+      "regex": "^/api/health(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/health(?:/)?$"
+    },
+    {
+      "page": "/api/inicializar-db",
+      "regex": "^/api/inicializar\\-db(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/inicializar\\-db(?:/)?$"
+    },
+    {
+      "page": "/api/manter-ativo",
+      "regex": "^/api/manter\\-ativo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/manter\\-ativo(?:/)?$"
+    },
+    {
+      "page": "/api/migration-sql",
+      "regex": "^/api/migration\\-sql(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/migration\\-sql(?:/)?$"
+    },
+    {
+      "page": "/api/notifications/subscribe",
+      "regex": "^/api/notifications/subscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/notifications/subscribe(?:/)?$"
+    },
+    {
+      "page": "/api/notifications/unsubscribe",
+      "regex": "^/api/notifications/unsubscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/notifications/unsubscribe(?:/)?$"
+    },
+    {
+      "page": "/api/torneios",
+      "regex": "^/api/torneios(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/torneios(?:/)?$"
+    },
+    {
+      "page": "/auth/callback",
+      "regex": "^/auth/callback(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/callback(?:/)?$"
+    },
+    {
+      "page": "/auth/confirm",
+      "regex": "^/auth/confirm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/confirm(?:/)?$"
+    },
+    {
+      "page": "/auth/convite",
+      "regex": "^/auth/convite(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/auth/convite(?:/)?$"
+    },
+    {
+      "page": "/calendario",
+      "regex": "^/calendario(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/calendario(?:/)?$"
+    },
+    {
+      "page": "/classificacao",
+      "regex": "^/classificacao(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/classificacao(?:/)?$"
+    },
+    {
+      "page": "/conta",
+      "regex": "^/conta(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conta(?:/)?$"
+    },
+    {
+      "page": "/conta/apagada",
+      "regex": "^/conta/apagada(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conta/apagada(?:/)?$"
+    },
+    {
+      "page": "/conta/palavra-passe",
+      "regex": "^/conta/palavra\\-passe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conta/palavra\\-passe(?:/)?$"
+    },
+    {
+      "page": "/conta/recuperar",
+      "regex": "^/conta/recuperar(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conta/recuperar(?:/)?$"
+    },
+    {
+      "page": "/conta/registo",
+      "regex": "^/conta/registo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/conta/registo(?:/)?$"
+    },
+    {
+      "page": "/direitos",
+      "regex": "^/direitos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/direitos(?:/)?$"
+    },
+    {
+      "page": "/manifest.webmanifest",
+      "regex": "^/manifest\\.webmanifest(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/manifest\\.webmanifest(?:/)?$"
+    },
+    {
+      "page": "/offline",
+      "regex": "^/offline(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/offline(?:/)?$"
+    },
+    {
+      "page": "/privacidade",
+      "regex": "^/privacidade(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/privacidade(?:/)?$"
+    },
+    {
+      "page": "/resultados",
+      "regex": "^/resultados(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/resultados(?:/)?$"
+    },
+    {
+      "page": "/robots.txt",
+      "regex": "^/robots\\.txt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/robots\\.txt(?:/)?$"
+    },
+    {
+      "page": "/termos",
+      "regex": "^/termos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/termos(?:/)?$"
+    },
+    {
+      "page": "/torneios",
+      "regex": "^/torneios(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/torneios(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": true,
+    "dynamicRSCPrerender": true
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  },
+  "ppr": {
+    "chain": {
+      "headers": {
+        "next-resume": "1"
+      }
+    }
+  }
+}

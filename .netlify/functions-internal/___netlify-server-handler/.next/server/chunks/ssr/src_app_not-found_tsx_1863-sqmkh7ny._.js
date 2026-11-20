@@ -1,0 +1,3 @@
+module.exports=[3363,a=>{"use strict";var b=a.i(7997),c=a.i(95936);a.s(["default",0,function(){return(0,b.jsxs)("div",{className:"py-16 text-center",children:[(0,b.jsx)("p",{className:"text-5xl font-black text-clube dark:text-destaque",children:"404"}),(0,b.jsx)("h1",{className:"mt-2 text-xl font-bold",children:"Página não encontrada"}),(0,b.jsx)("p",{className:"mt-1 text-suave",children:"O jogo ou escalão que procuras não existe ou foi removido."}),(0,b.jsx)(c.default,{href:"/",className:"mt-6 inline-flex h-11 items-center rounded-xl bg-clube px-5 font-semibold text-clube-texto",children:"Voltar ao início"})]})}])},17537,function(a){a.n(a.i(3363))}];
+
+//# sourceMappingURL=src_app_not-found_tsx_1863-sqmkh7ny._.js.map

@@ -1,0 +1,11 @@
+var R=require("../../../chunks/[turbopack]_runtime.js")("server/app/admin/copia/route.js")
+R.c("server/chunks/[externals]__0vs6sf_qp86sm._.js")
+R.c("server/chunks/_0lwh7jbwenbv-._.js")
+R.c("server/chunks/_1g4v83h-zf4z5._.js")
+R.c("server/chunks/_20szn2k-44twk._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7vv2xad._.js")
+R.c("server/chunks/[root-of-the-server]__15bjnu5yieigz._.js")
+R.c("server/chunks/node_modules_next_1op0jr8umtmq0._.js")
+R.c("server/chunks/_next-internal_server_app_admin_copia_route_actions_13j1dek-ovc52.js")
+R.m(13958)
+module.exports=R.m(13958).exports

@@ -1,0 +1,3 @@
+module.exports=[23953,a=>{"use strict";var b=a.i(87924);a.s(["default",0,function({reset:a}){return(0,b.jsxs)("div",{className:"py-16 text-center",children:[(0,b.jsx)("h1",{className:"text-xl font-bold",children:"Não foi possível carregar os dados"}),(0,b.jsx)("p",{className:"mt-1 text-suave",children:"Verifica a ligação à internet e tenta outra vez."}),(0,b.jsx)("button",{type:"button",onClick:a,className:"mt-6 inline-flex h-11 items-center rounded-xl bg-clube px-5 font-semibold text-clube-texto",children:"Tentar outra vez"})]})}])}];
+
+//# sourceMappingURL=src_app_error_tsx_0ac07bj196djj._.js.map

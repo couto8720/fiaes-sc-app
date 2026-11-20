@@ -1,0 +1,10 @@
+var R=require("../../../../../../../chunks/[turbopack]_runtime.js")("server/app/api/torneios/[id]/equipas/[equipaId]/grupo/route.js")
+R.c("server/chunks/[externals]__0vs6sf_qp86sm._.js")
+R.c("server/chunks/_17qm_jum23mft._.js")
+R.c("server/chunks/_0ctqnq1hnvyf2._.js")
+R.c("server/chunks/[root-of-the-server]__15bjnu5yieigz._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7vv2xad._.js")
+R.c("server/chunks/node_modules_next_0g8xe7c6fvfgl._.js")
+R.c("server/chunks/1jng_app_api_torneios_[id]_equipas_[equipaId]_grupo_route_actions_1pdy31apwozdt.js")
+R.m(487)
+module.exports=R.m(487).exports

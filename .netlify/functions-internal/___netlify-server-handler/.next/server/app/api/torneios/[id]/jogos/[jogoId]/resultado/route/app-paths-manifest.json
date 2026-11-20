@@ -1,0 +1,3 @@
+{
+  "/api/torneios/[id]/jogos/[jogoId]/resultado/route": "app/api/torneios/[id]/jogos/[jogoId]/resultado/route.js"
+}

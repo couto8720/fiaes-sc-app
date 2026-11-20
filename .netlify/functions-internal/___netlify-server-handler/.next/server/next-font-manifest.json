@@ -1,0 +1,227 @@
+{
+  "app": {
+    "[project]/src/app/(site)/direitos/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/(site)/privacidade/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/(site)/termos/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/_not-found/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/classificacao/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/classificacao/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/clube/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/dashboard/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/escaloes/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/escaloes/novo/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/escaloes/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/jogos/[id]/marcador/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/jogos/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/jogos/novo/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/locais/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/locais/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/manual/classificacao/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/manual/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/manual/resultados/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/post/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/editar/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/eliminatoria/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/equipas/gerenciar/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/equipas/nova/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/qualificacao/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/[id]/qualificacao/visualizar/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/novo/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/torneios/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/utilizadores/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/utilizadores/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/(painel)/zerozero/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/definir-palavra-passe/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/login/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/recuperar-2fa/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/recuperar/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/sem-acesso/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/admin/verificar-2fa/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/api/docs/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/auth/convite/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/calendario/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/classificacao/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/conta/apagada/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/conta/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/conta/palavra-passe/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/conta/recuperar/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/conta/registo/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/escaloes/[slug]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/jogos/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/offline/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/resultados/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/torneios/[id]/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ],
+    "[project]/src/app/torneios/page": [
+      "static/media/07c7676b89ed2778-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/caff7cd203548669-s.p.44ggz8q6qt7y3.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

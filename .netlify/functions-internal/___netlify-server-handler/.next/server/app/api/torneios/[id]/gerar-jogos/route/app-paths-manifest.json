@@ -1,0 +1,3 @@
+{
+  "/api/torneios/[id]/gerar-jogos/route": "app/api/torneios/[id]/gerar-jogos/route.js"
+}

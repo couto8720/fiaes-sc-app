@@ -1,0 +1,45 @@
+{
+  "node": {
+    "603d75bea0afa816408f11895cbdf8672ba75d5b64": {
+      "workers": {
+        "app/admin/recuperar-2fa/page": {
+          "moduleId": 36331,
+          "async": false
+        }
+      },
+      "exportedName": "definirPalavraPasse",
+      "filename": "src/app/admin/acoes/auth.ts"
+    },
+    "60899b3861896aa8a452ab517b7946e384a91d55a1": {
+      "workers": {
+        "app/admin/recuperar-2fa/page": {
+          "moduleId": 36331,
+          "async": false
+        }
+      },
+      "exportedName": "entrar",
+      "filename": "src/app/admin/acoes/auth.ts"
+    },
+    "60e501925b45777cdd660cc5eacc88c9698951bad2": {
+      "workers": {
+        "app/admin/recuperar-2fa/page": {
+          "moduleId": 36331,
+          "async": false
+        }
+      },
+      "exportedName": "pedirRecuperacao",
+      "filename": "src/app/admin/acoes/auth.ts"
+    },
+    "6059d31e809c7497b3a4be106bdda32470f4eeaa0b": {
+      "workers": {
+        "app/admin/recuperar-2fa/page": {
+          "moduleId": 36331,
+          "async": false
+        }
+      },
+      "exportedName": "recuperar2FA",
+      "filename": "src/app/admin/acoes/auth.ts"
+    }
+  },
+  "edge": {}
+}

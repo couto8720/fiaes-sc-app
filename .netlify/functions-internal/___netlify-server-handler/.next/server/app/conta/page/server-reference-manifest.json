@@ -1,0 +1,55 @@
+{
+  "node": {
+    "6017e4dc6f28691eba44e2196e1fed602169ef7285": {
+      "workers": {
+        "app/conta/page": {
+          "moduleId": 3138,
+          "async": false
+        }
+      },
+      "exportedName": "apagarContaAdepto",
+      "filename": "src/app/conta/acoes.ts"
+    },
+    "60e62e67f76924b8b90b5bf9a33f957ec72c1c82ca": {
+      "workers": {
+        "app/conta/page": {
+          "moduleId": 3138,
+          "async": false
+        }
+      },
+      "exportedName": "entrarAdepto",
+      "filename": "src/app/conta/acoes.ts"
+    },
+    "60dbb9b49856e706e1ec13ad376ca9b979b10f814d": {
+      "workers": {
+        "app/conta/page": {
+          "moduleId": 3138,
+          "async": false
+        }
+      },
+      "exportedName": "guardarPerfilAdepto",
+      "filename": "src/app/conta/acoes.ts"
+    },
+    "607dea107c949a79af9e246f4ba7e8eaa16791ac40": {
+      "workers": {
+        "app/conta/page": {
+          "moduleId": 3138,
+          "async": false
+        }
+      },
+      "exportedName": "registarAdepto",
+      "filename": "src/app/conta/acoes.ts"
+    },
+    "002c09d141586f794bf8bd8f323a2e67e0a865be67": {
+      "workers": {
+        "app/conta/page": {
+          "moduleId": 3138,
+          "async": false
+        }
+      },
+      "exportedName": "sairAdepto",
+      "filename": "src/app/conta/acoes.ts"
+    }
+  },
+  "edge": {}
+}

@@ -1,0 +1,3 @@
+{
+  "/api/torneios/[id]/jogos/gerar-proxima-rodada/route": "app/api/torneios/[id]/jogos/gerar-proxima-rodada/route.js"
+}

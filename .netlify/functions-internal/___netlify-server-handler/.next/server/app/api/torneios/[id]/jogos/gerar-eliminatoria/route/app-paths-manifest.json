@@ -1,0 +1,3 @@
+{
+  "/api/torneios/[id]/jogos/gerar-eliminatoria/route": "app/api/torneios/[id]/jogos/gerar-eliminatoria/route.js"
+}

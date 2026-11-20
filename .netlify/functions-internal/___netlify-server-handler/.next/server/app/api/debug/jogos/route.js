@@ -1,0 +1,10 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/debug/jogos/route.js")
+R.c("server/chunks/[externals]__0vs6sf_qp86sm._.js")
+R.c("server/chunks/_17qm_jum23mft._.js")
+R.c("server/chunks/_1wkdxoyu9c7k7._.js")
+R.c("server/chunks/[root-of-the-server]__15bjnu5yieigz._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7vv2xad._.js")
+R.c("server/chunks/node_modules_next_0g8xe7c6fvfgl._.js")
+R.c("server/chunks/_next-internal_server_app_api_debug_jogos_route_actions_1nkl_zr2mwtyn.js")
+R.m(84031)
+module.exports=R.m(84031).exports

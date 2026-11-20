@@ -1,0 +1,3 @@
+module.exports=[80686,a=>{"use strict";var b=a.i(72131);let c="app-clube:escalao",d=new Set;function e(){try{return localStorage.getItem(c)??""}catch{return""}}function f(a){return d.add(a),window.addEventListener("storage",a),()=>{d.delete(a),window.removeEventListener("storage",a)}}a.s(["b",0,function(a){try{a?localStorage.setItem(c,a):localStorage.removeItem(c)}catch{}d.forEach(a=>a())},"Q",0,function(){return(0,b.useSyncExternalStore)(f,e,()=>"")}])}];
+
+//# sourceMappingURL=src_lib_useFiltroEscalao_ts_1xmyck6yknig_._.js.map

@@ -1,0 +1,15 @@
+{
+  "node": {
+    "602632ea3a89f9f35805b82ced13d1be368fb872be": {
+      "workers": {
+        "app/admin/verificar-2fa/page": {
+          "moduleId": 92981,
+          "async": false
+        }
+      },
+      "exportedName": "verificarDoisFatores",
+      "filename": "src/app/admin/acoes/auth.ts"
+    }
+  },
+  "edge": {}
+}

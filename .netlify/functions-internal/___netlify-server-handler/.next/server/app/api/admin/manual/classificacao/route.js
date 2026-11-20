@@ -1,0 +1,11 @@
+var R=require("../../../../../chunks/[turbopack]_runtime.js")("server/app/api/admin/manual/classificacao/route.js")
+R.c("server/chunks/[externals]__0vs6sf_qp86sm._.js")
+R.c("server/chunks/_0lwh7jbwenbv-._.js")
+R.c("server/chunks/_1zicgc2api43n._.js")
+R.c("server/chunks/node_modules_next_1op0jr8umtmq0._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7vv2xad._.js")
+R.c("server/chunks/[root-of-the-server]__15bjnu5yieigz._.js")
+R.c("server/chunks/_17qm_jum23mft._.js")
+R.c("server/chunks/1oeh_server_app_api_admin_manual_classificacao_route_actions_12v552e0gbznc.js")
+R.m(37073)
+module.exports=R.m(37073).exports

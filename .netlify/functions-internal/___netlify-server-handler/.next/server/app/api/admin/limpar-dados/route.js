@@ -1,0 +1,11 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/admin/limpar-dados/route.js")
+R.c("server/chunks/[externals]__0vs6sf_qp86sm._.js")
+R.c("server/chunks/_0lwh7jbwenbv-._.js")
+R.c("server/chunks/_0sv2vhhcv1e79._.js")
+R.c("server/chunks/node_modules_next_1op0jr8umtmq0._.js")
+R.c("server/chunks/node_modules_@supabase_supabase-js_dist_index_mjs_0u-n9p7vv2xad._.js")
+R.c("server/chunks/[root-of-the-server]__15bjnu5yieigz._.js")
+R.c("server/chunks/_17qm_jum23mft._.js")
+R.c("server/chunks/_next-internal_server_app_api_admin_limpar-dados_route_actions_1sibljlbh51ea.js")
+R.m(42300)
+module.exports=R.m(42300).exports
