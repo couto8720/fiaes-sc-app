@@ -13,7 +13,7 @@ export async function PUT(
     const { golos_equipa_1, golos_equipa_2, estado } = body;
 
     const { error: erroAtualizar } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .update({
         golos_equipa_1,
         golos_equipa_2,

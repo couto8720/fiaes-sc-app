@@ -11,7 +11,7 @@ export async function POST(
 
     // 1. Buscar regras de qualificação
     const { data: regras } = await supabase
-      .from("regras_qualificacao_torneio")
+      .from("regras_qualificacao_torneio" as any)
       .select("*")
       .eq("torneio_id", id)
       .order("ordem");
@@ -25,7 +25,7 @@ export async function POST(
 
     // 2. Buscar todas as fases de grupos
     const { data: fases } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("*")
       .eq("torneio_id", id)
       .eq("tipo", "grupo");
@@ -39,7 +39,7 @@ export async function POST(
 
     // 3. Buscar todos os jogos realizados
     const { data: jogos } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("*")
       .eq("torneio_id", id);
 
@@ -49,7 +49,7 @@ export async function POST(
     for (const fase of fases) {
       // Buscar equipas desta fase
       const { data: equipasFase } = await supabase
-        .from("equipas_torneio")
+        .from("equipas_torneio" as any)
         .select("*")
         .eq("fase_torneio_id", fase.id);
 
@@ -125,14 +125,14 @@ export async function POST(
 
     // 6. Limpar apuramentos antigos
     await supabase
-      .from("apuramentos_torneio")
+      .from("apuramentos_torneio" as any)
       .delete()
       .eq("torneio_id", id);
 
     // 7. Inserir novos apuramentos
     const { error: erroInserir } = await supabase
-      .from("apuramentos_torneio")
-      .insert(apurantesParaInserir);
+      .from("apuramentos_torneio" as any)
+      .insert(apurantesParaInserir as any);
 
     if (erroInserir) {
       console.error("Erro ao inserir apuramentos:", erroInserir);

@@ -32,7 +32,7 @@ export const agora = cache(async () => {
 export const obterConfig = cache(async (): Promise<ClubeConfig> => {
   await connection();
   if (modoDemo) return CONFIG_DEMO;
-  const { data } = await createPublicClient().from("clube_config").select("*").maybeSingle();
+  const { data } = await createPublicClient().from("clube_config" as any).select("*").maybeSingle();
   return data ?? CONFIG_DEMO;
 });
 
@@ -40,7 +40,7 @@ export const obterEscaloes = cache(async (): Promise<Escalao[]> => {
   await connection();
   if (modoDemo) return ESCALOES_DEMO;
   const { data, error } = await createPublicClient()
-    .from("escaloes").select("*").eq("ativo", true).order("ordem");
+    .from("escaloes" as any).select("*").eq("ativo", true).order("ordem");
   if (error) throw error;
   return data;
 });
@@ -64,7 +64,7 @@ export async function obterJogos({ desde, ate, escalaoId, ordem = "asc" }: Filtr
       .filter((j) => !escalaoId || j.escalao_id === escalaoId)
       .sort((a, b) => (ordem === "asc" ? 1 : -1) * a.data_hora.localeCompare(b.data_hora));
   }
-  let q = createPublicClient().from("jogos").select(SELECT_JOGO);
+  let q = createPublicClient().from("jogos" as any).select(SELECT_JOGO);
   if (desde) q = q.gte("data_hora", desde.toISOString());
   if (ate) q = q.lt("data_hora", ate.toISOString());
   if (escalaoId) q = q.eq("escalao_id", escalaoId);
@@ -78,7 +78,7 @@ export const obterJogo = cache(async (id: string): Promise<JogoCompleto | null> 
   if (modoDemo) return jogosDemo(t).find((j) => j.id === id) ?? null;
   // Evita um erro do Postgres com ids que não são UUID (ex.: links antigos ou mal copiados).
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
-  const { data, error } = await createPublicClient().from("jogos").select(SELECT_JOGO).eq("id", id).maybeSingle();
+  const { data, error } = await createPublicClient().from("jogos" as any).select(SELECT_JOGO).eq("id", id).maybeSingle();
   if (error) throw error;
   return data;
 });
@@ -88,7 +88,7 @@ export async function obterClassificacoes(escalaoId?: string): Promise<Classific
   if (modoDemo) {
     return CLASSIFICACOES_DEMO.filter((c) => !escalaoId || c.escalao_id === escalaoId);
   }
-  let q = createPublicClient().from("classificacoes").select("*");
+  let q = createPublicClient().from("classificacoes" as any).select("*");
   if (escalaoId) q = q.eq("escalao_id", escalaoId);
   const { data, error } = await q.order("posicao");
   if (error) throw error;
@@ -99,7 +99,7 @@ export async function obterTorneios() {
   await connection();
   if (modoDemo) return [];
   const { data, error } = await createPublicClient()
-    .from("torneios")
+    .from("torneios" as any)
     .select("*")
     .order("criado_em", { ascending: false });
   if (error) throw error;

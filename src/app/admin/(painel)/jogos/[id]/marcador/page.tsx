@@ -25,7 +25,7 @@ async function ConteudoMarcador({ params }: Pick<PageProps<"/admin/jogos/[id]/ma
 
   const supabase = await createClient();
   const { data } = await supabase
-    .from("jogos")
+    .from("jogos" as any)
     .select("*, escalao:escaloes(nome), local:locais(nome)")
     .eq("id", id)
     .maybeSingle();

@@ -15,8 +15,8 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
-    .from("torneios")
-    .select("*")
+    .from("torneios" as any)
+    .select("*" as any)
     .eq("id", id)
     .single();
 
@@ -26,15 +26,15 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
 
   // Buscar fase de eliminação
   const { data: faseEliminatoria } = await supabase
-    .from("fases_torneio")
-    .select("*")
+    .from("fases_torneio" as any)
+    .select("*" as any)
     .eq("torneio_id", id)
     .eq("tipo", "eliminatoria")
     .single();
 
   // Buscar jogos de eliminação
   const { data: jogos } = await supabase
-    .from("jogos_torneio")
+    .from("jogos_torneio" as any)
     .select(`
       *,
       equipa_1:equipas_torneio!equipa_1_id(id, nome),
@@ -45,16 +45,16 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
 
   // Buscar equipas apuradas
   const { data: apuramentos } = await supabase
-    .from("apuramentos_torneio")
-    .select("*, equipa:equipa_id(id, nome)")
+    .from("apuramentos_torneio" as any)
+    .select("*, equipa:equipa_id(id, nome)" as any)
     .eq("torneio_id", id);
 
   // Buscar locais
   const { data: locais } = await supabase
-    .from("locais")
-    .select("id, nome");
+    .from("locais" as any)
+    .select("id, nome" as any);
 
-  const mapLocais = (locais || []).reduce(
+  const mapLocais = ((locais || []) as unknown as any[]).reduce(
     (acc, l) => ({ ...acc, [l.id]: l.nome }),
     {} as Record<string, string>
   );
@@ -85,12 +85,12 @@ export default async function PaginaEliminatoria({ params }: { params: Promise<{
         <div className="space-y-8">
           <VisualizadorEliminatoria
             torneioId={id}
-            jogos={jogos || []}
-            apuramentos={apuramentos || []}
+            jogos={((jogos || []) as unknown as any[]) as unknown as any[]}
+            apuramentos={((apuramentos || []) as unknown as any[]) as unknown as any[]}
             temTerceiroLugar={torneio.tem_terceiro_lugar || false}
             mapLocais={mapLocais}
           />
-          <Classificacao jogos={jogos || []} />
+          <Classificacao jogos={((jogos || []) as unknown as any[]) as unknown as any[]} />
         </div>
       )}
     </div>

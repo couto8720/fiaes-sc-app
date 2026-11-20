@@ -8,7 +8,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Deletar TODOS os jogos do torneio
     const { error: erroDelete } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .delete()
       .eq("torneio_id", id);
 

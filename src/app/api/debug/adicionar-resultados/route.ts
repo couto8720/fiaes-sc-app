@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
     // Pegar todos os jogos
     const { data: jogos, error: errJogos } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("*")
       .eq("torneio_id", torneioId)
       .order("rodada", { ascending: true })
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       const resultado = resultados[i.toString()];
       if (resultado) {
         const { error: errUpdate } = await supabase
-          .from("jogos_torneio")
+          .from("jogos_torneio" as any)
           .update({
             golos_equipa_1: resultado[0],
             golos_equipa_2: resultado[1],

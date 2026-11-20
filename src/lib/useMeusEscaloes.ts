@@ -22,7 +22,7 @@ export function useMeusEscaloes(): string[] | null {
         if (ativo) setMeus(null);
         return;
       }
-      const { data } = await supabase.from("adeptos").select("escaloes").eq("id", auth.user.id).maybeSingle();
+      const { data } = await supabase.from("adeptos" as any).select("escaloes").eq("id", auth.user.id).maybeSingle();
       if (ativo) setMeus(data?.escaloes ?? null);
     };
 

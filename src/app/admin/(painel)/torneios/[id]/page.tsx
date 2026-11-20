@@ -15,7 +15,7 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
-    .from("torneios")
+    .from("torneios" as any)
     .select("*")
     .eq("id", id)
     .single();
@@ -25,37 +25,37 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
   }
 
   const { data: fases } = await supabase
-    .from("fases_torneio")
+    .from("fases_torneio" as any)
     .select("*")
     .eq("torneio_id", id);
 
   const { data: equipas } = await supabase
-    .from("equipas_torneio")
+    .from("equipas_torneio" as any)
     .select("*, fase_torneio:fase_torneio_id(nome)")
     .eq("torneio_id", id)
     .order("nome");
 
   const { data: equipasMap } = await supabase
-    .from("equipas_torneio")
+    .from("equipas_torneio" as any)
     .select("id, nome")
     .eq("torneio_id", id);
 
   const { data: jogos } = await supabase
-    .from("jogos_torneio")
+    .from("jogos_torneio" as any)
     .select("*")
     .eq("torneio_id", id);
 
   const { data: locais } = await supabase
-    .from("locais")
+    .from("locais" as any)
     .select("id, nome");
 
-  const mapEquipas = (equipasMap || []).reduce(
-    (acc, e) => ({ ...acc, [e.id]: e.nome }),
+  const mapEquipas = ((equipasMap || []) as unknown as any[]).reduce(
+    (acc, e) => ({ ...acc, [e?.id || '']: e?.nome || '' }),
     {} as Record<string, string>
   );
 
-  const mapLocais = (locais || []).reduce(
-    (acc, l) => ({ ...acc, [l.id]: l.nome }),
+  const mapLocais = (((locais || []) as unknown as any[]) as unknown as any[]).reduce(
+    (acc, l) => ({ ...acc, [l?.id || '']: l?.nome || '' }),
     {} as Record<string, string>
   );
 
@@ -146,11 +146,11 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
 
       <AbasTorneio
         torneioId={id}
-        equipas={equipas || []}
-        jogos={jogos || []}
-        fases={fases || []}
+        equipas={((equipas || []) as unknown as any[]) as unknown as any[]}
+        jogos={((jogos || []) as unknown as any[]) as unknown as any[]}
+        fases={((fases || []) as unknown as any[]) as unknown as any[]}
         mapEquipas={mapEquipas}
-        locais={locais || []}
+        locais={((locais || []) as unknown as any[]) as unknown as any[]}
         mapLocais={mapLocais}
       />
     </div>

@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
       }));
 
       const { error } = await supabase
-        .from("jogos")
-        .insert(jogosParaInserir);
+        .from("jogos" as any)
+        .insert(jogosParaInserir as any);
 
       if (error) throw error;
 
@@ -67,13 +67,13 @@ export async function POST(request: NextRequest) {
 
       // Deletar classificação anterior
       await supabase
-        .from("classificacoes")
+        .from("classificacoes" as any)
         .delete()
         .eq("escalao_id", escalaoId);
 
       const { error } = await supabase
-        .from("classificacoes")
-        .insert(classificacaoParaInserir);
+        .from("classificacoes" as any)
+        .insert(classificacaoParaInserir as any);
 
       if (error) throw error;
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
           .map(Number);
 
         const { error } = await supabase
-          .from("jogos")
+          .from("jogos" as any)
           .update({
             golos_clube: clubeGolos,
             golos_adversario: adversarioGolos,

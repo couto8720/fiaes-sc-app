@@ -14,7 +14,7 @@ export function ListaUtilizadores() {
     try {
       const supabase = createClient();
       const { data, error } = await supabase
-        .from("perfis")
+        .from("perfis" as any)
         .select("*")
         .order("nome", { ascending: true });
 

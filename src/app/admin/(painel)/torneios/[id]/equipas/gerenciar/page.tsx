@@ -14,9 +14,9 @@ export default async function PaginaGerenciarEquipas({ params }: { params: Promi
   const supabase = await createClient();
 
   const [{ data: torneio }, { data: fases }, { data: equipas }] = await Promise.all([
-    supabase.from("torneios").select("*").eq("id", id).single(),
-    supabase.from("fases_torneio").select("*").eq("torneio_id", id).order("numero_grupo"),
-    supabase.from("equipas_torneio").select("*, fase_torneio:fase_torneio_id(id, nome)").eq("torneio_id", id).order("nome"),
+    supabase.from("torneios" as any).select("*" as any).eq("id", id).single(),
+    supabase.from("fases_torneio" as any).select("*" as any).eq("torneio_id", id).order("numero_grupo"),
+    supabase.from("equipas_torneio" as any).select("*, fase_torneio:fase_torneio_id(id, nome)" as any).eq("torneio_id", id).order("nome"),
   ]);
 
   if (!torneio) {
@@ -35,8 +35,8 @@ export default async function PaginaGerenciarEquipas({ params }: { params: Promi
       <GerenciadorEquipas
         torneioId={id}
         torneio={torneio}
-        fases={fases || []}
-        equipasIniciais={equipas || []}
+        fases={((fases || []) as unknown as any[]) as unknown as any[]}
+        equipasIniciais={((equipas || []) as unknown as any[]) as unknown as any[]}
       />
     </div>
   );

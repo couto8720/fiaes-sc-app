@@ -70,7 +70,7 @@ export async function guardarPerfilAdepto(_: EstadoFormulario, fd: FormData): Pr
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) redirect("/conta");
 
-  const { data: escaloes } = await supabase.from("escaloes").select("slug").eq("ativo", true);
+  const { data: escaloes } = await supabase.from("escaloes" as any).select("slug").eq("ativo", true);
   const r = validarPerfilAdepto(
     {
       nome: String(fd.get("nome") ?? ""),
@@ -81,7 +81,7 @@ export async function guardarPerfilAdepto(_: EstadoFormulario, fd: FormData): Pr
   );
   if (!r.ok) return { erros: r.erros, valores: valoresDe(fd) };
 
-  const { error } = await supabase.from("adeptos").update(r.dados).eq("id", auth.user.id);
+  const { error } = await supabase.from("adeptos" as any).update(r.dados as any).eq("id", auth.user.id);
   if (error) return { erro: "Não foi possível guardar. Tenta outra vez.", valores: valoresDe(fd) };
   // Depois de guardar, entra logo na app (página inicial).
   redirect("/");

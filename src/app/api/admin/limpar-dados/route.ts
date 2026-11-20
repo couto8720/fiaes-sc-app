@@ -18,21 +18,21 @@ export async function POST(request: Request) {
     // Deletar em ordem (respeitar constraints)
     // 1. Deletar marcadores (golos)
     const { error: erroGolos } = await supabase
-      .from("golos")
+      .from("golos" as any)
       .delete()
       .not("jogo_id", "is", null);
     if (erroGolos) throw erroGolos;
 
     // 2. Deletar expulsões
     const { error: erroExpulsoes } = await supabase
-      .from("expulsoes")
+      .from("expulsoes" as any)
       .delete()
       .not("jogo_id", "is", null);
     if (erroExpulsoes) throw erroExpulsoes;
 
     // 3. Deletar todos os jogos
     const { error: erroJogos } = await supabase
-      .from("jogos")
+      .from("jogos" as any)
       .delete()
       .not("id", "is", null);
     if (erroJogos) throw erroJogos;

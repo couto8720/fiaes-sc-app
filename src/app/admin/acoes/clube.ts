@@ -13,7 +13,7 @@ export async function guardarClube(_: EstadoFormulario, fd: FormData): Promise<E
 
   const supabase = await createClient();
   // Só existe uma linha de configuração (id = true); se ainda não existir, é criada.
-  const { error } = await supabase.from("clube_config").upsert({ id: true, ...r.dados });
+  const { error } = await supabase.from("clube_config" as any).upsert({ id: true, ...r.dados });
   if (error) return { erro: mensagemErroBD(error), valores };
   return { ok: "Guardado. O site, os ícones e o post já usam estes dados.", valores };
 }

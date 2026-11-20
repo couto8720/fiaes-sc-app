@@ -24,8 +24,8 @@ async function ConteudoEditarUtilizador({ params }: Pick<PageProps<"/admin/utili
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
   const [{ data: perfil }, { data: atribuicoes }] = await Promise.all([
-    supabase.from("perfis").select("*").eq("id", id).maybeSingle(),
-    supabase.from("perfis_escaloes").select("escalao_id").eq("perfil_id", id),
+    supabase.from("perfis" as any).select("*").eq("id", id).maybeSingle(),
+    supabase.from("perfis_escaloes" as any).select("escalao_id").eq("perfil_id", id),
   ]);
   if (!perfil) notFound();
 

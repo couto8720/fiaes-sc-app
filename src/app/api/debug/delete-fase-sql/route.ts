@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
     // Buscar fase de eliminação
     const { data: fases, error: erroFases } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("id")
       .eq("torneio_id", torneioId)
       .eq("tipo", "eliminatoria");
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // Usar RPC ou delete directo
     const { error: erroDelete } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .delete()
       .eq("id", faseId);
 

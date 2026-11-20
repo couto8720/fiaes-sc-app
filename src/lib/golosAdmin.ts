@@ -5,12 +5,12 @@ import { createClient } from "./supabase/server";
 export async function golosParaEditar(jogoId: string, escalaoId: string) {
   const supabase = await createClient();
   const [{ data: golos }, { data: jogosEscalao }] = await Promise.all([
-    supabase.from("golos").select("id, marcador, minuto, penalti").eq("jogo_id", jogoId).order("minuto", { nullsFirst: false }),
-    supabase.from("jogos").select("id").eq("escalao_id", escalaoId),
+    supabase.from("golos" as any).select("id, marcador, minuto, penalti").eq("jogo_id", jogoId).order("minuto", { nullsFirst: false }),
+    supabase.from("jogos" as any).select("id").eq("escalao_id", escalaoId),
   ]);
   const ids = (jogosEscalao ?? []).map((j) => j.id);
   const { data: usados } = ids.length
-    ? await supabase.from("golos").select("marcador").in("jogo_id", ids).limit(1000)
+    ? await supabase.from("golos" as any).select("marcador").in("jogo_id", ids).limit(1000)
     : { data: [] };
 
   // Os mais frequentes primeiro (quem marca mais aparece primeiro nos atalhos).
@@ -26,7 +26,7 @@ export async function golosParaEditar(jogoId: string, escalaoId: string) {
 export async function expulsoesParaEditar(jogoId: string) {
   const supabase = await createClient();
   const { data } = await supabase
-    .from("expulsoes")
+    .from("expulsoes" as any)
     .select("id, lado, atleta, minuto")
     .eq("jogo_id", jogoId)
     .order("minuto", { nullsFirst: false });

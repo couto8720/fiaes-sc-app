@@ -14,7 +14,7 @@ export default async function PaginaQualificacao({ params }: { params: Promise<{
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
-    .from("torneios")
+    .from("torneios" as any)
     .select("*")
     .eq("id", id)
     .single();
@@ -24,13 +24,13 @@ export default async function PaginaQualificacao({ params }: { params: Promise<{
   }
 
   const { data: regras } = await supabase
-    .from("regras_qualificacao_torneio")
+    .from("regras_qualificacao_torneio" as any)
     .select("*")
     .eq("torneio_id", id)
     .order("ordem");
 
   const { data: fases } = await supabase
-    .from("fases_torneio")
+    .from("fases_torneio" as any)
     .select("*")
     .eq("torneio_id", id);
 
@@ -43,7 +43,7 @@ export default async function PaginaQualificacao({ params }: { params: Promise<{
       <h1 className="mb-2 text-3xl font-black tracking-tight">Regras de Qualificação</h1>
       <p className="mb-6 text-suave">Configure como as equipas avançam dos grupos para as próximas fases</p>
 
-      <FormularioQualificacao torneioId={id} regrasAtuais={regras || []} fases={fases || []} />
+      <FormularioQualificacao torneioId={id} regrasAtuais={regras || []} fases={(fases || []) as unknown as any[]} />
     </div>
   );
 }

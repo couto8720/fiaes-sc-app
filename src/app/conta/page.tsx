@@ -65,9 +65,9 @@ async function Conteudo() {
   }
 
   const [{ data: adepto }, { data: perfil }, { data: escaloes }] = await Promise.all([
-    supabase.from("adeptos").select("*").eq("id", auth.user.id).maybeSingle(),
-    supabase.from("perfis").select("id").eq("id", auth.user.id).maybeSingle(),
-    supabase.from("escaloes").select("slug, nome").eq("ativo", true).order("ordem"),
+    supabase.from("adeptos" as any).select("*").eq("id", auth.user.id).maybeSingle(),
+    supabase.from("perfis" as any).select("id").eq("id", auth.user.id).maybeSingle(),
+    supabase.from("escaloes" as any).select("slug, nome").eq("ativo", true).order("ordem"),
   ]);
 
   // Conta do staff (não é conta de adepto).

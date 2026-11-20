@@ -36,10 +36,10 @@ export async function convidarUtilizador(_: EstadoFormulario, fd: FormData): Pro
   // O perfil é criado pelo trigger da BD; aqui só se acertam o papel e os escalões.
   // (Cliente admin porque a sessão do super-admin já foi confirmada acima.)
   const userId = data.user.id;
-  await admin.from("perfis").update({ nome: r.dados.nome, papel: r.dados.papel }).eq("id", userId);
+  await admin.from("perfis" as any).update({ nome: r.dados.nome, papel: r.dados.papel } as any).eq("id", userId);
   const escaloes = escaloesValidos(sessao, fd);
   if (escaloes.length) {
-    await admin.from("perfis_escaloes").insert(escaloes.map((escalao_id) => ({ perfil_id: userId, escalao_id })));
+    await admin.from("perfis_escaloes" as any).insert(escaloes.map((escalao_id) => ({ perfil_id: userId, escalao_id })) as any);
   }
   return { ok: `Convite enviado para ${r.dados.email}.` };
 }
@@ -59,18 +59,18 @@ export async function atualizarUtilizador(_: EstadoFormulario, fd: FormData): Pr
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase.from("perfis").update({ nome, papel, ativo }).eq("id", id).select("id");
+  const { data, error } = await supabase.from("perfis" as any).update({ nome, papel, ativo } as any).eq("id", id).select("id");
   if (error) return { erro: mensagemErroBD(error), valores };
   if (!data?.length) return { erro: "Utilizador não encontrado.", valores };
 
   // Substitui as atribuições pelas escolhidas no formulário.
   const escaloes = escaloesValidos(sessao, fd);
-  const apagar = await supabase.from("perfis_escaloes").delete().eq("perfil_id", id);
+  const apagar = await supabase.from("perfis_escaloes" as any).delete().eq("perfil_id", id);
   if (apagar.error) return { erro: mensagemErroBD(apagar.error), valores };
   if (escaloes.length) {
     const inserir = await supabase
-      .from("perfis_escaloes")
-      .insert(escaloes.map((escalao_id) => ({ perfil_id: id, escalao_id })));
+      .from("perfis_escaloes" as any)
+      .insert(escaloes.map((escalao_id) => ({ perfil_id: id, escalao_id })) as any);
     if (inserir.error) return { erro: mensagemErroBD(inserir.error), valores };
   }
   redirect("/admin/utilizadores");

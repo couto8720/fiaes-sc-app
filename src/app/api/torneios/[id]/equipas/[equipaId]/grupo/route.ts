@@ -20,8 +20,8 @@ export async function PUT(
     }
 
     const { data: equipa, error } = await supabase
-      .from("equipas_torneio")
-      .update({ fase_torneio_id })
+      .from("equipas_torneio" as any)
+      .update({ fase_torneio_id } as any)
       .eq("id", equipaId)
       .eq("torneio_id", id)
       .select()

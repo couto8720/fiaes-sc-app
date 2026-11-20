@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     // Deletar classificações antigas para este escalão
-    await supabase.from("classificacoes").delete().eq("escalao_id", escalaoId);
+    await supabase.from("classificacoes" as any).delete().eq("escalao_id", escalaoId);
 
     // Inserir novas linhas
     const classificacoes = linhas.map((linha) => ({
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       atualizado_em: new Date().toISOString(),
     }));
 
-    const { error } = await supabase.from("classificacoes").insert(classificacoes);
+    const { error } = await supabase.from("classificacoes" as any).insert(classificacoes as any);
 
     if (error) throw error;
 

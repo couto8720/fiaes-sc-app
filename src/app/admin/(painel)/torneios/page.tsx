@@ -19,7 +19,7 @@ async function ConteudoTorneios() {
   const supabase = await createClient();
 
   const { data: torneios } = await supabase
-    .from("torneios")
+    .from("torneios" as any)
     .select("*")
     .order("criado_em", { ascending: false });
 

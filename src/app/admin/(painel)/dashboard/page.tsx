@@ -29,19 +29,19 @@ async function Dashboard() {
     { data: classificacoes },
   ] = await Promise.all([
     supabase
-      .from("jogos")
+      .from("jogos" as any)
       .select("id")
       .in("escalao_id", ids)
       .gte("data_hora", new Date(agora_).toISOString())
       .limit(1),
     supabase
-      .from("jogos")
+      .from("jogos" as any)
       .select("id")
       .in("escalao_id", ids)
       .eq("estado", "final")
       .limit(10),
     supabase
-      .from("classificacoes")
+      .from("classificacoes" as any)
       .select("id")
       .in("escalao_id", ids),
   ]);

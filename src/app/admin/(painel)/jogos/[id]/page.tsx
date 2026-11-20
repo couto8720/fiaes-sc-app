@@ -33,8 +33,8 @@ async function ConteudoEditarJogo({ params }: Pick<PageProps<"/admin/jogos/[id]"
 
   const supabase = await createClient();
   const [{ data: jogo }, { data: locais }] = await Promise.all([
-    supabase.from("jogos").select("*").eq("id", id).maybeSingle(),
-    supabase.from("locais").select("id, nome").order("nome"),
+    supabase.from("jogos" as any).select("*").eq("id", id).maybeSingle(),
+    supabase.from("locais" as any).select("id, nome").order("nome"),
   ]);
   if (!jogo) notFound();
 

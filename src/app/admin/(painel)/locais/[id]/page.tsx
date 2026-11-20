@@ -25,7 +25,7 @@ async function ConteudoEditarLocal({ params }: Pick<PageProps<"/admin/locais/[id
   const [sessao, { id }] = await Promise.all([exigirSessao(), params]);
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const supabase = await createClient();
-  const { data: local } = await supabase.from("locais").select("*").eq("id", id).maybeSingle();
+  const { data: local } = await supabase.from("locais" as any).select("*").eq("id", id).maybeSingle();
   if (!local) notFound();
 
   return (

@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
     // Atualizar torneio
     const { error: erroAtualizacao } = await supabase
-      .from("torneios")
+      .from("torneios" as any)
       .update({
         nome,
         descricao,
@@ -51,24 +51,24 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
     // Deletar todas as fases associadas (cascade deleta jogos automaticamente)
     await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .delete()
       .eq("torneio_id", id);
 
     // Deletar todas as equipas
     await supabase
-      .from("equipas_torneio")
+      .from("equipas_torneio" as any)
       .delete()
       .eq("torneio_id", id);
 
     // Deletar todos os apuramentos
     await supabase
-      .from("apuramentos_torneio")
+      .from("apuramentos_torneio" as any)
       .delete()
       .eq("torneio_id", id);
 
     // Deletar o torneio
-    const { error } = await supabase.from("torneios").delete().eq("id", id);
+    const { error } = await supabase.from("torneios" as any).delete().eq("id", id);
 
     if (error) {
       console.error("Erro ao deletar torneio:", error);

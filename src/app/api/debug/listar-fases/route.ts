@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     // Buscar todas as fases
     const { data: fases, error } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("*")
       .eq("torneio_id", torneioId);
 

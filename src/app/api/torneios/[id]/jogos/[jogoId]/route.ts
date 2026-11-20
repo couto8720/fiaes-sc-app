@@ -18,7 +18,7 @@ export async function PUT(
     if (local_id && typeof local_id === "string" && !local_id.match(/^[0-9a-f-]{36}$/i)) {
       // É um nome, não um UUID
       const { data: localExistente } = await supabase
-        .from("locais")
+        .from("locais" as any)
         .select("id")
         .eq("nome", local_id)
         .single();
@@ -28,8 +28,8 @@ export async function PUT(
       } else {
         // Criar novo local
         const { data: novoLocal, error: erroInserirLocal } = await supabase
-          .from("locais")
-          .insert({ nome: local_id })
+          .from("locais" as any)
+          .insert({ nome: local_id } as any)
           .select("id")
           .single();
 
@@ -43,7 +43,7 @@ export async function PUT(
     }
 
     const { error: erroAtualizar } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .update({
         golos_equipa_1,
         golos_equipa_2,

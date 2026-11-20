@@ -22,7 +22,7 @@ export default function PaginaLocais() {
 async function ListaLocais() {
   await exigirSessao();
   const supabase = await createClient();
-  const { data: locais } = await supabase.from("locais").select("*").order("nome");
+  const { data: locais } = await supabase.from("locais" as any).select("*").order("nome");
 
   return (
     <>

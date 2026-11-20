@@ -10,7 +10,7 @@ export async function DELETE(
     const supabase = await createClient();
 
     const { error } = await supabase
-      .from("equipas_torneio")
+      .from("equipas_torneio" as any)
       .delete()
       .eq("id", equipaId)
       .eq("torneio_id", id);

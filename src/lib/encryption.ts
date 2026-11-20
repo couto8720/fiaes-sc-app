@@ -43,7 +43,7 @@ export function encrypt(plaintext: string): EncryptedData {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
-    let ciphertext = cipher.update(plaintext, "utf8", ENCODING);
+    let ciphertext = cipher.update(plaintext, "utf8", ENCODING as any);
     ciphertext += cipher.final(ENCODING);
 
     const authTag = cipher.getAuthTag();
@@ -72,7 +72,7 @@ export function decrypt(encrypted: EncryptedData): string {
     const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
     decipher.setAuthTag(authTag);
 
-    let plaintext = decipher.update(encrypted.ciphertext, ENCODING, "utf8");
+    let plaintext = decipher.update(encrypted.ciphertext, ENCODING, "utf8" as any);
     plaintext += decipher.final("utf8");
 
     return plaintext;
@@ -120,7 +120,7 @@ export function generateEncryptionKey(): string {
  */
 export function hashData(data: string, salt: string = ""): string {
   const hash = crypto.createHash("sha256");
-  hash.update(data + salt);
+  hash.update(data + salt as any);
   return hash.digest(ENCODING);
 }
 

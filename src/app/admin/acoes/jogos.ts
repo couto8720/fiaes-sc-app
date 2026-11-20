@@ -21,15 +21,15 @@ export async function guardarJogo(_: EstadoFormulario, fd: FormData): Promise<Es
   const supabase = await createClient();
 
   if (novo_local) {
-    const { data: local, error } = await supabase.from("locais").insert({ nome: novo_local }).select("id").single();
+    const { data: local, error } = await supabase.from("locais" as any).insert({ nome: novo_local } as any).select("id").single();
     if (error) return { erro: mensagemErroBD(error), valores };
     dados.local_id = local.id;
   }
 
   const id = valores.id;
   const { data, error } = id
-    ? await supabase.from("jogos").update(dados).eq("id", id).select("id")
-    : await supabase.from("jogos").insert(dados).select("id");
+    ? await supabase.from("jogos" as any).update(dados as any).eq("id", id).select("id")
+    : await supabase.from("jogos" as any).insert(dados as any).select("id");
 
   if (error) return { erro: mensagemErroBD(error), valores };
   if (!data?.length) return { erro: "O jogo não existe ou não tens permissão para o alterar.", valores };
@@ -40,6 +40,6 @@ export async function guardarJogo(_: EstadoFormulario, fd: FormData): Promise<Es
 export async function apagarJogo(fd: FormData) {
   await exigirSessao();
   const supabase = await createClient();
-  await supabase.from("jogos").delete().eq("id", String(fd.get("id")));
+  await supabase.from("jogos" as any).delete().eq("id", String(fd.get("id")));
   redirect("/admin");
 }

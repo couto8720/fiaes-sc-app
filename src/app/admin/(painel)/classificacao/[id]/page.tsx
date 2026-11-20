@@ -24,7 +24,7 @@ async function ConteudoEditarClassificacao({ params }: Pick<PageProps<"/admin/cl
   if (!escalao) notFound(); // não existe ou não é dos escalões deste utilizador
 
   const supabase = await createClient();
-  const { data: linhas } = await supabase.from("classificacoes").select("*").eq("escalao_id", id).order("posicao");
+  const { data: linhas } = await supabase.from("classificacoes" as any).select("*").eq("escalao_id", id).order("posicao");
 
   return (
     <>

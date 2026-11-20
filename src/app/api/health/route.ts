@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Test simple query
-    const { error: dbError } = await supabase.from("audit_logs").select("count").limit(1);
+    const { error: dbError } = await supabase.from("audit_logs" as any).select("count").limit(1);
 
     if (dbError) {
       health.services.database = "error";

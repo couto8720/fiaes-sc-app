@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     // Now we might need to create a profile in our profiles table if it doesn't exist
 
     const { data: profile } = await supabase
-      .from("perfis")
+      .from("perfis" as any)
       .select("id")
       .eq("id", data.user.id)
       .maybeSingle();

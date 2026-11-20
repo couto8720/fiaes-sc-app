@@ -21,13 +21,13 @@ export function RecentActivity() {
       try {
         const supabase = createClient();
         const { data, error } = await supabase
-          .from("audit_logs")
+          .from("audit_logs" as any)
           .select("id, user_id, action, resource_type, created_at as timestamp, status")
           .order("created_at", { ascending: false })
           .limit(10);
 
         if (error) throw error;
-        setActivities((data || []) as Activity[]);
+        setActivities((data || []) as unknown as Activity[]);
       } catch (err) {
         console.error("Erro ao carregar atividades:", err);
       } finally {

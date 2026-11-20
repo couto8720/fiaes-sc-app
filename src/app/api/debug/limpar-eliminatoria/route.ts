@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const torneioId = searchParams.get("torneio_id");
@@ -17,7 +14,7 @@ export async function POST(
 
     // 1. Buscar fase de eliminação
     const { data: fases } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("id")
       .eq("torneio_id", torneioId)
       .eq("tipo", "eliminatoria");
@@ -30,7 +27,7 @@ export async function POST(
 
     // 2. Deletar jogos desta fase
     const { error: erroJogos } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .delete()
       .eq("fase_torneio_id", faseId);
 
@@ -44,7 +41,7 @@ export async function POST(
 
     // 3. Deletar fase
     const { error: erroFase } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .delete()
       .eq("id", faseId);
 

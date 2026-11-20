@@ -20,7 +20,7 @@ export async function POST(
     }
 
     const { data: equipa, error: erroInserir } = await supabase
-      .from("equipas_torneio")
+      .from("equipas_torneio" as any)
       .insert({
         torneio_id: id,
         fase_torneio_id,

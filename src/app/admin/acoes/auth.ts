@@ -7,7 +7,7 @@ import { origemDoSite } from "@/lib/sessao";
 import { destinoSeguro, mensagemErroPalavraPasse, validarPalavraPasse } from "@/lib/validacao";
 import { checkRateLimit, resetRateLimit } from "@/lib/rate-limit";
 import { logAuditEvent } from "@/lib/audit-log";
-import { isTwoFactorEnabled, getTwoFactorSecret, verifyTOTPToken, verifyBackupCode } from "@/lib/two-factor";
+// import { isTwoFactorEnabled, getTwoFactorSecret, verifyTOTPToken, verifyBackupCode } from "@/lib/two-factor";
 import type { EstadoFormulario } from "./tipos";
 
 export async function entrar(_: EstadoFormulario, fd: FormData): Promise<EstadoFormulario> {
@@ -187,7 +187,7 @@ export async function definirPalavraPasse(_: EstadoFormulario, fd: FormData): Pr
   // Staff (tem perfil) vai para o painel; adeptos para a sua conta.
   const { data: auth } = await supabase.auth.getUser();
   const { data: perfil } = auth.user
-    ? await supabase.from("perfis").select("id").eq("id", auth.user.id).maybeSingle()
+    ? await supabase.from("perfis" as any).select("id").eq("id", auth.user.id).maybeSingle()
     : { data: null };
   redirect(perfil ? "/admin" : "/conta");
 }
@@ -217,7 +217,7 @@ export async function recuperar2FA(_: EstadoFormulario, fd: FormData): Promise<E
 
   // Verify backup code
   const { data: backupCodes } = await supabase
-    .from("backup_codes")
+    .from("backup_codes" as any)
     .select("id, used")
     .eq("user_id", user.id)
     .eq("code", backupCode)
@@ -237,8 +237,8 @@ export async function recuperar2FA(_: EstadoFormulario, fd: FormData): Promise<E
 
   // Mark backup code as used
   await supabase
-    .from("backup_codes")
-    .update({ used: true })
+    .from("backup_codes" as any)
+    .update({ used: true } as any)
     .eq("id", backupCodes.id);
 
   // Log successful recovery

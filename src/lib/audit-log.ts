@@ -34,7 +34,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
   try {
     const supabase = await createClient();
 
-    const { error } = await supabase.from("audit_logs").insert({
+    const { error } = await supabase.from("audit_logs" as any).insert({
       user_id: entry.user_id,
       action: entry.action,
       resource_type: entry.resource_type,
@@ -58,7 +58,7 @@ export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
 export async function getAuditLogs(options?: { user_id?: string; action?: AuditAction; limit?: number; offset?: number }) {
   const supabase = await createClient();
 
-  let query = supabase.from("audit_logs").select("*");
+  let query = supabase.from("audit_logs" as any).select("*");
 
   if (options?.user_id) {
     query = query.eq("user_id", options.user_id);

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { data: profile } = await supabase
-      .from("perfis")
+      .from("perfis" as any)
       .select("role")
       .eq("user_id", user.id)
       .single();
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
     // Get webhooks
     const { data: webhooks, error } = await supabase
-      .from("webhooks")
+      .from("webhooks" as any)
       .select("id, event_type, url, active, created_at, updated_at")
       .order("created_at", { ascending: false });
 
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { data: profile } = await supabase
-      .from("perfis")
+      .from("perfis" as any)
       .select("role")
       .eq("user_id", user.id)
       .single();
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { data: webhook, error } = await supabase
-      .from("webhooks")
+      .from("webhooks" as any)
       .insert({
         event_type,
         url,
@@ -114,7 +114,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { data: profile } = await supabase
-      .from("perfis")
+      .from("perfis" as any)
       .select("role")
       .eq("user_id", user.id)
       .single();
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { error } = await supabase
-      .from("webhooks")
+      .from("webhooks" as any)
       .delete()
       .eq("id", webhookId);
 

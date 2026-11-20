@@ -24,7 +24,7 @@ async function ConteudoResultados() {
 
   // Buscar jogos sem resultado
   const { data: jogos } = await supabase
-    .from("jogos")
+    .from("jogos" as any)
     .select("*, escalao:escaloes(nome)")
     .in("escalao_id", ids)
     .is("golos_clube", null)

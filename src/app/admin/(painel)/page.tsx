@@ -43,7 +43,7 @@ async function ListaJogosAdmin({ searchParams }: Pick<PageProps<"/admin">, "sear
   const inicioHoje = lisboaParaISO(hoje, "00:00")!;
   const supabase = await createClient();
   let q = supabase
-    .from("jogos")
+    .from("jogos" as any)
     .select("*, escalao:escaloes(nome, slug), local:locais(nome, maps_url)")
     .in("escalao_id", filtro && ids.includes(filtro) ? [filtro] : ids);
   q = anteriores ? q.lt("data_hora", inicioHoje) : q.gte("data_hora", inicioHoje);

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     // Buscar o último jogo sem resultado para este escalão
     const { data: jogo, error: erroJogo } = await supabase
-      .from("jogos")
+      .from("jogos" as any)
       .select("id, escalao_id")
       .eq("escalao_id", escalaoId)
       .is("golos_clube", null)
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     // Atualizar o jogo com os golos
     const { error } = await supabase
-      .from("jogos")
+      .from("jogos" as any)
       .update({
         golos_clube: golosClube,
         golos_adversario: golosAdversario,

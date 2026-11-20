@@ -14,8 +14,8 @@ export default async function PaginaEditarTorneio({ params }: { params: Promise<
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
-    .from("torneios")
-    .select("*")
+    .from("torneios" as any)
+    .select("*" as any)
     .eq("id", id)
     .single();
 

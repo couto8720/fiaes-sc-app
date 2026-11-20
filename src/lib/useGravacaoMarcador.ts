@@ -51,8 +51,8 @@ export function useGravacaoMarcador(jogo: Jogo) {
     let resposta: { data: Pick<Jogo, "estado_desde" | "atualizado_em"> | null; error: { code?: string } | null };
     try {
       resposta = await cliente()
-        .from("jogos")
-        .update(alvo)
+        .from("jogos" as any)
+        .update(alvo as any)
         .eq("id", jogo.id)
         .select("estado_desde, atualizado_em")
         .abortSignal(AbortSignal.timeout(8000)) // rede "pendurada" no campo: desiste e volta a tentar

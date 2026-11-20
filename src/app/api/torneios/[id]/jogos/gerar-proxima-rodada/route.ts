@@ -12,7 +12,7 @@ export async function POST(
 
     // 1. Buscar fase de eliminação
     const { data: fase } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("id")
       .eq("torneio_id", id)
       .eq("tipo", "eliminatoria")
@@ -27,7 +27,7 @@ export async function POST(
 
     // 2. Buscar semi-finais completadas
     const { data: semifinais } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select(
         `
         id,
@@ -81,7 +81,7 @@ export async function POST(
 
     // 4. Verificar se já existem jogos de rodada 2
     const { data: jogosRodada2 } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("id")
       .eq("torneio_id", id)
       .eq("fase_torneio_id", fase.id)
@@ -117,8 +117,8 @@ export async function POST(
     ];
 
     const { data: jogosInseridos, error: erroJogos } = await supabase
-      .from("jogos_torneio")
-      .insert(novosjogos)
+      .from("jogos_torneio" as any)
+      .insert(novosjogos as any)
       .select();
 
     if (erroJogos || !jogosInseridos) {

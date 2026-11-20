@@ -29,7 +29,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Obter torneio
     const { data: torneio, error: erroTorneio } = await supabase
-      .from("torneios")
+      .from("torneios" as any)
       .select("*")
       .eq("id", id)
       .single();
@@ -42,13 +42,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     console.log("✅ Torneio encontrado:", torneio.nome);
 
     // Deletar regras antigas
-    await supabase.from("regras_qualificacao_torneio").delete().eq("torneio_id", id);
+    await supabase.from("regras_qualificacao_torneio" as any).delete().eq("torneio_id", id);
     console.log("🗑️ Regras antigas deletadas");
 
     // Inserir novas regras
     for (let i = 0; i < regras.length; i++) {
       const regra = regras[i];
-      const { error: erroInsert } = await supabase.from("regras_qualificacao_torneio").insert({
+      const { error: erroInsert } = await supabase.from("regras_qualificacao_torneio" as any).insert({
         torneio_id: id,
         nome: regra.nome,
         descricao: regra.descricao,
@@ -73,14 +73,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
       // Deletar TODAS as fases de eliminação antigas
       await supabase
-        .from("fases_torneio")
+        .from("fases_torneio" as any)
         .delete()
         .eq("torneio_id", id)
         .eq("tipo", "eliminatoria");
 
       // Criar uma nova fase de eliminação
       const { data: novaFase, error: erroFase } = await supabase
-        .from("fases_torneio")
+        .from("fases_torneio" as any)
         .insert({
           torneio_id: id,
           nome: "Eliminatória",
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       console.log("✅ Fase de eliminação criada:", faseEliminacaoId);
       // Obter grupos
       let { data: grupos } = await supabase
-        .from("fases_torneio")
+        .from("fases_torneio" as any)
         .select("*")
         .eq("torneio_id", id)
         .eq("tipo", "grupos");
@@ -108,7 +108,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       if (!grupos || grupos.length === 0) {
         // Buscar todas as fases do torneio
         const { data: todasAsFases } = await supabase
-          .from("fases_torneio")
+          .from("fases_torneio" as any)
           .select("*")
           .eq("torneio_id", id)
           .neq("tipo", "eliminatoria");
@@ -120,7 +120,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         } else {
           // Se ainda não há nenhuma fase, criar uma genérica
           const { data: novaFase, error: erroNovaFase } = await supabase
-            .from("fases_torneio")
+            .from("fases_torneio" as any)
             .insert({
               torneio_id: id,
               nome: "Grupos",
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         // Buscar classificação do grupo
         const { data: jogosGrupo } = await supabase
-          .from("jogos_torneio")
+          .from("jogos_torneio" as any)
           .select("*, equipa_1:equipa_1_id(*), equipa_2:equipa_2_id(*)")
           .eq("fase_torneio_id", grupo.id);
 
@@ -210,7 +210,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         // Buscar TODAS as equipas do torneio e adicionar as que não têm resultados
         const { data: todasEquipas } = await supabase
-          .from("equipas_torneio")
+          .from("equipas_torneio" as any)
           .select("id, nome")
           .eq("torneio_id", id);
 
@@ -249,11 +249,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       // Verificar se temos as equipas apuradas
       if (equipasApuradas.length > 0) {
         // Deletar apuramentos antigos
-        await supabase.from("apuramentos_torneio").delete().eq("torneio_id", id);
+        await supabase.from("apuramentos_torneio" as any).delete().eq("torneio_id", id);
 
         // Inserir novos apuramentos
         for (const apuramento of equipasApuradas) {
-          await supabase.from("apuramentos_torneio").insert(apuramento);
+          await supabase.from("apuramentos_torneio" as any).insert(apuramento as any);
         }
 
         console.log("✅ Apuramentos criados:", equipasApuradas.length);

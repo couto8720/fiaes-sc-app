@@ -26,17 +26,17 @@ const lerSessao = cache(async (): Promise<Estado> => {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { tipo: "anonimo" };
 
-  const { data: perfil } = await supabase.from("perfis").select("*").eq("id", data.user.id).maybeSingle();
+  const { data: perfil } = (await supabase as any).from("perfis" as any).select("*").eq("id", data.user.id).maybeSingle();
   if (!perfil || !perfil.ativo) return { tipo: "sem-acesso" };
 
   const superAdmin = perfil.papel === "super_admin";
   let escaloes: Escalao[];
   if (superAdmin) {
-    const { data: todos } = await supabase.from("escaloes").select("*").order("ordem");
+    const { data: todos } = await supabase.from("escaloes" as any).select("*").order("ordem");
     escaloes = todos ?? [];
   } else {
     const { data: atribuidos } = await supabase
-      .from("perfis_escaloes")
+      .from("perfis_escaloes" as any)
       .select("escalao:escaloes(*)")
       .eq("perfil_id", perfil.id);
     escaloes = (atribuidos ?? [])

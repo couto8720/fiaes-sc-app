@@ -47,8 +47,8 @@ export function GestorExpulsoes({
     setErro(null);
     setAGravar(true);
     const { data, error } = await cliente()
-      .from("expulsoes")
-      .insert({ jogo_id: jogoId, lado, atleta, minuto: m })
+      .from("expulsoes" as any)
+      .insert({ jogo_id: jogoId, lado, atleta, minuto: m } as any)
       .select("id, lado, atleta, minuto")
       .single();
     setAGravar(false);
@@ -61,7 +61,7 @@ export function GestorExpulsoes({
   async function apagar(id: string) {
     const anterior = expulsoes;
     setExpulsoes((es) => es.filter((e) => e.id !== id));
-    const { error } = await cliente().from("expulsoes").delete().eq("id", id);
+    const { error } = await cliente().from("expulsoes" as any).delete().eq("id", id);
     if (error) {
       setExpulsoes(anterior);
       setErro("Não foi possível apagar. Tenta outra vez.");

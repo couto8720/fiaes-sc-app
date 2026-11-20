@@ -11,13 +11,13 @@ export async function POST(
 
     // Buscar todas as fases e equipas
     const { data: fases } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("*")
       .eq("torneio_id", id)
       .order("numero_grupo");
 
     const { data: equipas } = await supabase
-      .from("equipas_torneio")
+      .from("equipas_torneio" as any)
       .select("*")
       .eq("torneio_id", id);
 
@@ -44,8 +44,8 @@ export async function POST(
     // Atualizar todas as equipas
     for (const atualizacao of atualizacoes) {
       const { error } = await supabase
-        .from("equipas_torneio")
-        .update({ fase_torneio_id: atualizacao.fase_torneio_id })
+        .from("equipas_torneio" as any)
+        .update({ fase_torneio_id: atualizacao.fase_torneio_id } as any)
         .eq("id", atualizacao.id);
 
       if (error) {

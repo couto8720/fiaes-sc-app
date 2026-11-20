@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     // Criar torneio
     const { data: torneio, error: erroCriar } = await supabase
-      .from("torneios")
+      .from("torneios" as any)
       .insert({
         nome,
         descricao,
@@ -69,8 +69,8 @@ export async function POST(req: NextRequest) {
       }
 
       const { error: erroFases, data: fasesCriadas } = await supabase
-        .from("fases_torneio")
-        .insert(fases)
+        .from("fases_torneio" as any)
+        .insert(fases as any)
         .select();
 
       if (erroFases) {

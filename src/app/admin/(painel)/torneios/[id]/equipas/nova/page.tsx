@@ -14,20 +14,20 @@ export default async function PaginaNovaEquipa({ params }: { params: Promise<{ i
 
   // Buscar torneio
   const { data: torneio } = await supabase
-    .from("torneios")
+    .from("torneios" as any)
     .select("*")
     .eq("id", id)
     .single();
 
   // Buscar fases do torneio
   const { data: fases } = await supabase
-    .from("fases_torneio")
+    .from("fases_torneio" as any)
     .select("*")
     .eq("torneio_id", id);
 
   // Buscar escalões
   const { data: escaloes } = await supabase
-    .from("escaloes")
+    .from("escaloes" as any)
     .select("*")
     .order("idade");
 
@@ -44,7 +44,7 @@ export default async function PaginaNovaEquipa({ params }: { params: Promise<{ i
 
       <FormularioNovaEquipa
         torneioId={id}
-        fases={fases || []}
+        fases={(fases || []) as unknown as any[]}
         escaloes={escaloes || []}
       />
     </div>

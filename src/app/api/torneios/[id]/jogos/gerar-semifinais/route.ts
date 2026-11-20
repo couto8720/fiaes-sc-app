@@ -13,7 +13,7 @@ export async function POST(
 
     // 1. Buscar fase de eliminação
     const { data: fase, error: erroFase } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("id")
       .eq("torneio_id", id)
       .eq("tipo", "eliminatoria")
@@ -31,7 +31,7 @@ export async function POST(
 
     // 2. Buscar equipas apuradas ordenadas por posição
     const { data: apuramentos, error: erroApuramentos } = await supabase
-      .from("apuramentos_torneio")
+      .from("apuramentos_torneio" as any)
       .select("equipa_id")
       .eq("torneio_id", id)
       .order("posicao", { ascending: true });
@@ -48,7 +48,7 @@ export async function POST(
 
     // 3. Verificar se já existem semi-finais
     const { data: semifinaisExistentes } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("id")
       .eq("fase_torneio_id", fase.id)
       .eq("rodada", 1);
@@ -71,7 +71,7 @@ export async function POST(
 
     for (const matchup of matchups) {
       const { error: erroJogo } = await supabase
-        .from("jogos_torneio")
+        .from("jogos_torneio" as any)
         .insert({
           torneio_id: id,
           fase_torneio_id: fase.id,

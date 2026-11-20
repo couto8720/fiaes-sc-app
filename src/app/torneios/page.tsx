@@ -25,7 +25,7 @@ export default async function PaginaTorneios() {
 
 async function ConteudoTorneios() {
   const supabase = await createClient();
-  const { data: torneios } = await supabase.from("torneios").select("*").order("criado_em", { ascending: false });
+  const { data: torneios } = await supabase.from("torneios" as any).select("*").order("criado_em", { ascending: false });
 
   const formatoTexto: Record<string, string> = {
     grupos: "Em grupos",

@@ -25,7 +25,7 @@ async function ListaClassificacoes() {
   const ids = sessao.escaloes.map((e) => e.id);
   const supabase = await createClient();
   const { data } = ids.length
-    ? await supabase.from("classificacoes").select("escalao_id, posicao, e_o_clube, atualizado_em").in("escalao_id", ids)
+    ? await supabase.from("classificacoes" as any).select("escalao_id, posicao, e_o_clube, atualizado_em").in("escalao_id", ids)
     : { data: [] };
 
   if (!ids.length) {

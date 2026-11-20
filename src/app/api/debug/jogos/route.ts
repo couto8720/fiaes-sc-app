@@ -8,13 +8,13 @@ export async function GET(req: NextRequest) {
 
     // Total games count
     const { data: totalGames, error: err1 } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("*", { count: "exact" })
       .eq("torneio_id", torneioId);
 
     // Games with results
     const { data: gamesWithResults, error: err2 } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("*")
       .eq("torneio_id", torneioId)
       .not("golos_equipa_1", "is", null)
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     // Games per team
     const { data: allGames, error: err3 } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select(`
         id,
         equipa_1_id,

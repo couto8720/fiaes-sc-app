@@ -12,6 +12,6 @@ export async function GET(request: NextRequest) {
   }
   if (!supabaseConfigurado) return Response.json({ ok: true, nota: "Supabase não configurado" });
 
-  const { error } = await createPublicClient().from("escaloes").select("id").limit(1);
+  const { error } = await createPublicClient().from("escaloes" as any).select("id").limit(1);
   return Response.json({ ok: !error, em: new Date().toISOString() }, { status: error ? 502 : 200 });
 }

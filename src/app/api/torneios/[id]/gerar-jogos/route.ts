@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Buscar todas as equipas da fase
     const { data: equipas, error: erroEquipas } = await supabase
-      .from("equipas_torneio")
+      .from("equipas_torneio" as any)
       .select("id, nome")
       .eq("torneio_id", id)
       .eq("fase_torneio_id", fase_torneio_id)
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Apagar jogos antigos da fase
     await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .delete()
       .eq("fase_torneio_id", fase_torneio_id);
 
@@ -100,8 +100,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     // Inserir jogos
     const { data: jogosInseridos, error: erroInserir } = await supabase
-      .from("jogos_torneio")
-      .insert(jogos)
+      .from("jogos_torneio" as any)
+      .insert(jogos as any)
       .select();
 
     if (erroInserir) {

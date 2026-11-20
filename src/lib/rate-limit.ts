@@ -35,8 +35,8 @@ export async function checkRateLimit(
   try {
     // Verificar se existe registo de rate limit
     const { data: existing, error: fetchError } = await supabase
-      .from("rate_limits")
-      .select("*")
+      .from("rate_limits" as any)
+      .select("*" as any)
       .eq("key", identifier)
       .single();
 
@@ -48,7 +48,7 @@ export async function checkRateLimit(
 
     if (!existing) {
       // Criar novo registo
-      const { error: insertError } = await supabase.from("rate_limits").insert({
+      const { error: insertError } = await supabase.from("rate_limits" as any).insert({
         key: identifier,
         attempts: 1,
         reset_at: resetAt.toISOString(),
@@ -67,7 +67,7 @@ export async function checkRateLimit(
     if (now > recordResetAt) {
       // Janela expirou, resetar
       const { error: updateError } = await supabase
-        .from("rate_limits")
+        .from("rate_limits" as any)
         .update({
           attempts: 1,
           reset_at: resetAt.toISOString(),
@@ -88,7 +88,7 @@ export async function checkRateLimit(
     }
 
     const { error: incrementError } = await supabase
-      .from("rate_limits")
+      .from("rate_limits" as any)
       .update({
         attempts: existing.attempts + 1,
       })
@@ -113,5 +113,5 @@ export async function checkRateLimit(
 
 export async function resetRateLimit(identifier: string): Promise<void> {
   const supabase = await createClient();
-  await supabase.from("rate_limits").delete().eq("key", identifier);
+  await supabase.from("rate_limits" as any).delete().eq("key", identifier);
 }

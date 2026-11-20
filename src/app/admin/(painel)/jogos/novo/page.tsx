@@ -24,7 +24,7 @@ export default function NovoJogo({ searchParams }: PageProps<"/admin/jogos/novo"
 async function ConteudoNovoJogo({ searchParams }: Pick<PageProps<"/admin/jogos/novo">, "searchParams">) {
   const [sessao, params] = await Promise.all([exigirSessao(), searchParams]);
   const supabase = await createClient();
-  const { data: locais } = await supabase.from("locais").select("id, nome").order("nome");
+  const { data: locais } = await supabase.from("locais" as any).select("id, nome").order("nome");
 
   let inicial: Record<string, string> = {
     escalao_id: typeof params.escalao === "string" ? params.escalao : sessao.escaloes.length === 1 ? sessao.escaloes[0].id : "",
@@ -32,7 +32,7 @@ async function ConteudoNovoJogo({ searchParams }: Pick<PageProps<"/admin/jogos/n
 
   // "Duplicar": mesmo escalão, competição e local; jornada seguinte, uma semana depois, à mesma hora.
   if (typeof params.duplicar === "string") {
-    const { data: base } = await supabase.from("jogos").select("*").eq("id", params.duplicar).maybeSingle();
+    const { data: base } = await supabase.from("jogos" as any).select("*").eq("id", params.duplicar).maybeSingle();
     if (base) {
       const { data, hora } = isoParaLisboa(new Date(Date.parse(base.data_hora) + SEMANA).toISOString());
       inicial = {

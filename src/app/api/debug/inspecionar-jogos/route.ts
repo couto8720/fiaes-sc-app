@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     // Buscar um exemplo de jogo existente
     const { data: jogosExemplo, error } = await supabase
-      .from("jogos_torneio")
+      .from("jogos_torneio" as any)
       .select("*")
       .eq("torneio_id", torneioId)
       .limit(1);

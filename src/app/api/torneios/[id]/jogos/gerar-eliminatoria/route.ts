@@ -12,7 +12,7 @@ export async function POST(
 
     // 1. Buscar equipas apuradas COM A RELAÇÃO DE EQUIPAS
     const { data: apuramentos, error: erroApuramentos } = await supabase
-      .from("apuramentos_torneio")
+      .from("apuramentos_torneio" as any)
       .select("id, equipa_id, equipa:equipa_id(id, nome)")
       .eq("torneio_id", id)
       .order("id");
@@ -48,7 +48,7 @@ export async function POST(
     // 2. Deletar fase anterior se existir (limpeza automática)
     console.log("Limpando fases anteriores...");
     const { data: fasesExistentes } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .select("id")
       .eq("torneio_id", id)
       .eq("tipo", "eliminatoria");
@@ -58,13 +58,13 @@ export async function POST(
       const faseIdAnterior = fasesExistentes[0].id;
       console.log("Deletando jogos da fase anterior...");
       await supabase
-        .from("jogos_torneio")
+        .from("jogos_torneio" as any)
         .delete()
         .eq("fase_torneio_id", faseIdAnterior);
 
       console.log("Deletando fase anterior...");
       await supabase
-        .from("fases_torneio")
+        .from("fases_torneio" as any)
         .delete()
         .eq("id", faseIdAnterior);
     }
@@ -73,7 +73,7 @@ export async function POST(
 
     // 3. Criar fase de eliminação
     const { data: novasFases, error: erroFase } = await supabase
-      .from("fases_torneio")
+      .from("fases_torneio" as any)
       .insert({
         torneio_id: id,
         nome: "Eliminatória",
@@ -131,8 +131,8 @@ export async function POST(
     // 5. Inserir jogos
     console.log("Tentando inserir jogos:", JSON.stringify(jogos, null, 2));
     const { data: jogosInseridos, error: erroJogos } = await supabase
-      .from("jogos_torneio")
-      .insert(jogos)
+      .from("jogos_torneio" as any)
+      .insert(jogos as any)
       .select();
 
     console.log("Jogos inseridos:", jogosInseridos);

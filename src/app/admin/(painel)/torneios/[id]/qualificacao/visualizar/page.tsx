@@ -14,7 +14,7 @@ export default async function PaginaVisualizarQualificacao({ params }: { params:
   const supabase = await createClient();
 
   const { data: torneio } = await supabase
-    .from("torneios")
+    .from("torneios" as any)
     .select("*")
     .eq("id", id)
     .single();
@@ -24,29 +24,29 @@ export default async function PaginaVisualizarQualificacao({ params }: { params:
   }
 
   const { data: fases } = await supabase
-    .from("fases_torneio")
+    .from("fases_torneio" as any)
     .select("*")
     .eq("torneio_id", id)
     .order("numero_grupo");
 
   const { data: equipas } = await supabase
-    .from("equipas_torneio")
+    .from("equipas_torneio" as any)
     .select("*, fase_torneio:fase_torneio_id(id, nome)")
     .eq("torneio_id", id);
 
   const { data: jogos } = await supabase
-    .from("jogos_torneio")
+    .from("jogos_torneio" as any)
     .select("*")
     .eq("torneio_id", id);
 
   const { data: regras } = await supabase
-    .from("regras_qualificacao_torneio")
+    .from("regras_qualificacao_torneio" as any)
     .select("*")
     .eq("torneio_id", id)
     .order("ordem");
 
   const { data: apuramentos } = await supabase
-    .from("apuramentos_torneio")
+    .from("apuramentos_torneio" as any)
     .select("*, regra:regra_id(nome), equipa:equipa_id(nome)")
     .eq("torneio_id", id);
 
@@ -62,11 +62,11 @@ export default async function PaginaVisualizarQualificacao({ params }: { params:
       <VisualizadorQualificacao
         torneioId={id}
         torneio={torneio}
-        fases={fases || []}
-        equipas={equipas || []}
-        jogos={jogos || []}
+        fases={(fases || []) as unknown as any[]}
+        equipas={(equipas || []) as unknown as any[]}
+        jogos={(jogos || []) as unknown as any[]}
         regras={regras || []}
-        apuramentos={apuramentos || []}
+        apuramentos={(apuramentos || []) as unknown as any[]}
       />
     </div>
   );

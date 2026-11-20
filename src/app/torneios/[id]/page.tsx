@@ -31,31 +31,31 @@ export default async function PaginaDetalhesTorneio({ params }: { params: Promis
 async function ConteudoTorneio({ id }: { id: string }) {
   const supabase = await createClient();
 
-  const { data: torneio } = await supabase.from("torneios").select("*").eq("id", id).single();
+  const { data: torneio } = await supabase.from("torneios" as any).select("*").eq("id", id).single();
 
   if (!torneio) {
     notFound();
   }
 
   const { data: equipas } = await supabase
-    .from("equipas_torneio")
+    .from("equipas_torneio" as any)
     .select("*")
     .eq("torneio_id", id)
     .order("nome");
 
   const { data: jogos } = await supabase
-    .from("jogos_torneio")
+    .from("jogos_torneio" as any)
     .select("*")
     .eq("torneio_id", id)
     .order("data_hora", { ascending: true });
 
   const { data: standings } = await supabase
-    .from("classificacao_torneio")
+    .from("classificacao_torneio" as any)
     .select("*")
     .eq("torneio_id", id)
     .order("grupo, posicao");
 
-  const equipasMap = new Map((equipas || []).map((e) => [e.id, e.nome]));
+  const equipasMap = new Map(((equipas || []) as unknown as any[]).map((e) => [e.id, e.nome]));
 
   const formatoTexto: Record<string, string> = {
     grupos: "Em grupos",
@@ -93,8 +93,8 @@ async function ConteudoTorneio({ id }: { id: string }) {
 
       <TabsTorneioCliente
         torneio={torneio}
-        equipas={equipas || []}
-        jogos={jogos || []}
+        equipas={(equipas || []) as unknown as any[]}
+        jogos={(jogos || []) as unknown as any[]}
         standings={standings || []}
         equipasMap={equipasMap}
         formatoTexto={formatoTexto}

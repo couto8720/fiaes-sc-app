@@ -14,8 +14,8 @@ export async function guardarLocal(_: EstadoFormulario, fd: FormData): Promise<E
 
   const supabase = await createClient();
   const { data, error } = valores.id
-    ? await supabase.from("locais").update(r.dados).eq("id", valores.id).select("id")
-    : await supabase.from("locais").insert(r.dados).select("id");
+    ? await supabase.from("locais" as any).update(r.dados as any).eq("id", valores.id).select("id")
+    : await supabase.from("locais" as any).insert(r.dados as any).select("id");
   if (error) return { erro: mensagemErroBD(error), valores };
   if (!data?.length) return { erro: "Não foi possível guardar.", valores };
   redirect("/admin/locais");
@@ -25,6 +25,6 @@ export async function apagarLocal(fd: FormData) {
   await exigirSuperAdmin();
   const supabase = await createClient();
   // Os jogos que usavam este local ficam com "local a definir" (on delete set null).
-  await supabase.from("locais").delete().eq("id", String(fd.get("id")));
+  await supabase.from("locais" as any).delete().eq("id", String(fd.get("id")));
   redirect("/admin/locais");
 }

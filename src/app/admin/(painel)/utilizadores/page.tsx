@@ -23,8 +23,8 @@ async function ListaUtilizadores() {
   const sessao = await exigirSuperAdmin();
   const supabase = await createClient();
   const [{ data: perfis }, { data: atribuicoes }] = await Promise.all([
-    supabase.from("perfis").select("*").order("nome"),
-    supabase.from("perfis_escaloes").select("perfil_id, escalao_id"),
+    supabase.from("perfis" as any).select("*").order("nome"),
+    supabase.from("perfis_escaloes" as any).select("perfil_id, escalao_id"),
   ]);
   const nomeEscalao = new Map(sessao.escaloes.map((e) => [e.id, e.nome]));
 
