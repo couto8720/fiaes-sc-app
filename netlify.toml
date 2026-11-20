@@ -2,12 +2,6 @@
   command = "npm run build"
   publish = ".next"
 
-# Disable Next.js automatic edge functions
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-  [plugins.inputs]
-    skipMiddlewareDetection = true
-
 [dev]
   command = "npm run dev"
   port = 3000
