@@ -1,0 +1,3 @@
+.next/server/middleware.js
+.netlify/edge-functions
+.netlify/cache
