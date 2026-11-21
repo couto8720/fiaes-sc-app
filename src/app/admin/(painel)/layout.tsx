@@ -18,34 +18,45 @@ export default function LayoutPainel({ children }: LayoutProps<"/admin">) {
     );
   }
   return (
-    <>
-      <Suspense fallback={<div className="mb-5 h-[88px]" />}>
-        <NavAdmin />
+    <div className="flex h-screen gap-0 bg-fundo">
+      <Suspense fallback={<div className="w-64 bg-superficie" />}>
+        <SidebarAdmin />
       </Suspense>
-      {children}
-    </>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex-1 overflow-auto">
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
-async function NavAdmin() {
+async function SidebarAdmin() {
   const s = await exigirSessao();
   return (
-    <div className="mb-5">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="min-w-0 truncate text-sm text-suave">
-          <span className="font-semibold text-texto">{s.perfil.nome}</span>
-          {s.superAdmin ? " · super-admin" : ` · ${s.escaloes.map((e) => e.nome).join(", ") || "sem escalões"}`}
+    <aside className="w-64 border-r border-borda bg-superficie p-4 flex flex-col">
+      <div className="mb-6">
+        <p className="mb-2 text-sm text-suave">Utilizador</p>
+        <p className="truncate text-sm font-semibold text-texto">{s.perfil.nome}</p>
+        <p className="text-xs text-suave">
+          {s.superAdmin ? "super-admin" : s.escaloes.map((e) => e.nome).join(", ") || "sem escalões"}
         </p>
-        <div className="flex shrink-0 items-center gap-2">
-          <Link href="/admin/definir-palavra-passe" className="text-sm font-semibold text-suave underline-offset-2 hover:underline">
-            Palavra-passe
-          </Link>
-          <form action={sair}>
-            <button className="h-9 rounded-lg border border-borda px-3 text-sm font-semibold">Sair</button>
-          </form>
-        </div>
       </div>
-      <LinksAdmin superAdmin={s.superAdmin} />
-    </div>
+
+      <nav className="flex-1 mb-6">
+        <LinksAdmin superAdmin={s.superAdmin} />
+      </nav>
+
+      <div className="border-t border-borda pt-4 flex flex-col gap-2">
+        <Link href="/admin/definir-palavra-passe" className="text-sm font-semibold text-suave hover:text-texto px-3 py-2 rounded-lg hover:bg-fundo transition">
+          Palavra-passe
+        </Link>
+        <form action={sair}>
+          <button className="w-full text-left text-sm font-semibold text-suave hover:text-texto px-3 py-2 rounded-lg hover:bg-fundo transition">
+            Sair
+          </button>
+        </form>
+      </div>
+    </aside>
   );
 }
