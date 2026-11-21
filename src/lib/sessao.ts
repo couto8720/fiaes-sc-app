@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
+import { createAdminClient } from "./supabase/admin";
 import { supabaseConfigurado } from "./supabase/env";
 import type { Escalao, Perfil } from "./supabase/database.types";
 
@@ -26,32 +27,27 @@ const lerSessao = cache(async (): Promise<Estado> => {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { tipo: "anonimo" };
 
-  const { data: perfil, error: erroPerfil } = (await supabase as any).from("perfis" as any).select("*").eq("id", data.user.id).maybeSingle();
-  // TEMPORÁRIO: diagnóstico do "SEM ACESSO" em produção (sem e-mails nem tokens).
-  if (erroPerfil || !perfil || !perfil.ativo) {
-    const { data: c } = await supabase.auth.getClaims();
-    const { data: s } = await supabase.auth.getSession();
-    const tok = s.session?.access_token ?? "";
-    let tokRole: unknown = null;
-    let tokSubIgual: unknown = null;
-    try {
-      const p = JSON.parse(Buffer.from(tok.split(".")[1] ?? "", "base64url").toString());
-      tokRole = p.role ?? null;
-      tokSubIgual = p.sub === data.user.id;
-    } catch {}
-    const { count, error: erroContagem } = await supabase.from("perfis" as any).select("id", { count: "exact", head: true });
-    console.error("[sessao-2] sem-acesso:", {
-      erro: erroPerfil ? { code: erroPerfil.code, message: erroPerfil.message } : null,
-      perfilEncontrado: Boolean(perfil),
-      claimsRole: c?.claims?.role ?? null,
-      claimsSubIgual: c?.claims?.sub === data.user.id,
-      temSessao: Boolean(s.session),
-      tokPartes: tok ? tok.split(".").length : 0,
-      tokRole,
-      tokSubIgual,
-      perfisVisiveis: count ?? null,
-      erroContagem: erroContagem?.message ?? null,
-      chave: (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "").slice(0, 15) || "(vazia)",
+  // O getUser() acima já validou o utilizador no servidor de Auth. O perfil é lido pelo id dele com o
+  // cliente admin, porque a leitura com o cliente de sessão vinha vazia em produção (causa por apurar).
+  const { data: perfil, error: erroPerfil } = await (createAdminClient() as any)
+    .from("perfis")
+    .select("*")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  if (erroPerfil) console.error("[sessao] erro ao ler perfil:", { code: erroPerfil.code, message: erroPerfil.message });
+
+  // TEMPORÁRIO: comparar com o cliente de sessão para perceber a causa (sem e-mails nem tokens).
+  if (perfil) {
+    const a = await (supabase as any).from("perfis").select("*").eq("id", data.user.id).maybeSingle();
+    const b = await (supabase as any).from("perfis").select("id,ativo,papel").eq("id", data.user.id);
+    const c = await (supabase as any).from("perfis").select("*").eq("id", data.user.id);
+    const d = await (supabase as any).from("perfis").select("id");
+    console.error("[sessao-3] comparacao:", {
+      adminEncontrou: true,
+      sessaoMaybeSingle: { tem: Boolean(a.data), status: a.status, erro: a.error?.message ?? null },
+      sessaoColunas: { linhas: b.data?.length ?? null, status: b.status, erro: b.error?.message ?? null },
+      sessaoTodasColunas: { linhas: c.data?.length ?? null, status: c.status, erro: c.error?.message ?? null },
+      sessaoSemFiltro: { linhas: d.data?.length ?? null, contemProprio: (d.data ?? []).some((r: any) => r.id === data.user.id), status: d.status },
     });
   }
   if (!perfil || !perfil.ativo) return { tipo: "sem-acesso" };
