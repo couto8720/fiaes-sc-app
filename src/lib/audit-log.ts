@@ -1,4 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
+// Escrever na auditoria é só do servidor (service_role); ler fica com o cliente de sessão (RLS: só super-admin).
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export type AuditAction =
   | "login"
@@ -32,7 +34,7 @@ export interface AuditLogEntry {
 
 export async function logAuditEvent(entry: AuditLogEntry): Promise<void> {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient() as any;
 
     const { error } = await supabase.from("audit_logs" as any).insert({
       user_id: entry.user_id,

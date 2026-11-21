@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+// Só o servidor (service_role) lê e escreve em rate_limits: o RLS fecha a tabela a anon e authenticated.
+import { createAdminClient } from "@/lib/supabase/admin";
 
 interface RateLimitRecord {
   key: string;
@@ -27,7 +28,7 @@ export async function checkRateLimit(
   identifier: string,
   endpoint?: string
 ): Promise<{ allowed: boolean; remaining: number; resetAt: Date }> {
-  const supabase = await createClient();
+  const supabase = createAdminClient() as any;
   const config = endpoint ? ENDPOINT_LIMITS[endpoint] ?? DEFAULT_LIMIT : DEFAULT_LIMIT;
   const now = new Date();
   const resetAt = new Date(now.getTime() + config.window);
@@ -112,6 +113,6 @@ export async function checkRateLimit(
 }
 
 export async function resetRateLimit(identifier: string): Promise<void> {
-  const supabase = await createClient();
+  const supabase = createAdminClient() as any;
   await supabase.from("rate_limits" as any).delete().eq("key", identifier);
 }
