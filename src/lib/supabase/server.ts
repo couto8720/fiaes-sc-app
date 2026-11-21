@@ -8,6 +8,8 @@ export async function createClient() {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(SUPABASE_URL, SUPABASE_KEY, {
+    // Dados por utilizador: nunca servir respostas guardadas em cache (Next/Netlify).
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
     cookies: {
       getAll() {
         return cookieStore.getAll();
