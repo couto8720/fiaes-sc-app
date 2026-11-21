@@ -3,7 +3,6 @@ import { Inter, Teko } from "next/font/google";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Cabecalho, CabecalhoProvisorio } from "@/components/Cabecalho";
-import { NavInferior, NavInferiorVista } from "@/components/NavInferior";
 import { MenuLateralSite } from "@/components/MenuLateralSite";
 import { RegistarServiceWorker } from "@/components/RegistarServiceWorker";
 import { LGPDBanner } from "@/components/lgpd-banner";
@@ -38,14 +37,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Cabecalho />
         </Suspense>
         <div className="flex flex-1">
-          {/* Computador: menu lateral com ☰ (telemóvel: barra de baixo). Não aparece no painel. */}
+          {/* Menu lateral do site (computador fixo; telemóvel desliza com o ☰ do cabeçalho). Não aparece no painel. */}
           <Suspense fallback={null}>
             <MenuLateralSite />
           </Suspense>
           {/* Site público: até ~1000px em computador. Painel (data-painel): largura toda. */}
-          <main className="mx-auto w-full min-w-0 max-w-2xl flex-1 px-4 pt-4 pb-28 md:max-w-5xl md:px-6 md:pb-8 has-[[data-painel]]:max-w-none">
+          <main className="mx-auto w-full min-w-0 max-w-2xl flex-1 px-4 pt-4 pb-8 md:max-w-5xl md:px-6 has-[[data-painel]]:max-w-none">
           {children}
-          {/* Rodapé discreto (fica acima da barra de navegação inferior) */}
+          {/* Rodapé discreto */}
           <footer className="mt-10 border-t border-borda pt-4 text-center text-xs text-suave">
             <Link href="/privacidade" className="font-semibold hover:underline">
               Privacidade
@@ -54,9 +53,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </footer>
           </main>
         </div>
-        <Suspense fallback={<NavInferiorVista caminho={null} />}>
-          <NavInferior />
-        </Suspense>
         <RegistarServiceWorker />
         <LGPDBanner />
       </body>
