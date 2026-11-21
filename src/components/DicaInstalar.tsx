@@ -25,12 +25,10 @@ if (typeof window !== "undefined") {
   });
 }
 
-type Plataforma = "android" | "ios" | null;
+export type Plataforma = "android" | "ios" | null;
 
-function lerPlataforma(): Plataforma {
-  try {
-    if (localStorage.getItem(CHAVE)) return null;
-  } catch {}
+/** Como se instala a app neste browser ("android" = botão nativo, "ios" = instruções), ou null se não dá/já está instalada. */
+export function plataformaInstalar(): Plataforma {
   const instalada =
     window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
   if (instalada) return null;
@@ -39,7 +37,19 @@ function lerPlataforma(): Plataforma {
   return ios ? "ios" : null;
 }
 
-const subscrever = (cb: () => void) => {
+function lerPlataforma(): Plataforma {
+  try {
+    if (localStorage.getItem(CHAVE)) return null;
+  } catch {}
+  return plataformaInstalar();
+}
+
+/** Abre a janela de instalação do browser (Android/Chrome). */
+export async function pedirInstalacao() {
+  await pedidoInstalar?.prompt();
+}
+
+export const subscrever = (cb: () => void) => {
   ouvintes.add(cb);
   return () => ouvintes.delete(cb);
 };

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Cabecalho, CabecalhoProvisorio } from "@/components/Cabecalho";
 import { MenuLateralSite } from "@/components/MenuLateralSite";
+import { EcraBoasVindas } from "@/components/EcraBoasVindas";
 import { RegistarServiceWorker } from "@/components/RegistarServiceWorker";
 import { LGPDBanner } from "@/components/lgpd-banner";
 import "./globals.css";
@@ -53,6 +54,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </footer>
           </main>
         </div>
+        {/* Primeira visita: Entrar, Criar conta ou Instalar (lê o URL, por isso dentro de Suspense). */}
+        <Suspense fallback={null}>
+          <EcraBoasVindas />
+        </Suspense>
         <RegistarServiceWorker />
         <LGPDBanner />
       </body>
