@@ -18,7 +18,8 @@ export default function LayoutPainel({ children }: LayoutProps<"/admin">) {
     );
   }
   return (
-    <div className="flex h-screen gap-0 bg-fundo">
+    // Altura = ecrã menos o cabeçalho do site (56px) e o espaço do <main> (16px): o "Sair" fica sempre visível.
+    <div className="flex h-[calc(100dvh-4.5rem)] gap-0 bg-fundo">
       <Suspense fallback={<div className="w-64 bg-superficie" />}>
         <SidebarAdmin />
       </Suspense>
