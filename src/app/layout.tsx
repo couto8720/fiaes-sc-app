@@ -36,7 +36,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<CabecalhoProvisorio />}>
           <Cabecalho />
         </Suspense>
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28">
+        {/* O painel de administração (marcado com data-painel) usa a largura toda; o site público fica estreito. */}
+        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28 has-[[data-painel]]:max-w-none">
           {children}
           {/* Rodapé discreto (fica acima da barra de navegação inferior) */}
           <footer className="mt-10 border-t border-borda pt-4 text-center text-xs text-suave">

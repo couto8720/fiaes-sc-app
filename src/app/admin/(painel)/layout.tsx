@@ -20,7 +20,7 @@ export default function LayoutPainel({ children }: LayoutProps<"/admin">) {
   }
   return (
     // Altura = ecrã menos o cabeçalho do site (56px) e o espaço do <main> (16px): o "Sair" fica sempre visível.
-    <div className="flex h-[calc(100dvh-4.5rem)] gap-0 bg-fundo">
+    <div data-painel className="flex h-[calc(100dvh-4.5rem)] gap-0 bg-fundo">
       <Suspense fallback={<div className="w-14 shrink-0 border-r border-borda bg-superficie" />}>
         <SidebarAdmin />
       </Suspense>
