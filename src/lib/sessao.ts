@@ -26,17 +26,7 @@ const lerSessao = cache(async (): Promise<Estado> => {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { tipo: "anonimo" };
 
-  const { data: perfil, error: erroPerfil } = (await supabase as any).from("perfis" as any).select("*").eq("id", data.user.id).maybeSingle();
-  // TEMPORÁRIO: diagnóstico do "SEM ACESSO" em produção (só código/mensagem do erro, sem dados pessoais).
-  if (erroPerfil || !perfil || !perfil.ativo) {
-    console.error("[sessao] sem-acesso:", {
-      code: erroPerfil?.code ?? null,
-      message: erroPerfil?.message ?? null,
-      hint: erroPerfil?.hint ?? null,
-      perfilEncontrado: Boolean(perfil),
-      ativo: perfil?.ativo ?? null,
-    });
-  }
+  const { data: perfil } = (await supabase as any).from("perfis" as any).select("*").eq("id", data.user.id).maybeSingle();
   if (!perfil || !perfil.ativo) return { tipo: "sem-acesso" };
 
   const superAdmin = perfil.papel === "super_admin";

@@ -1,9 +1,6 @@
-// Variáveis do Supabase.
+// Variáveis públicas do Supabase (seguras no browser: o acesso é controlado pelo RLS).
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-// Usar secret key no servidor para fazer bypass do RLS
-export const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY ?? "";
-// Usar publishable key no browser (controlado pelo RLS)
-export const SUPABASE_PUBLISHABLE_KEY =
+export const SUPABASE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
   "";
