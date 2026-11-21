@@ -47,14 +47,19 @@ export function FormConvite({ escaloes }: { escaloes: EscalaoOpcao[] }) {
       <Campo rotulo="Nome" nome="nome" erro={e.nome}>
         <input id="nome" name="nome" defaultValue={v("nome")} maxLength={60} aria-invalid={Boolean(e.nome)} className={classeInput} />
       </Campo>
-      <Campo rotulo="Email" nome="email" erro={e.email} ajuda="Recebe um email para escolher a palavra-passe.">
+      <Campo
+        rotulo="Email"
+        nome="email"
+        erro={e.email}
+        ajuda="Se ainda não tem conta, recebe um convite para escolher a palavra-passe. Se já tem conta no site, passa logo a staff e entra com a palavra-passe que já usa."
+      >
         <input id="email" name="email" type="email" defaultValue={v("email")} aria-invalid={Boolean(e.email)} className={classeInput} />
       </Campo>
       <Campo rotulo="Papel" nome="papel" erro={e.papel}>
         <SelectPapel valor={v("papel")} />
       </Campo>
       <EscolhaEscaloes escaloes={escaloes} marcados={[]} />
-      <BotaoSubmeter>Enviar convite</BotaoSubmeter>
+      <BotaoSubmeter>Convidar ou dar acesso</BotaoSubmeter>
     </form>
   );
 }
