@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     icon: [{ url: "/icones/favicon", type: "image/png", sizes: "48x48" }, { url: "/icones/192", type: "image/png", sizes: "192x192" }],
     apple: [{ url: "/icones/apple", sizes: "180x180" }],
   },
+  manifest: "/manifest.webmanifest",
   // iPhone: abre em ecrã inteiro quando instalada no ecrã principal.
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Fiães SC" },
   formatDetection: { telephone: false },
