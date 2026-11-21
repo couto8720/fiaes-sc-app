@@ -26,7 +26,34 @@ const lerSessao = cache(async (): Promise<Estado> => {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return { tipo: "anonimo" };
 
-  const { data: perfil } = (await supabase as any).from("perfis" as any).select("*").eq("id", data.user.id).maybeSingle();
+  const { data: perfil, error: erroPerfil } = (await supabase as any).from("perfis" as any).select("*").eq("id", data.user.id).maybeSingle();
+  // TEMPORÁRIO: diagnóstico do "SEM ACESSO" em produção (sem e-mails nem tokens).
+  if (erroPerfil || !perfil || !perfil.ativo) {
+    const { data: c } = await supabase.auth.getClaims();
+    const { data: s } = await supabase.auth.getSession();
+    const tok = s.session?.access_token ?? "";
+    let tokRole: unknown = null;
+    let tokSubIgual: unknown = null;
+    try {
+      const p = JSON.parse(Buffer.from(tok.split(".")[1] ?? "", "base64url").toString());
+      tokRole = p.role ?? null;
+      tokSubIgual = p.sub === data.user.id;
+    } catch {}
+    const { count, error: erroContagem } = await supabase.from("perfis" as any).select("id", { count: "exact", head: true });
+    console.error("[sessao-2] sem-acesso:", {
+      erro: erroPerfil ? { code: erroPerfil.code, message: erroPerfil.message } : null,
+      perfilEncontrado: Boolean(perfil),
+      claimsRole: c?.claims?.role ?? null,
+      claimsSubIgual: c?.claims?.sub === data.user.id,
+      temSessao: Boolean(s.session),
+      tokPartes: tok ? tok.split(".").length : 0,
+      tokRole,
+      tokSubIgual,
+      perfisVisiveis: count ?? null,
+      erroContagem: erroContagem?.message ?? null,
+      chave: (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "").slice(0, 15) || "(vazia)",
+    });
+  }
   if (!perfil || !perfil.ativo) return { tipo: "sem-acesso" };
 
   const superAdmin = perfil.papel === "super_admin";
