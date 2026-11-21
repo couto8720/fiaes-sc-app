@@ -36,20 +36,6 @@ const lerSessao = cache(async (): Promise<Estado> => {
     .maybeSingle();
   if (erroPerfil) console.error("[sessao] erro ao ler perfil:", { code: erroPerfil.code, message: erroPerfil.message });
 
-  // TEMPORÁRIO: comparar com o cliente de sessão para perceber a causa (sem e-mails nem tokens).
-  if (perfil) {
-    const a = await (supabase as any).from("perfis").select("*").eq("id", data.user.id).maybeSingle();
-    const b = await (supabase as any).from("perfis").select("id,ativo,papel").eq("id", data.user.id);
-    const c = await (supabase as any).from("perfis").select("*").eq("id", data.user.id);
-    const d = await (supabase as any).from("perfis").select("id");
-    console.error("[sessao-3] comparacao:", {
-      adminEncontrou: true,
-      sessaoMaybeSingle: { tem: Boolean(a.data), status: a.status, erro: a.error?.message ?? null },
-      sessaoColunas: { linhas: b.data?.length ?? null, status: b.status, erro: b.error?.message ?? null },
-      sessaoTodasColunas: { linhas: c.data?.length ?? null, status: c.status, erro: c.error?.message ?? null },
-      sessaoSemFiltro: { linhas: d.data?.length ?? null, contemProprio: (d.data ?? []).some((r: any) => r.id === data.user.id), status: d.status },
-    });
-  }
   if (!perfil || !perfil.ativo) return { tipo: "sem-acesso" };
 
   const superAdmin = perfil.papel === "super_admin";
