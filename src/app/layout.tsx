@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Cabecalho, CabecalhoProvisorio } from "@/components/Cabecalho";
 import { NavInferior, NavInferiorVista } from "@/components/NavInferior";
+import { MenuLateralSite } from "@/components/MenuLateralSite";
 import { RegistarServiceWorker } from "@/components/RegistarServiceWorker";
 import { LGPDBanner } from "@/components/lgpd-banner";
 import "./globals.css";
@@ -36,8 +37,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={<CabecalhoProvisorio />}>
           <Cabecalho />
         </Suspense>
-        {/* O painel de administração (marcado com data-painel) usa a largura toda; o site público fica estreito. */}
-        <main className="mx-auto w-full max-w-2xl flex-1 px-4 pt-4 pb-28 has-[[data-painel]]:max-w-none">
+        <div className="flex flex-1">
+          {/* Computador: menu lateral com ☰ (telemóvel: barra de baixo). Não aparece no painel. */}
+          <Suspense fallback={null}>
+            <MenuLateralSite />
+          </Suspense>
+          {/* Site público: até ~1000px em computador. Painel (data-painel): largura toda. */}
+          <main className="mx-auto w-full min-w-0 max-w-2xl flex-1 px-4 pt-4 pb-28 md:max-w-5xl md:px-6 md:pb-8 has-[[data-painel]]:max-w-none">
           {children}
           {/* Rodapé discreto (fica acima da barra de navegação inferior) */}
           <footer className="mt-10 border-t border-borda pt-4 text-center text-xs text-suave">
@@ -46,7 +52,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </Link>
             <span aria-hidden> · </span>© Fiães Sport Clube
           </footer>
-        </main>
+          </main>
+        </div>
         <Suspense fallback={<NavInferiorVista caminho={null} />}>
           <NavInferior />
         </Suspense>

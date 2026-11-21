@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, House, ListOrdered, Trophy, Zap, type LucideIcon } from "lucide-react";
 
-const ITENS: { href: string; rotulo: string; Icone: LucideIcon }[] = [
+export const ITENS_NAVEGACAO: { href: string; rotulo: string; Icone: LucideIcon }[] = [
   { href: "/", rotulo: "Início", Icone: House },
   { href: "/calendario", rotulo: "Calendário", Icone: CalendarDays },
   { href: "/resultados", rotulo: "Resultados", Icone: Trophy },
@@ -23,10 +23,10 @@ export function NavInferiorVista({ caminho }: { caminho: string | null }) {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-borda bg-superficie/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-20 border-t md:hidden border-borda bg-superficie/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
       <ul className="mx-auto grid max-w-2xl grid-cols-5">
-        {ITENS.map(({ href, rotulo, Icone }) => {
+        {ITENS_NAVEGACAO.map(({ href, rotulo, Icone }) => {
           const ativo = href === "/" ? caminho === "/" : Boolean(caminho?.startsWith(href));
           return (
             <li key={href}>
