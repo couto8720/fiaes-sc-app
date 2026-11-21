@@ -1,0 +1,26 @@
+-- Grant necessárias ao service_role para operações do servidor
+-- O service_role ignora RLS, por isso é essencial para operações administrativas
+
+grant select on public.escaloes to service_role;
+grant select on public.jogos to service_role;
+grant select on public.torneios to service_role;
+grant select on public.locais to service_role;
+grant select on public.clube_config to service_role;
+grant select on public.perfis to service_role;
+grant select on public.perfis_escaloes to service_role;
+grant select on public.classificacoes to service_role;
+
+-- Se houver tabelas adicionais:
+grant select on public.marcadores to service_role;
+grant select on public.jornadas to service_role;
+grant select on public.regras_qualificacao to service_role;
+grant select on public.equipas_torneio to service_role;
+grant select on public.eliminatoria to service_role;
+grant select on public.adeptos to service_role;
+
+-- Permissões de escrita para operações administrativas
+grant insert, update, delete on public.jogos to service_role;
+grant insert, update, delete on public.escaloes to service_role;
+grant insert, update, delete on public.torneios to service_role;
+grant insert, update, delete on public.locais to service_role;
+grant insert, update, delete on public.perfis to service_role;
