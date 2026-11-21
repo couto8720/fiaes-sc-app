@@ -1,9 +1,25 @@
 import Link from "next/link";
+import { VERSAO_POLITICA } from "@/lib/politica";
 
 export const metadata = {
   title: "Política de Privacidade | Fiães SC",
-  description: "Política de privacidade e proteção de dados da aplicação Fiães SC",
+  description: "Como o Fiães Sport Clube trata os dados pessoais na aplicação do clube.",
 };
+
+const EMAIL = "privacidade@fiaes.pt";
+
+function dataPorExtenso(iso: string) {
+  return new Date(`${iso}T12:00:00Z`).toLocaleDateString("pt-PT", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function Seccao({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+  return (
+    <section>
+      <h2 className="text-2xl font-bold text-white mt-8 mb-4">{titulo}</h2>
+      {children}
+    </section>
+  );
+}
 
 export default function PrivacidadePage() {
   return (
@@ -14,180 +30,151 @@ export default function PrivacidadePage() {
             ← Voltar
           </Link>
           <h1 className="text-4xl font-bold text-white mb-2">Política de Privacidade</h1>
-          <p className="text-slate-400">Última atualização: 19 de Novembro de 2026</p>
+          <p className="text-slate-400">Última atualização: {dataPorExtenso(VERSAO_POLITICA)}</p>
         </div>
 
         <div className="prose prose-invert max-w-none text-slate-300 space-y-6">
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">1. Introdução</h2>
+          <Seccao titulo="1. Quem é o responsável">
             <p>
-              A Fiães SC ("nós", "nosso" ou "empresa") opera a aplicação web de gestão de torneios
-              ("Serviço"). Esta página informa-o sobre as nossas políticas quanto à recolha, utilização
-              e divulgação de dados pessoais quando utiliza o nosso Serviço e das opções que tem associadas
-              a esse dados.
+              O responsável pelo tratamento dos dados pessoais nesta aplicação é o <strong>Fiães Sport Clube</strong>.
+              Para qualquer questão sobre privacidade, escreve para <strong>{EMAIL}</strong>.
             </p>
             <p>
-              Utilizamos os seus dados para fornecer e melhorar o Serviço. Ao utilizar o Serviço,
-              concorda com a recolha e utilização de informações de acordo com esta política.
+              Esta política aplica-se ao site e à aplicação do clube (calendário, resultados, classificações, torneios,
+              contas de sócios e adeptos e painel do staff) e segue o Regulamento Geral sobre a Proteção de Dados (RGPD)
+              e a Lei n.º 58/2019.
             </p>
-          </section>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">2. Dados Pessoais Recolhidos</h2>
-            <p>Podemos recolher os seguintes dados pessoais:</p>
+          <Seccao titulo="2. Que dados tratamos">
             <ul className="list-disc list-inside space-y-2">
-              <li><strong>Dados de Autenticação:</strong> Email e password (encriptados)</li>
-              <li><strong>Dados de Perfil:</strong> Nome, função de utilizador</li>
-              <li><strong>Dados de Torneios:</strong> Nomes de equipas, locais, datas</li>
-              <li><strong>Dados de Jogadores:</strong> Nomes de jogadores/equipas</li>
-              <li><strong>Dados Técnicos:</strong> Endereço IP, tipo de navegador, timestamps</li>
+              <li>
+                <strong>Visitantes sem conta:</strong> não pedimos dados. O browser guarda apenas preferências locais
+                (por exemplo, se o menu está aberto ou a escolha no aviso de cookies), que não nos são enviadas.
+              </li>
+              <li>
+                <strong>Contas de sócios e adeptos:</strong> nome, email, palavra-passe (guardada de forma cifrada,
+                nunca em texto), número de sócio (opcional), escalões que segues e a data em que aceitaste esta política.
+              </li>
+              <li>
+                <strong>Contas do staff</strong> (treinadores, delegados e direção): nome, email, função e escalões que
+                gerem, e um registo das entradas e saídas do painel e de algumas ações (por exemplo, mudar a palavra-passe).
+              </li>
+              <li>
+                <strong>Atletas:</strong> nos golos e expulsões aparece só o nome abreviado (primeiro nome e inicial,
+                por exemplo «João S.»), porque muitos atletas são menores. Os nomes completos não são publicados.
+              </li>
+              <li>
+                <strong>Dados técnicos:</strong> o serviço de alojamento regista dados técnicos dos pedidos (como o
+                endereço IP) para funcionar e proteger o site.
+              </li>
             </ul>
-          </section>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">3. Base Legal para Processamento</h2>
-            <p>Processamos dados com base em:</p>
+          <Seccao titulo="3. Para que usamos os dados e com que fundamento">
             <ul className="list-disc list-inside space-y-2">
-              <li><strong>Contrato:</strong> Para fornecer os serviços solicitados</li>
-              <li><strong>Consentimento:</strong> Quando obtém explicitamente</li>
-              <li><strong>Obrigações Legais:</strong> Para cumprir requisitos legais</li>
-              <li><strong>Interesses Legítimos:</strong> Para melhorar segurança e fraude</li>
+              <li>
+                <strong>Conta de adepto</strong> (mostrar os teus escalões e guardar as tuas preferências): execução do
+                serviço que pediste ao criar a conta.
+              </li>
+              <li>
+                <strong>Painel do staff</strong> (gerir jogos, resultados e classificações): interesse legítimo do clube
+                na organização da sua atividade desportiva.
+              </li>
+              <li>
+                <strong>Segurança</strong> (registo de acessos e limite de tentativas de login): interesse legítimo em
+                proteger as contas e o serviço.
+              </li>
+              <li>
+                <strong>Divulgação desportiva</strong> (resultados e marcadores com nome abreviado): interesse legítimo do
+                clube, com a minimização descrita acima.
+              </li>
             </ul>
-          </section>
+            <p>Não usamos os dados para publicidade, não os vendemos e não fazemos perfis de comportamento.</p>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">4. Como Utilizamos os Seus Dados</h2>
-            <p>Utilizamos os dados recolhidos para:</p>
+          <Seccao titulo="4. Durante quanto tempo guardamos os dados">
             <ul className="list-disc list-inside space-y-2">
-              <li>Fornecer, manter e melhorar o Serviço</li>
-              <li>Processar transações e enviar notificações</li>
-              <li>Responder aos seus pedidos e suporte ao cliente</li>
-              <li>Detectar, prevenir e resolver problemas técnicos e fraude</li>
-              <li>Cumprir obrigações legais e regulamentares</li>
-              <li>Comunicações de segurança e atualizações importantes</li>
+              <li><strong>Conta de adepto:</strong> até a apagares (podes fazê-lo a qualquer momento em «A minha conta»).</li>
+              <li><strong>Conta do staff:</strong> enquanto a pessoa colaborar com o clube; é desativada quando deixa de colaborar.</li>
+              <li><strong>Registo de acessos e ações do staff:</strong> 90 dias, apagado automaticamente.</li>
+              <li><strong>Tentativas de login:</strong> apagadas automaticamente quando expiram (15 minutos).</li>
+              <li><strong>Resultados e marcadores:</strong> fazem parte do histórico desportivo do clube.</li>
             </ul>
-          </section>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">5. Retenção de Dados</h2>
-            <p>Retemos dados pessoais pelos períodos necessários para:</p>
+          <Seccao titulo="5. Quem trata os dados por nossa conta">
+            <p>Usamos estes prestadores de serviços, que só tratam os dados segundo as nossas instruções:</p>
             <ul className="list-disc list-inside space-y-2">
-              <li>Fornecer o Serviço (duração da conta)</li>
-              <li>Cumprir obrigações legais (mínimo 2 anos para auditoria)</li>
-              <li>Resolver disputas (máximo 7 anos)</li>
+              <li>
+                <strong>Supabase</strong> — base de dados, autenticação e envio dos emails da conta (confirmação e
+                recuperação da palavra-passe). Os dados ficam em servidores na União Europeia.
+              </li>
+              <li>
+                <strong>Netlify</strong> — alojamento do site. Pode tratar dados técnicos fora da União Europeia, com as
+                garantias previstas no RGPD (cláusulas contratuais-tipo).
+              </li>
             </ul>
-            <p className="mt-4">
-              <strong>Dados de Menores:</strong> Se a conta é de um menor (menores de 18 anos),
-              os dados serão deletados imediatamente após cancelamento da conta ou aos 18 anos.
-            </p>
-          </section>
+            <p>Só partilhamos dados com outras entidades quando a lei o obrigar.</p>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">6. Partilha de Dados</h2>
+          <Seccao titulo="6. Os teus direitos">
+            <ul className="list-disc list-inside space-y-2">
+              <li>
+                <strong>Acesso e portabilidade:</strong> em «A minha conta», usa «Descarregar os meus dados» para
+                receberes um ficheiro com tudo o que guardamos sobre ti.
+              </li>
+              <li><strong>Retificação:</strong> podes alterar o nome, o número de sócio e os escalões em «A minha conta».</li>
+              <li><strong>Apagamento:</strong> podes apagar a tua conta em «A minha conta».</li>
+              <li><strong>Oposição e limitação</strong> do tratamento, e qualquer outro pedido: escreve para {EMAIL}.</li>
+            </ul>
+            <p>Respondemos no prazo de um mês, como prevê o RGPD.</p>
+          </Seccao>
+
+          <Seccao titulo="7. Menores">
             <p>
-              <strong>Não vendemos, alugamos nem divulgamos dados pessoais a terceiros,</strong>
-              exceto em casos limitados:
+              Para criar conta de adepto é preciso ter <strong>13 anos ou mais</strong>, ou autorização dos pais ou do
+              tutor (artigo 16.º da Lei n.º 58/2019). No registo, a pessoa declara cumprir esta condição.
             </p>
+            <p>
+              Os nomes dos atletas aparecem sempre abreviados. Os pais ou tutores podem pedir a correção ou a remoção do
+              nome de um atleta menor através de {EMAIL}.
+            </p>
+          </Seccao>
+
+          <Seccao titulo="8. Cookies">
+            <p>
+              Usamos apenas cookies essenciais para manter a sessão de quem entra na conta. Não usamos cookies de
+              publicidade, de rastreamento nem ferramentas de análise.
+            </p>
+          </Seccao>
+
+          <Seccao titulo="9. Segurança">
             <ul className="list-disc list-inside space-y-2">
-              <li><strong>Supabase:</strong> Plataforma de base de dados (see privacidade Supabase)</li>
-              <li><strong>Requisição Legal:</strong> Se obrigado por lei</li>
-              <li><strong>Consentimento Explícito:</strong> Quando obtém permissão</li>
+              <li>Ligação cifrada (HTTPS) em todo o site.</li>
+              <li>Palavras-passe guardadas de forma cifrada.</li>
+              <li>Regras de acesso na base de dados: cada pessoa só vê e altera o que lhe é permitido.</li>
+              <li>Limite de tentativas de login e registo de acessos ao painel.</li>
             </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">7. Seus Direitos (LGPD/GDPR)</h2>
-            <p>Tem o direito de:</p>
-            <ul className="list-disc list-inside space-y-2">
-              <li><strong>Acesso:</strong> Solicitar cópia dos seus dados</li>
-              <li><strong>Correção:</strong> Corrigir dados inexatos</li>
-              <li><strong>Eliminação:</strong> "Direito ao esquecimento" (com exceções legais)</li>
-              <li><strong>Restrição:</strong> Restringir processamento</li>
-              <li><strong>Portabilidade:</strong> Receber dados em formato estruturado</li>
-              <li><strong>Oposição:</strong> Opor-se a certos processamentos</li>
-            </ul>
-            <p className="mt-4">
-              Para exercer estes direitos, contacte: <strong>privacidade@fiaes.pt</strong>
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">8. Segurança dos Dados</h2>
             <p>
-              Implementamos medidas técnicas e organizacionais para proteger dados:
+              Se houver uma violação de dados que represente risco para as pessoas, comunicamo-la à CNPD no prazo de 72
+              horas e, quando for exigido, às pessoas afetadas.
             </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Encriptação HTTPS para toda transmissão</li>
-              <li>Senhas encriptadas (não legível)</li>
-              <li>Acesso restrito a dados (autenticação obrigatória)</li>
-              <li>Firewalls e proteção contra intrusão</li>
-              <li>Backups regulares</li>
-            </ul>
-            <p className="mt-4">
-              <strong>Aviso:</strong> Nenhum método é 100% seguro.
-              Não podemos garantir segurança absoluta.
-            </p>
-          </section>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">9. Cookies e Rastreamento</h2>
+          <Seccao titulo="10. Alterações">
             <p>
-              <strong>Cookies:</strong> Utilizamos apenas cookies essenciais para sessão (autenticação).
-              Não utilizamos cookies de rastreamento ou publicidade.
+              Se esta política mudar, atualizamos a data no topo desta página. Quando a alteração for relevante, avisamos
+              no site.
             </p>
-            <p className="mt-2">
-              <strong>Analytics:</strong> Podemos utilizar ferramentas de análise anónimas
-              (sem rastreamento individual).
-            </p>
-          </section>
+          </Seccao>
 
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">10. Dados de Menores</h2>
+          <Seccao titulo="11. Reclamações">
             <p>
-              <strong>Se a aplicação envolve menores (menores de 18 anos):</strong>
+              Se considerares que os teus dados não foram tratados corretamente, podes apresentar queixa à Comissão
+              Nacional de Proteção de Dados (CNPD) — <strong>www.cnpd.pt</strong>.
             </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Requer consentimento parental/tutor explícito</li>
-              <li>Dados são armazenados com protecção adicional</li>
-              <li>Não são vendidos a terceiros</li>
-              <li>São deletados aos 18 anos ou 2 anos após inactividade</li>
-              <li>Pais/tutores podem solicitar acesso/deleção</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">11. Alterações a Esta Política</h2>
-            <p>
-              Podemos atualizar esta política ocasionalmente. Notificaremos de alterações
-              significativas por email ou aviso destacado no Serviço.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">12. Contacto</h2>
-            <p>
-              Para questões sobre esta política ou exercer direitos, contacte:
-            </p>
-            <div className="bg-slate-700 p-4 rounded mt-4">
-              <p><strong>Email:</strong> privacidade@fiaes.pt</p>
-              <p><strong>Contacto Responsável:</strong> Responsável de Dados Pessoais</p>
-              <p className="text-sm text-slate-400 mt-4">
-                Responderemos num prazo de 30 dias úteis.
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-white mt-8 mb-4">13. Reclamações</h2>
-            <p>
-              Se considera que viámos esta política, pode apresentar queixa à autoridade
-              de proteção de dados:
-            </p>
-            <ul className="list-disc list-inside space-y-2">
-              <li><strong>Portugal:</strong> CNPD (Comissão Nacional de Protecção de Dados)</li>
-              <li><strong>UE:</strong> Autoridade de proteção de dados local</li>
-            </ul>
-          </section>
+          </Seccao>
         </div>
       </div>
     </div>

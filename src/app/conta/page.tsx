@@ -108,6 +108,11 @@ async function Conteudo() {
         <Link href="/conta/palavra-passe" className="text-suave underline underline-offset-2">
           Mudar a palavra-passe
         </Link>
+        <span aria-hidden className="text-suave"> · </span>
+        {/* Link normal (não <Link>): é um download de ficheiro, não uma página. */}
+        <a href="/conta/dados" className="text-suave underline underline-offset-2">
+          Descarregar os meus dados
+        </a>
       </p>
       <ApagarContaAdepto />
     </div>

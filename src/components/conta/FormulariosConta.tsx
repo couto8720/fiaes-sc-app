@@ -93,11 +93,19 @@ export function FormRegistoAdepto() {
         />
       </Campo>
       {confirmacao && confirmacao !== palavra && <p className="text-sm font-medium text-derrota">As palavras-passe não coincidem.</p>}
-      <p className="text-xs text-suave">
-        Ao criar conta aceitas a <Link href="/privacidade" className="underline">política de privacidade</Link> e os{" "}
-        <Link href="/termos" className="underline">termos de utilização</Link>. A conta serve só para personalizar o site;
-        não precisas dela para ver jogos e resultados.
-      </p>
+      {/* RGPD: aceitação explícita (caixa por marcar) e declaração de idade; a data fica registada na conta. */}
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" name="aceito_termos" value="sim" required className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>
+          Li e aceito a <Link href="/privacidade" className="underline">política de privacidade</Link> e os{" "}
+          <Link href="/termos" className="underline">termos de utilização</Link>.
+        </span>
+      </label>
+      <label className="flex items-start gap-2 text-sm">
+        <input type="checkbox" name="idade_minima" value="sim" required className="mt-0.5 h-4 w-4 shrink-0" />
+        <span>Tenho 13 anos ou mais (ou autorização dos meus pais ou tutor para criar esta conta).</span>
+      </label>
+      <p className="text-xs text-suave">A conta serve só para personalizar o site; não precisas dela para ver jogos e resultados.</p>
       <BotaoSubmeter>Criar conta</BotaoSubmeter>
     </form>
   );

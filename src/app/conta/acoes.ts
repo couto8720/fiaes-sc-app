@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { origemDoSite } from "@/lib/sessao";
+import { VERSAO_POLITICA } from "@/lib/politica";
 import { validarPalavraPasse, validarPerfilAdepto } from "@/lib/validacao";
 import { valoresDe, type EstadoFormulario } from "@/app/admin/acoes/tipos";
 
@@ -19,13 +20,21 @@ export async function registarAdepto(_: EstadoFormulario, fd: FormData): Promise
   if (!nome || !email) return { erro: "Preenche o nome e o email.", valores };
   const erroPalavraPasse = validarPalavraPasse(password, String(fd.get("confirmacao") ?? ""));
   if (erroPalavraPasse) return { erro: erroPalavraPasse, valores };
+  if (fd.get("aceito_termos") !== "sim") return { erro: "Tens de aceitar a política de privacidade e os termos.", valores };
+  if (fd.get("idade_minima") !== "sim") return { erro: "Confirma que tens 13 anos ou autorização dos pais.", valores };
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { nome: nome.slice(0, 80) },
+      // Registo do aceite (RGPD): quando aceitou e que versão da política estava em vigor.
+      data: {
+        nome: nome.slice(0, 80),
+        termos_aceites_em: new Date().toISOString(),
+        versao_politica: VERSAO_POLITICA,
+        declarou_idade_minima: true,
+      },
       // Se o Supabase pedir confirmação do email, o link volta à conta.
       emailRedirectTo: `${await origemDoSite()}/auth/confirm?next=/conta`,
     },
