@@ -5,6 +5,7 @@ import { supabaseConfigurado } from "@/lib/supabase/env";
 import { exigirSessao } from "@/lib/sessao";
 import { AvisoSemSupabase } from "@/components/admin/CartaoEntrada";
 import { LinksAdmin } from "@/components/admin/LinksAdmin";
+import { BarraLateral } from "@/components/admin/BarraLateral";
 import { sair } from "../acoes/auth";
 
 export const metadata: Metadata = { title: { default: "Painel", template: "%s · Painel" }, robots: { index: false } };
@@ -20,7 +21,7 @@ export default function LayoutPainel({ children }: LayoutProps<"/admin">) {
   return (
     // Altura = ecrã menos o cabeçalho do site (56px) e o espaço do <main> (16px): o "Sair" fica sempre visível.
     <div className="flex h-[calc(100dvh-4.5rem)] gap-0 bg-fundo">
-      <Suspense fallback={<div className="w-64 bg-superficie" />}>
+      <Suspense fallback={<div className="w-14 shrink-0 border-r border-borda bg-superficie" />}>
         <SidebarAdmin />
       </Suspense>
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -35,7 +36,7 @@ export default function LayoutPainel({ children }: LayoutProps<"/admin">) {
 async function SidebarAdmin() {
   const s = await exigirSessao();
   return (
-    <aside className="w-64 border-r border-borda bg-superficie p-4 flex flex-col">
+    <BarraLateral>
       <div className="mb-6">
         <p className="mb-2 text-sm text-suave">Utilizador</p>
         <p className="truncate text-sm font-semibold text-texto">{s.perfil.nome}</p>
@@ -58,6 +59,6 @@ async function SidebarAdmin() {
           </button>
         </form>
       </div>
-    </aside>
+    </BarraLateral>
   );
 }
