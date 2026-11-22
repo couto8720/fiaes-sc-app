@@ -32,7 +32,8 @@ export function MenuLateralSite() {
 
   // O ☰ do cabeçalho (telemóvel) abre o menu deslizante.
   useEffect(() => {
-    const abrir = () => setMovelAberto(true);
+    // No painel quem responde é a BarraLateral; aqui só abre fora dele (site, conta, login…).
+    const abrir = () => !document.querySelector("[data-painel]") && setMovelAberto(true);
     window.addEventListener(EVENTO_ABRIR_MENU, abrir);
     return () => window.removeEventListener(EVENTO_ABRIR_MENU, abrir);
   }, []);
@@ -50,7 +51,7 @@ export function MenuLateralSite() {
     };
   }, [movelAberto]);
 
-  if (caminho?.startsWith("/admin")) return null;
+  const noAdmin = Boolean(caminho?.startsWith("/admin"));
 
   function alternar() {
     localStorage.setItem(CHAVE, aberto ? "0" : "1");
@@ -86,8 +87,8 @@ export function MenuLateralSite() {
 
   return (
     <>
-      {/* Computador */}
-      <aside
+      {/* Computador (não aparece nas páginas /admin) */}
+      {!noAdmin && <aside
         className={`sticky top-14 hidden h-[calc(100dvh-3.5rem)] shrink-0 flex-col border-r border-borda bg-superficie py-4 transition-[width] duration-200 md:flex ${
           aberto ? "w-56 px-3" : "w-16 items-center px-2"
         }`}
@@ -105,7 +106,7 @@ export function MenuLateralSite() {
           <Menu className="h-5 w-5" aria-hidden />
         </button>
         {links(!aberto)}
-      </aside>
+      </aside>}
 
       {/* Telemóvel: menu deslizante por cima da página */}
       <div className={`fixed inset-0 z-40 md:hidden ${movelAberto ? "" : "pointer-events-none"}`} aria-hidden={!movelAberto}>

@@ -42,11 +42,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense fallback={null}>
             <MenuLateralSite />
           </Suspense>
-          {/* Site público: até ~1000px em computador. Painel (data-painel): largura toda. */}
-          <main className="mx-auto w-full min-w-0 max-w-2xl flex-1 px-4 pt-4 pb-8 md:max-w-5xl md:px-6 has-[[data-painel]]:max-w-none">
+          {/* Site público: até ~1000px em computador. Painel (data-painel): largura toda, sem margens. */}
+          <main className="group/main mx-auto w-full min-w-0 max-w-2xl flex-1 px-4 pt-4 pb-8 md:max-w-5xl md:px-6 has-[[data-painel]]:max-w-none has-[[data-painel]]:p-0 md:has-[[data-painel]]:p-0">
           {children}
           {/* Rodapé discreto */}
-          <footer className="mt-10 border-t border-borda pt-4 text-center text-xs text-suave">
+          <footer className="mt-10 border-t border-borda pt-4 text-center text-xs text-suave group-has-[[data-painel]]/main:hidden">
             <Link href="/privacidade" className="font-semibold hover:underline">
               Privacidade
             </Link>

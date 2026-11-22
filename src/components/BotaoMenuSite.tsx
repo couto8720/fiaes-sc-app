@@ -1,14 +1,13 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { EVENTO_ABRIR_MENU } from "./navegacao";
 
-/** Botão ☰ do cabeçalho, só no telemóvel: abre o menu deslizante do site público. */
+/**
+ * Botão ☰ do cabeçalho, só no telemóvel: abre o menu deslizante.
+ * No site público abre o MenuLateralSite; no painel abre a BarraLateral (cada um só existe na sua área).
+ */
 export function BotaoMenuSite() {
-  const caminho = usePathname();
-  if (caminho?.startsWith("/admin")) return null;
-
   return (
     <button
       type="button"
