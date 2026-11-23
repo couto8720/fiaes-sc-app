@@ -24,6 +24,13 @@ export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoComple
       </span>
     ) : null;
   };
+  // Marcadores do clube, por baixo do nome do clube (como as expulsões).
+  const marcadores = (eClube: boolean) =>
+    eClube && jogo.golos.length > 0 ? (
+      <span className="mt-1 block text-xs font-semibold text-destaque" aria-label={`Marcadores do ${nomeClube}: ${resumoMarcadores(jogo.golos)}`}>
+        <span aria-hidden>⚽</span> {resumoMarcadores(jogo.golos)}
+      </span>
+    ) : null;
 
   return (
     <section
@@ -39,6 +46,7 @@ export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoComple
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 text-center">
         <div>
           <p className={`text-base leading-tight sm:text-lg ${casa.eClube ? "font-black" : "font-semibold"}`}>{casa.nome}</p>
+          {marcadores(casa.eClube)}
           {vermelhos(casa.eClube)}
         </div>
         <p className="tabular text-5xl font-black sm:text-6xl" aria-label={temResultado ? `${casa.golos} a ${fora.golos}` : "Ainda sem resultado"}>
@@ -54,15 +62,10 @@ export function MarcadorPublico({ jogo: inicial, nomeClube }: { jogo: JogoComple
         </p>
         <div>
           <p className={`text-base leading-tight sm:text-lg ${fora.eClube ? "font-black" : "font-semibold"}`}>{fora.nome}</p>
+          {marcadores(fora.eClube)}
           {vermelhos(fora.eClube)}
         </div>
       </div>
-      {jogo.golos.length > 0 && (
-        <p className="mt-4 border-t border-white/20 pt-3 text-center text-sm">
-          <span aria-label={`Marcadores do ${nomeClube}`}>⚽</span>{" "}
-          <span className="font-semibold text-destaque">{resumoMarcadores(jogo.golos)}</span>
-        </p>
-      )}
     </section>
   );
 }
