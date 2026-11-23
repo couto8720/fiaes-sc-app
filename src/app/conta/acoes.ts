@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { origemDoSite } from "@/lib/sessao";
 import { VERSAO_POLITICA } from "@/lib/politica";
-import { validarPalavraPasse, validarPerfilAdepto } from "@/lib/validacao";
+import { validarIdadeMinima, validarPalavraPasse, validarPerfilAdepto } from "@/lib/validacao";
 import { valoresDe, type EstadoFormulario } from "@/app/admin/acoes/tipos";
 
 // Ações da área de sócios e adeptos (/conta). As permissões estão no RLS:
@@ -21,7 +21,9 @@ export async function registarAdepto(_: EstadoFormulario, fd: FormData): Promise
   const erroPalavraPasse = validarPalavraPasse(password, String(fd.get("confirmacao") ?? ""));
   if (erroPalavraPasse) return { erro: erroPalavraPasse, valores };
   if (fd.get("aceito_termos") !== "sim") return { erro: "Tens de aceitar a política de privacidade e os termos.", valores };
-  if (fd.get("idade_minima") !== "sim") return { erro: "Confirma que tens 13 anos ou autorização dos pais.", valores };
+  // Idade mínima de 13 anos, verificada aqui no servidor. A data de nascimento não é guardada.
+  const erroIdade = validarIdadeMinima(String(fd.get("data_nascimento") ?? ""));
+  if (erroIdade) return { erro: erroIdade, valores };
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({

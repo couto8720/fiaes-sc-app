@@ -133,8 +133,8 @@ export default function PrivacidadePage() {
 
           <Seccao titulo="7. Menores">
             <p>
-              Para criar conta de adepto é preciso ter <strong>13 anos ou mais</strong>, ou autorização dos pais ou do
-              tutor (artigo 16.º da Lei n.º 58/2019). No registo, a pessoa declara cumprir esta condição.
+              Para criar conta de adepto é obrigatório ter <strong>13 anos ou mais</strong> (artigo 16.º da Lei
+              n.º 58/2019). No registo pedimos a data de nascimento só para confirmar a idade; a data não fica guardada.
             </p>
             <p>
               Os nomes dos atletas aparecem sempre abreviados. Os pais ou tutores podem pedir a correção ou a remoção do

@@ -157,3 +157,15 @@ test("palavra-passe: erros do Supabase traduzidos", () => {
   assert.match(mensagemErroPalavraPasse("over_request_rate_limit"), /Espera uns minutos/);
   assert.match(mensagemErroPalavraPasse(undefined), /Não foi possível guardar/);
 });
+
+test("registo: só aceita quem já fez 13 anos; datas inválidas ou no futuro são recusadas", async () => {
+  const { validarIdadeMinima } = await import("../src/lib/validacao.ts");
+  const hoje = new Date(2026, 10, 23); // 23/11/2026
+  assert.equal(validarIdadeMinima("2013-11-23", hoje), null); // faz 13 hoje
+  assert.equal(validarIdadeMinima("1980-02-29", hoje), null);
+  assert.match(validarIdadeMinima("2013-11-24", hoje)!, /13 anos/); // faz 13 amanhã
+  assert.match(validarIdadeMinima("2020-01-01", hoje)!, /13 anos/);
+  assert.match(validarIdadeMinima("", hoje)!, /Indica/);
+  assert.match(validarIdadeMinima("2010-02-30", hoje)!, /não é válida/);
+  assert.match(validarIdadeMinima("2030-01-01", hoje)!, /não é válida/);
+});

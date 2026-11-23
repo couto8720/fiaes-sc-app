@@ -5,7 +5,7 @@ import { useActionState, useState } from "react";
 import { apagarContaAdepto, entrarAdepto, guardarPerfilAdepto, registarAdepto, sairAdepto } from "@/app/conta/acoes";
 import { ESTADO_INICIAL } from "@/app/admin/acoes/tipos";
 import { BotaoSubmeter, Campo, Mensagem, classeInput } from "../admin/ui";
-import { REGRAS_PALAVRA_PASSE } from "@/lib/validacao";
+import { IDADE_MINIMA, REGRAS_PALAVRA_PASSE } from "@/lib/validacao";
 import { definirFiltroEscalao } from "@/lib/useFiltroEscalao";
 
 export function FormEntrarAdepto() {
@@ -93,17 +93,26 @@ export function FormRegistoAdepto() {
         />
       </Campo>
       {confirmacao && confirmacao !== palavra && <p className="text-sm font-medium text-derrota">As palavras-passe não coincidem.</p>}
-      {/* RGPD: aceitação explícita (caixa por marcar) e declaração de idade; a data fica registada na conta. */}
+      {/* Idade mínima: 13 anos. A data só serve para verificar a idade; não fica guardada. */}
+      <Campo rotulo="Data de nascimento" nome="data_nascimento" ajuda={`Precisas de ter ${IDADE_MINIMA} anos ou mais. Só a usamos para verificar a idade; não a guardamos.`}>
+        <input
+          id="data_nascimento"
+          name="data_nascimento"
+          type="date"
+          autoComplete="bday"
+          required
+          min="1900-01-01"
+          defaultValue={estado.valores?.data_nascimento}
+          className={classeInput}
+        />
+      </Campo>
+      {/* RGPD: aceitação explícita (caixa por marcar); a data do aceite fica registada na conta. */}
       <label className="flex items-start gap-2 text-sm">
         <input type="checkbox" name="aceito_termos" value="sim" required className="mt-0.5 h-4 w-4 shrink-0" />
         <span>
           Li e aceito a <Link href="/privacidade" className="underline">política de privacidade</Link> e os{" "}
           <Link href="/termos" className="underline">termos de utilização</Link>.
         </span>
-      </label>
-      <label className="flex items-start gap-2 text-sm">
-        <input type="checkbox" name="idade_minima" value="sim" required className="mt-0.5 h-4 w-4 shrink-0" />
-        <span>Tenho 13 anos ou mais (ou autorização dos meus pais ou tutor para criar esta conta).</span>
       </label>
       <p className="text-xs text-suave">A conta serve só para personalizar o site; não precisas dela para ver jogos e resultados.</p>
       <BotaoSubmeter>Criar conta</BotaoSubmeter>

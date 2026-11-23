@@ -49,8 +49,8 @@ export default function TermosPage() {
           <Seccao titulo="2. Contas">
             <ul className="list-disc list-inside space-y-2">
               <li>
-                Para criar conta de adepto é preciso ter <strong>13 anos ou mais</strong>, ou autorização dos pais ou do
-                tutor.
+                Para criar conta de adepto é obrigatório ter <strong>13 anos ou mais</strong>. No registo pedimos a
+                data de nascimento para o confirmar.
               </li>
               <li>Os dados que indicas devem ser verdadeiros. Cada conta é pessoal e não deve ser partilhada.</li>
               <li>Guarda a tua palavra-passe em segredo e avisa-nos se suspeitares de uso indevido da tua conta.</li>

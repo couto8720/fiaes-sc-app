@@ -324,3 +324,24 @@ export function validarPerfilAdepto(
     ? { ok: false, erros }
     : { ok: true, dados: { nome, numero_socio: numero || null, escaloes } };
 }
+
+/** Idade mínima para criar conta de adepto (art. 16.º da Lei n.º 58/2019). */
+export const IDADE_MINIMA = 13;
+
+/**
+ * Valida a data de nascimento do registo ("aaaa-mm-dd") e devolve uma mensagem de erro,
+ * ou null se a pessoa já tem a idade mínima em `hoje`. A data não é guardada (minimização de dados).
+ */
+export function validarIdadeMinima(dataNascimento: string | undefined | null, hoje = new Date()): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((dataNascimento ?? "").trim());
+  if (!m) return "Indica a tua data de nascimento.";
+  const [ano, mes, dia] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const data = new Date(Date.UTC(ano, mes - 1, dia));
+  if (data.getUTCFullYear() !== ano || data.getUTCMonth() !== mes - 1 || data.getUTCDate() !== dia || ano < 1900) {
+    return "A data de nascimento não é válida.";
+  }
+  const [hA, hM, hD] = [hoje.getFullYear(), hoje.getMonth() + 1, hoje.getDate()];
+  if (ano > hA || (ano === hA && (mes > hM || (mes === hM && dia > hD)))) return "A data de nascimento não é válida.";
+  const idade = hA - ano - (hM < mes || (hM === mes && hD < dia) ? 1 : 0);
+  return idade < IDADE_MINIMA ? `Precisas de ter pelo menos ${IDADE_MINIMA} anos para criar conta.` : null;
+}
