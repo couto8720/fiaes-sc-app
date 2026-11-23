@@ -60,7 +60,7 @@ export function FormRegistoAdepto() {
           name="password"
           type="password"
           autoComplete="new-password"
-          minLength={10}
+          minLength={8}
           required
           value={palavra}
           onChange={(e) => setPalavra(e.target.value)}
@@ -85,7 +85,7 @@ export function FormRegistoAdepto() {
           name="confirmacao"
           type="password"
           autoComplete="new-password"
-          minLength={10}
+          minLength={8}
           required
           value={confirmacao}
           onChange={(e) => setConfirmacao(e.target.value)}

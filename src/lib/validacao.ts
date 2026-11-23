@@ -261,7 +261,7 @@ export function validarConvite(c: Campos): Resultado<DadosConvite> {
 
 // Regras das palavras-passe: iguais às definidas no Supabase (Authentication → Sign In / Providers → Email).
 export const REGRAS_PALAVRA_PASSE = [
-  { id: "tamanho", texto: "Pelo menos 12 caracteres", falta: "pelo menos 12 caracteres", cumpre: (s: string) => s.length >= 12 },
+  { id: "tamanho", texto: "Pelo menos 8 caracteres", falta: "pelo menos 8 caracteres", cumpre: (s: string) => s.length >= 8 },
   { id: "minuscula", texto: "Uma letra minúscula", falta: "uma letra minúscula", cumpre: (s: string) => /\p{Ll}/u.test(s) },
   { id: "maiuscula", texto: "Uma letra maiúscula", falta: "uma letra maiúscula", cumpre: (s: string) => /\p{Lu}/u.test(s) },
   { id: "numero", texto: "Um número", falta: "um número", cumpre: (s: string) => /\d/.test(s) },
@@ -284,7 +284,7 @@ export function mensagemErroPalavraPasse(codigo: string | undefined, motivos: re
       return "A nova palavra-passe tem de ser diferente da anterior.";
     case "weak_password":
       if (motivos.includes("pwned")) return "Essa palavra-passe apareceu em fugas de dados na internet. Escolhe outra.";
-      if (motivos.includes("length")) return "A palavra-passe é demasiado curta. Usa pelo menos 12 caracteres com maiúsculas, minúsculas, números e símbolos.";
+      if (motivos.includes("length")) return "A palavra-passe é demasiado curta. Usa pelo menos 8 caracteres com maiúsculas, minúsculas, números e símbolos.";
       return "A palavra-passe é fraca. Usa letras minúsculas, maiúsculas e números.";
     case "reauthentication_needed":
     case "reauthentication_not_valid":

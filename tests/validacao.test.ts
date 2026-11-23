@@ -137,16 +137,16 @@ test("perfil do adepto: nome, número de sócio e escalões que existem", () => 
   if (!mau.ok) assert.deepEqual(Object.keys(mau.erros).sort(), ["nome", "numero_socio"]);
 });
 
-test("palavra-passe: regras em português (10 caracteres, minúscula, maiúscula, número)", () => {
-  assert.equal(validarPalavraPasse("Fiaes2026SC", "Fiaes2026SC"), null);
-  assert.equal(validarPalavraPasse("Fiães2026sc", "Fiães2026sc"), null); // letras acentuadas contam
-  assert.equal(validarPalavraPasse("curta1A", "curta1A"), "A palavra-passe precisa de ter pelo menos 10 caracteres.");
+test("palavra-passe: regras em português (8 caracteres, minúscula, maiúscula, número, símbolo)", () => {
+  assert.equal(validarPalavraPasse("Fiaes26!", "Fiaes26!"), null); // 8 caracteres chegam
+  assert.equal(validarPalavraPasse("Fiães2026sc!", "Fiães2026sc!"), null); // letras acentuadas contam
+  assert.equal(validarPalavraPasse("Curt1A!", "Curt1A!"), "A palavra-passe precisa de ter pelo menos 8 caracteres.");
   assert.equal(
-    validarPalavraPasse("sominusculas", "sominusculas"),
+    validarPalavraPasse("sominusculas!", "sominusculas!"),
     "A palavra-passe precisa de ter uma letra maiúscula e um número.",
   );
-  assert.equal(validarPalavraPasse("Fiaes2026SC", "Fiaes2026Sc"), "As palavras-passe não coincidem.");
-  assert.equal(validarPalavraPasse(undefined, undefined)?.startsWith("A palavra-passe precisa de ter pelo menos 10 caracteres, "), true);
+  assert.equal(validarPalavraPasse("Fiaes2026SC!", "Fiaes2026Sc!"), "As palavras-passe não coincidem.");
+  assert.equal(validarPalavraPasse(undefined, undefined)?.startsWith("A palavra-passe precisa de ter pelo menos 8 caracteres, "), true);
 });
 
 test("palavra-passe: erros do Supabase traduzidos", () => {

@@ -78,7 +78,7 @@ export function FormDefinirPalavraPasse() {
           name="password"
           type="password"
           autoComplete="new-password"
-          minLength={12}
+          minLength={8}
           required
           value={nova}
           onChange={(e) => setNova(e.target.value)}
@@ -104,7 +104,7 @@ export function FormDefinirPalavraPasse() {
           name="confirmacao"
           type="password"
           autoComplete="new-password"
-          minLength={12}
+          minLength={8}
           required
           value={confirmacao}
           onChange={(e) => setConfirmacao(e.target.value)}
