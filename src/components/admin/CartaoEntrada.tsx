@@ -24,11 +24,11 @@ export function CartaoEntrada({
   return (
     <div className="mx-auto max-w-sm py-4">
       <div className="overflow-hidden rounded-3xl border border-borda bg-superficie shadow-md">
-        <div className="relative flex flex-col items-center bg-gradient-to-br from-clube to-clube-escuro px-6 pt-7 pb-6 text-center text-clube-texto">
+        <div className="fundo-estadio relative flex min-h-64 flex-col items-center justify-end px-6 pt-10 pb-6 text-center text-white">
           {/* Faixa amarela do clube */}
           <span aria-hidden className="absolute inset-x-0 bottom-0 h-1.5 bg-destaque" />
           {/* eslint-disable-next-line @next/next/no-img-element -- símbolo incluído na app */}
-          <img src={SIMBOLO_LOCAL} alt="Símbolo do Fiães Sport Clube" width={72} height={87} className="h-20 w-auto drop-shadow-md" />
+          <img src={SIMBOLO_LOCAL} alt="Símbolo do Fiães Sport Clube" width={72} height={87} className="h-20 w-auto drop-shadow-[0_6px_18px_rgb(0_0_0/0.55)]" />
           <p className="mt-3 text-xs font-bold uppercase tracking-[0.18em] text-destaque">{area}</p>
           <h1 className="font-display text-5xl uppercase leading-none">{titulo}</h1>
           {descricao && <p className="mt-2 text-sm opacity-90">{descricao}</p>}
