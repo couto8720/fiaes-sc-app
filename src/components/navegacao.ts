@@ -1,4 +1,4 @@
-import { CalendarDays, House, ListOrdered, Trophy, Zap, type LucideIcon } from "lucide-react";
+import { CalendarDays, House, ListOrdered, Shield, Trophy, Zap, type LucideIcon } from "lucide-react";
 
 /** Secções do site público (menu lateral em computador e menu deslizante no telemóvel). */
 export const ITENS_NAVEGACAO: { href: string; rotulo: string; Icone: LucideIcon }[] = [
@@ -7,6 +7,7 @@ export const ITENS_NAVEGACAO: { href: string; rotulo: string; Icone: LucideIcon 
   { href: "/resultados", rotulo: "Resultados", Icone: Trophy },
   { href: "/classificacao", rotulo: "Classificação", Icone: ListOrdered },
   { href: "/torneios", rotulo: "Torneios", Icone: Zap },
+  { href: "/clube", rotulo: "Fiães SC", Icone: Shield },
 ];
 
 /** Evento que o botão ☰ do cabeçalho (telemóvel) envia para abrir o menu deslizante. */
