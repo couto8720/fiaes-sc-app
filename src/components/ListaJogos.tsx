@@ -3,13 +3,14 @@
 import type { JogoCompleto } from "@/lib/dados";
 import type { Escalao } from "@/lib/supabase/database.types";
 import { CalendarClock, CalendarDays, History, Radio, type LucideIcon } from "lucide-react";
-import { agruparPorDia, agruparPorSemana, rotuloDia } from "@/lib/jogos";
+import { aoVivo, agruparPorDia, agruparPorSemana, rotuloDia } from "@/lib/jogos";
 import { useJogosAoVivo } from "@/lib/useJogosAoVivo";
 import { useFiltroEscalao } from "@/lib/useFiltroEscalao";
 import { useMeusEscaloes } from "@/lib/useMeusEscaloes";
 import { filtrarJogos, filtroAtivo } from "@/lib/filtroJogos";
 import { CartaoJogo } from "./CartaoJogo";
 import { FiltroEscaloes } from "./FiltroEscaloes";
+import { DestaqueJogo } from "./DestaqueJogo";
 
 type Props = {
   jogos: JogoCompleto[];
@@ -58,7 +59,13 @@ export function PainelInicio({ jogos, nomeClube, agora, escaloes }: Omit<Props, 
   const meus = useMeusEscaloes();
   const filtroValido = filtroAtivo(filtro, escaloes, meus);
   const visiveis = filtrarJogos(vivos, filtroValido, meus);
-  const g = agruparPorSemana(visiveis, agora);
+  // Destaque no topo: o primeiro jogo ao vivo ou, não havendo, o próximo jogo agendado. Sai da lista para não aparecer duas vezes.
+  const destaque =
+    visiveis.find((j) => aoVivo(j.estado)) ??
+    [...visiveis]
+      .filter((j) => j.estado === "agendado" && new Date(j.data_hora).getTime() >= agora - 2 * 3_600_000)
+      .sort((a, b) => a.data_hora.localeCompare(b.data_hora))[0];
+  const g = agruparPorSemana(destaque ? visiveis.filter((j) => j.id !== destaque.id) : visiveis, agora);
 
   const seccao = (titulo: string, Icone: LucideIcon, lista: JogoCompleto[], tom: "vivo" | "destaque" | "normal" | "suave") =>
     lista.length > 0 && (
@@ -85,11 +92,12 @@ export function PainelInicio({ jogos, nomeClube, agora, escaloes }: Omit<Props, 
       </section>
     );
 
-  const nada = !g.aoVivo.length && !g.estaSemana.length && !g.proximaSemana.length && !g.anteriores.length;
+  const nada = !destaque && !g.aoVivo.length && !g.estaSemana.length && !g.proximaSemana.length && !g.anteriores.length;
 
   return (
     <>
       {escaloes && <FiltroEscaloes escaloes={escaloes} ativo={filtroValido} meus={Boolean(meus?.length)} />}
+      {destaque && <DestaqueJogo key={destaque.id} jogo={destaque} nomeClube={nomeClube} agora={agora} />}
       {seccao("Ao vivo", Radio, g.aoVivo, "vivo")}
       {seccao("Esta semana", CalendarClock, g.estaSemana, "destaque")}
       {seccao("Próxima semana", CalendarDays, g.proximaSemana, "normal")}

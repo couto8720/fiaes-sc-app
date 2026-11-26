@@ -8,6 +8,14 @@ import { NumeroGolos } from "./NumeroGolos";
 import { resumoMarcadores } from "@/lib/marcadores";
 import { CartaoVermelho } from "./CartaoVermelho";
 
+// Barra à esquerda: cor do resultado nos jogos terminados; cor do clube nos restantes.
+const COR_BORDA = {
+  vitoria: "border-l-vitoria",
+  empate: "border-l-empate",
+  derrota: "border-l-derrota",
+  nenhum: "border-l-clube dark:border-l-destaque",
+} as const;
+
 export function CartaoJogo({
   jogo,
   nomeClube,
@@ -24,6 +32,7 @@ export function CartaoJogo({
   const vivo = aoVivo(jogo.estado);
   const riscado = jogo.estado === "adiado" || jogo.estado === "cancelado";
   const comEstado = vivo || jogo.estado === "final" || riscado;
+  const resultado = desfecho(jogo);
 
   const titulo = [mostrarEscalao && jogo.escalao?.nome, jogo.competicao, jogo.jornada && `Jornada ${jogo.jornada}`]
     .filter(Boolean)
@@ -31,14 +40,16 @@ export function CartaoJogo({
 
   return (
     <article
-      className={`relative overflow-hidden rounded-xl border border-l-[6px] bg-superficie p-4 shadow-sm ${
-        vivo ? "border-ao-vivo/60 border-l-ao-vivo ring-1 ring-ao-vivo/30" : "border-borda border-l-clube dark:border-l-destaque"
+      className={`cartao-vivo entrar relative overflow-hidden rounded-2xl border border-l-[6px] bg-superficie p-4 shadow-sm ${
+        vivo
+          ? "border-ao-vivo/60 border-l-ao-vivo bg-linear-to-r from-ao-vivo/10 to-superficie to-40% ring-1 ring-ao-vivo/30"
+          : `border-borda ${COR_BORDA[resultado ?? "nenhum"]}`
       }`}
     >
       <div className="mb-2 flex items-start justify-between gap-2">
         <span className="text-xs font-bold uppercase tracking-wide text-clube dark:text-destaque">{titulo}</span>
         {comEstado ? (
-          <EstadoJogo estado={jogo.estado} desde={jogo.estado_desde} desfecho={desfecho(jogo)} />
+          <EstadoJogo estado={jogo.estado} desde={jogo.estado_desde} desfecho={resultado} />
         ) : (
           mostrarDia && (
             <span className="shrink-0 rounded bg-destaque/25 px-2 py-0.5 text-xs font-semibold">
@@ -50,7 +61,7 @@ export function CartaoJogo({
 
       <ul className={riscado ? "opacity-60" : undefined}>
         {ladoALado.map((eq) => (
-          <li key={eq.nome} className="flex items-center justify-between gap-3 py-0.5">
+          <li key={eq.nome} className="flex items-center justify-between gap-3 py-1">
             <span className="flex min-w-0 items-center gap-1.5">
               <span className={`truncate text-base ${eq.eClube ? "font-bold" : "font-medium"}`}>{eq.nome}</span>
               {/* Um cartão por expulsão dessa equipa */}
@@ -64,7 +75,12 @@ export function CartaoJogo({
               )}
             </span>
             {temResultado && (
-              <NumeroGolos valor={eq.golos} className="tabular rounded px-1.5 font-display text-3xl leading-none font-bold" />
+              <NumeroGolos
+                valor={eq.golos}
+                className={`tabular grid min-w-9 place-items-center rounded-lg px-1.5 pt-1 font-display text-3xl leading-none font-bold ${
+                  eq.eClube ? "bg-clube text-white dark:bg-destaque dark:text-black" : "bg-fundo"
+                }`}
+              />
             )}
           </li>
         ))}
@@ -94,7 +110,7 @@ export function CartaoJogo({
       {jogo.notas && <p className="mt-2 text-sm italic text-suave">{jogo.notas}</p>}
 
       {/* O cartão inteiro abre a página do jogo; o link do mapa fica por cima (z-10). */}
-      <Link href={`/jogos/${jogo.id}`} className="absolute inset-0 rounded-xl" aria-label={`Ver jogo: ${titulo}`} />
+      <Link href={`/jogos/${jogo.id}`} className="absolute inset-0 rounded-2xl" aria-label={`Ver jogo: ${titulo}`} />
     </article>
   );
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { agora, obterConfig, obterEscaloes, obterJogos } from "@/lib/dados";
-import { formatarDataHora, resumoJogo } from "@/lib/jogos";
+import { CartaoJogo } from "@/components/CartaoJogo";
 
 export const metadata: Metadata = {
   title: "Resultados",
@@ -32,32 +32,15 @@ async function ConteudoResultados() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="mb-2 text-3xl font-black tracking-tight">Resultados</h1>
+        <h1 className="mb-1 font-display text-4xl leading-none font-semibold uppercase tracking-wide">Resultados</h1>
         <p className="text-suave">Últimos jogos realizados</p>
       </div>
 
       {resultados.length > 0 ? (
-        <div className="rounded-xl border border-borda overflow-hidden">
-          <ul className="divide-y divide-borda">
-            {resultados.map((jogo) => (
-              <li key={jogo.id} className="p-4 hover:bg-borda/30 transition">
-                <Link
-                  href={`/jogos/${jogo.id}`}
-                  className="flex flex-col gap-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold uppercase text-suave">
-                      {formatarDataHora(jogo.data_hora)} · {jogo.escalao?.nome}
-                    </p>
-                    <span className="text-xs font-bold bg-vitoria/20 text-vitoria px-2 py-1 rounded">
-                      FINAL
-                    </span>
-                  </div>
-                  <p className="font-semibold text-lg">{resumoJogo(jogo, config.nome_curto)}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
+        <div className="space-y-3">
+          {resultados.map((jogo) => (
+            <CartaoJogo key={jogo.id} jogo={jogo} nomeClube={config.nome_curto} mostrarDia />
+          ))}
         </div>
       ) : (
         <div className="rounded-xl border border-dashed border-borda p-6 text-center text-suave">

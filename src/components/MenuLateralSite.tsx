@@ -73,7 +73,7 @@ export function MenuLateralSite() {
               compacto ? "justify-center px-0" : "px-3"
             } ${
               ativo
-                ? "bg-clube/10 text-clube dark:bg-destaque/10 dark:text-destaque"
+                ? "bg-clube text-white shadow-md shadow-clube/25 dark:bg-destaque/15 dark:text-destaque dark:shadow-none"
                 : "text-suave hover:bg-fundo hover:text-texto"
             }`}
           >
